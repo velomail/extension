@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "echo 'Static'",
-  "outputDirectory": "."
+  "buildCommand": "node scripts/build-landing.js",
+  "outputDirectory": "public"
 }
