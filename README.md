@@ -42,7 +42,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 - **`docs/`** — Chrome Web Store audit, listing, pre-submit checklist, architecture, developer guide, privacy.
 
 ```
-email-mobility/
+velomail/
 ├── manifest.json
 ├── src/
 │   ├── background/   # Service worker

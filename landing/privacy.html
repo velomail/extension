@@ -262,7 +262,7 @@
         <ul>
           <li><strong>Settings:</strong> Your preferences (e.g. tip notifications on or off).</li>
           <li><strong>Onboarding state:</strong> Whether you have completed the welcome flow so we do not show it again.</li>
-          <li><strong>Usage counter:</strong> A local count of emails sent through the extension, used only to enforce the free tier limit and show your usage in the popup. This resets on the 1st of each month.</li>
+          <li><strong>Usage counter:</strong> A local count of emails sent through the extension each day, used only to enforce the free tier daily limit (5 sends per day) and to show your usage in the popup. It resets at local midnight each day.</li>
         </ul>
         <p>We do <strong>not</strong> collect, send, or upload this data to any server. All of it stays on your computer.</p>
       </section>
@@ -285,7 +285,7 @@
       <section>
         <h2>Permissions and why we use them</h2>
         <ul>
-          <li><strong>Storage:</strong> To save your settings and usage counter locally on your device.</li>
+          <li><strong>Storage:</strong> To save your settings and daily usage counter locally on your device.</li>
           <li><strong>Active tab:</strong> To know when you are composing mail so we can show the preview and tips in context.</li>
           <li><strong>Notifications / Alarms:</strong> To optionally show in-app tips (e.g. reminder to try the preview). These are local only and never sent to a server.</li>
           <li><strong>Host access (Gmail, Outlook):</strong> So the extension can run on mail.google.com and outlook.live.com / office.com to display the mobile preview and run the in-page UI. We do not read or send your email content to any third party.</li>

@@ -1019,7 +1019,7 @@ async function showUpgradeModal(limitCheck) {
  */
 async function createPreviewUI(composeWindow) {
   // Check both JS variable AND actual DOM element
-  const existingOverlay = document.getElementById('email-mobility-overlay');
+  const existingOverlay = document.getElementById('velomail-overlay');
   
   console.log('🔍 DEBUG: createPreviewUI called', {
     overlayContainer: !!overlayContainer,
@@ -1061,7 +1061,7 @@ async function createPreviewUI(composeWindow) {
   // Create container with fixed positioning
   try {
     overlayContainer = document.createElement('div');
-    overlayContainer.id = 'email-mobility-overlay';
+    overlayContainer.id = 'velomail-overlay';
     overlayContainer.style.cssText = `
       position: fixed;
       top: 80px;

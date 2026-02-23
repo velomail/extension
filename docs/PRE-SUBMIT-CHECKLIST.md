@@ -35,8 +35,9 @@ Use this before pushing to GitHub and before submitting to the Chrome Web Store.
 
 ## Privacy
 
-- [ ] Privacy policy URL set in dashboard (e.g. `https://velomail.github.io/extension/landing/privacy.html` or your deployed URL)
-- [ ] [docs/PRIVACY-POLICY.md](PRIVACY-POLICY.md) content matches what you host at that URL
+- [ ] Privacy policy is on your landing page at `landing/privacy.html` (linked in the landing footer)
+- [ ] After deploying the landing, set the **Privacy policy URL** in the dashboard to your live URL, e.g. `https://yoursite.com/landing/privacy.html` or `https://yoursite.com/privacy.html` (depending on how you deploy)
+- [ ] The content there matches [docs/PRIVACY-POLICY.md](PRIVACY-POLICY.md) (use that as the source for `landing/privacy.html` if you build the page from it)
 
 ---
 

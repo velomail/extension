@@ -16,7 +16,7 @@
 
 ## Other
 
-- **Privacy policy** — [PRIVACY-POLICY.md](PRIVACY-POLICY.md) (host this at your privacy URL)
+- **Privacy policy** — [PRIVACY-POLICY.md](PRIVACY-POLICY.md) is the source text; the live policy is on the landing page at `landing/privacy.html` (linked in the footer). Use your deployed landing URL + `/landing/privacy.html` in the Chrome Web Store dashboard.
 - **Post-purchase unlock** — [POST-PURCHASE-UNLOCK.md](POST-PURCHASE-UNLOCK.md)
 - **Architecture** — [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Developer guide** — [DEVELOPER-GUIDE.md](DEVELOPER-GUIDE.md)

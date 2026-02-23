@@ -5,7 +5,7 @@
  */
 
 /* App-wide color palette */
-#email-mobility-overlay {
+#velomail-overlay {
   --black: #07020d;
   --sky-surge: #5db7de;
   --soft-linen: #f1e9db;
@@ -18,7 +18,7 @@
    OVERLAY CONTAINER - Root Element
    ============================================================================ */
 
-#email-mobility-overlay {
+#velomail-overlay {
   position: fixed !important;
   z-index: 999999 !important;
   pointer-events: auto !important;
@@ -29,7 +29,7 @@
    FONT SYSTEM - SF Pro (Apple's System Font Stack)
    ============================================================================ */
 
-#email-mobility-overlay * {
+#velomail-overlay * {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
