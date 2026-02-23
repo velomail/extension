@@ -1,20 +1,8 @@
-# VeloMail - Mobile Email Optimization Extension
+# VeloMail
 
 Real-time mobile preview for Gmail and Outlook. See how your emails look on iPhone and Android as you type.
 
----
-
-## 🚀 Quick Start
-
-### Install Extension
-
-1. Open Chrome and go to: `chrome://extensions/`
-2. Enable **Developer mode** (top right toggle)
-3. Click **Load unpacked**
-4. Select the `email-mobility` folder
-5. Extension installed! Look for VeloMail icon in toolbar
-
-### First Use
+## Quick start
 
 1. Open [Gmail](https://mail.google.com)
 2. Click **Compose** button
@@ -22,9 +10,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 4. Start typing - watch it update in real-time!
 5. Click VeloMail icon to see your mobile score
 
----
-
-## ✨ Features
+## Features
 
 ### Real-Time Mobile Preview
 - Live iPhone and Android-style phone preview (393x852px)
@@ -32,30 +18,11 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 - Draggable & collapsible interface
 - Shadow DOM isolated (no Gmail conflicts)
 
-### Mobile Preflight Checks
-- ✅ **Subject Hook** - First 30 chars compelling
-- ✅ **CTA Above Fold** - Action visible without scrolling (250 chars)
-- ✅ **Link Tap-ability** - Links properly spaced
-
-### Mobile Score (0-100)
-- **7-Factor Algorithm**:
-  - Subject length (20 pts)
-  - CTA placement (25 pts)
-  - Link density (15 pts)
-  - Images (12 pts)
-  - Text length (12 pts)
-  - Spacing (10 pts)
-  - Readability (6 pts)
-- Letter grade: A, B, C, D, F
-- Specific improvement tips with point impact
-
 ### Freemium Limits
 - **Free**: 5 sends/day (resets at midnight)
 - **Lifetime**: $49 one-time, unlimited sends (see landing/upgrade)
 
----
-
-## 🏗️ Project Structure
+## Project layout
 
 - **`src/`** — Extension: popup, background (service worker), content script, welcome page, shared lib (first-compose-guide, theme).
 - **`landing/`** — Marketing site (index, privacy); deploy to Netlify.
@@ -80,52 +47,6 @@ email-mobility/
 └── docs/             # Audit, listing, architecture, privacy
 ```
 
----
-
-## 🧪 Testing
-
-### Quick Test (2 minutes)
-
-1. **Load extension** in Chrome
-2. **Open Gmail** and click Compose
-3. **Type**: "Demo Ready - Can we schedule 15 min?"
-4. **Body**: "Hi! Can you schedule a quick call this week?"
-5. **Check**: Preview updates, dots turn green, score shows in popup
-
-### Reset Usage Counter
-
-```javascript
-// In Chrome console
-chrome.storage.local.set({ monthlyUsage: {} }).then(() => location.reload());
-```
-
----
-
-## 📊 Code Quality
-
-- ✅ Production-ready error handling
-- ✅ Performance monitoring (4 metrics)
-- ✅ Safe DOM operations (never crash)
-- ✅ State validation
-- ✅ Usage tracking enforced
-- ✅ No linter errors
-
-**Quality Score**: 10/10
-
----
-
-## 🛠️ Development
-
-### Configuration
-
-Edit `src/content/content.js` line 8:
-
-```javascript
-const DEBUG = true;  // Show detailed logs
-```
-
-### Key Files
-
 | File | Purpose |
 |------|---------|
 | `content.js` | Main logic, scoring, preview UI |
@@ -142,7 +63,7 @@ const DEBUG = true;  // Show detailed logs
 
 ---
 
-## 🎯 Target Users
+## Target Users
 
 - Sales Development Reps (SDRs)
 - Account Executives (AEs)
@@ -151,14 +72,14 @@ const DEBUG = true;  // Show detailed logs
 
 ---
 
-## 📱 Supported Email Clients
+## Supported Email Clients
 
 - Gmail (mail.google.com)
 - Outlook Web (outlook.live.com, outlook.office.com, outlook.office365.com)
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Preview doesn't show?
 
@@ -170,23 +91,23 @@ const DEBUG = true;  // Show detailed logs
 ### Console full of errors?
 
 Ignore these (Gmail's own errors):
-- ❌ Service worker navigation preload
-- ❌ FetchEvent network error
-- ❌ iframe sandbox warnings
+- Service worker navigation preload
+- FetchEvent network error
+- iframe sandbox warnings
 
 Only worry about errors starting with:
-- `❌ VeloMail Error`
+- `VeloMail Error`
 - `chrome-extension://`
 
 ---
 
-## 📄 License
+## License
 
 Proprietary - VeloMail
 
 ---
 
-## 🔗 Links
+## Links
 
 - Chrome Web Store: (pending)
 - Website: (pending)
@@ -195,5 +116,5 @@ Proprietary - VeloMail
 ---
 
 **Version**: 1.0.1  
-**Status**: Production Ready ✅  
+**Status**: Production Ready  
 **Last Updated**: February 22, 2026
