@@ -55,7 +55,8 @@ No `webRequest`, `debugger`, or `<all_urls>` – this helps avoid long manual re
 
 ### External URLs in the project
 
-- `https://velomailext.netlify.app` – used for **navigation** (upgrade/landing), not script loading. OK.
+- `https://buy.stripe.com/...` – used for **navigation** (upgrade/purchase) when user clicks Upgrade. OK.
+- `https://velomail.github.io/extension` – used in welcome/help for **navigation** (landing, support). OK.
 - `https://mail.google.com` and Outlook URLs – host patterns and links only. OK.
 - Landing page links (Chrome Web Store, Stripe, etc.) – normal links, not script sources. OK.
 
@@ -65,19 +66,19 @@ No `webRequest`, `debugger`, or `<all_urls>` – this helps avoid long manual re
 
 ## 3. Paywall UI Check
 
-### 15-use limit and redirect behavior
+### 5-per-day limit and redirect behavior
 
-- **Limit:** Enforced in the service worker (`worker-simple.js`): `FREE_CHECKS_LIMIT = 15`. Popup and content script use the same limit from storage/worker.
+- **Limit:** Enforced in the service worker (`worker-simple.js`): `DAILY_LIMIT = 5` (resets at local midnight). Popup and content script use the same limit from storage/worker.
 - **When the user hits the limit:**  
-  - In content (Gmail/Outlook): Paywall sheet and upgrade modal show; “Upgrade” now triggers a message to the background, which opens the site with **`chrome.tabs.create`** (no `window.open` from content, no blocking UI).
+  - In content (Gmail/Outlook): Paywall sheet and upgrade modal show; “Upgrade” now triggers a message to the background, which opens the purchase page with **`chrome.tabs.create`** (no `window.open` from content, no blocking UI).
   - In popup: “Upgrade →” uses **`chrome.tabs.create`** and then `window.close()`, so the redirect does not block the browser UI.
 
 ### Changes made for store policy
 
-- **Content script (paywall sheet + upgrade modal):** “Upgrade” sends `OPEN_UPGRADE_URL` to the background; the service worker calls `chrome.tabs.create({ url: 'https://velomailext.netlify.app' })`. This avoids popup-blocking and keeps behavior consistent and non-malicious.
+- **Content script (paywall sheet + upgrade modal):** “Upgrade” sends `OPEN_UPGRADE_URL` to the background; the service worker calls `chrome.tabs.create({ url: 'https://buy.stripe.com/...' })`. This avoids popup-blocking and keeps behavior consistent and non-malicious.
 - **Popup:** Upgrade CTA click is handled in JS: `e.preventDefault()` and `chrome.tabs.create({ url: UPGRADE_URL })` then `window.close()`.
 
-Result: Redirect to your website at the 15-use limit is done via **`chrome.tabs.create`** and does not block the browser UI in a way that looks like malware.
+Result: Redirect to the upgrade/purchase page at the daily limit is done via **`chrome.tabs.create`** and does not block the browser UI in a way that looks like malware.
 
 ---
 
@@ -89,7 +90,7 @@ Copy this into the “Justification for Permissions” (or equivalent) field in 
 
 **Justification for Permissions**
 
-VeloMail needs **storage** to remember the user’s monthly preview count (15 free checks), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **notifications** and **alarms** are used for optional in-app tips and reset reminders. No data is sent to external servers except when the user explicitly clicks Upgrade and is taken to our website.
+VeloMail needs **storage** to remember the user’s daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **notifications** and **alarms** are used for optional in-app tips and daily reset. No data is sent to external servers except when the user explicitly clicks Upgrade and is taken to the purchase/landing page.
 
 ---
 

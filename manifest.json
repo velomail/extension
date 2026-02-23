@@ -26,6 +26,11 @@
       "js": ["src/content/content.js"],
       "css": ["src/content/styles.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://velomail.github.io/extension/landing/success.html*"],
+      "js": ["src/content/success-unlock.js"],
+      "run_at": "document_idle"
     }
   ],
   "permissions": [
@@ -47,7 +52,9 @@
     "https://mail.google.com/*",
     "https://outlook.live.com/*",
     "https://outlook.office365.com/*",
-    "https://outlook.office.com/*"
+    "https://outlook.office.com/*",
+    "https://velomail.github.io/extension/*",
+    "https://velomail-api.vercel.app/*"
   ],
   "minimum_chrome_version": "88",
   "web_accessible_resources": [

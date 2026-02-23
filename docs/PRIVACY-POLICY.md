@@ -1,6 +1,6 @@
 # VeloMail Privacy Policy
 
-**Last updated:** 2025
+**Last updated:** February 2026
 
 VeloMail ("we", "our") is a browser extension that helps you optimize sales emails for mobile viewing. This policy describes how we handle information in the extension.
 

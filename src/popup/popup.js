@@ -316,24 +316,44 @@ function showEmptyState() {
 // USAGE STATS
 // ============================================================================
 
+const UPGRADE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
+
 async function updateUsageStats() {
   try {
-    const result = await chrome.storage.local.get(['monthlyUsage']);
-    const monthlyUsage = result.monthlyUsage || {};
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const usage = monthlyUsage[currentMonth] || { previews: 0, limit: 15 };
-    
+    const [sync, local] = await Promise.all([
+      chrome.storage.sync.get(['isPaid']),
+      chrome.storage.local.get(['usageData'])
+    ]);
+
     const usageCount = document.getElementById('usageCount');
     const usageFill = document.getElementById('usageFill');
+    const usageBar = document.getElementById('usageBar');
     const usageReset = document.getElementById('usageReset');
     const upgradeCta = document.getElementById('upgradeCta');
-    
-    if (usageCount) {
-      usageCount.textContent = `${usage.previews} / ${usage.limit}`;
+
+    if (sync.isPaid === true) {
+      if (usageCount) usageCount.textContent = 'Lifetime — Unlimited';
+      if (usageBar) usageBar.classList.add('hidden');
+      if (usageReset) usageReset.textContent = '';
+      if (upgradeCta) upgradeCta.classList.add('hidden');
+      return;
     }
-    
+
+    const today = new Date().toLocaleDateString('en-CA');
+    let data = local.usageData || { date: today, count: 0 };
+    if (data.date !== today) {
+      data = { date: today, count: 0 };
+    }
+    const count = data.count;
+    const limit = 5;
+
+    if (usageCount) {
+      usageCount.textContent = `${count} / ${limit}`;
+    }
+
+    if (usageBar) usageBar.classList.remove('hidden');
     if (usageFill) {
-      const percentage = (usage.previews / usage.limit) * 100;
+      const percentage = (count / limit) * 100;
       usageFill.style.width = `${Math.min(percentage, 100)}%`;
       usageFill.classList.remove('warning', 'danger');
       if (percentage >= 90) {
@@ -343,23 +363,14 @@ async function updateUsageStats() {
       }
     }
 
-    // Reset date: first day of next month
     if (usageReset) {
-      const now = new Date();
-      const resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      const daysLeft = Math.ceil((resetDate - now) / (1000 * 60 * 60 * 24));
-      usageReset.textContent = daysLeft === 1 ? 'Resets tomorrow' : `Resets in ${daysLeft} days`;
+      usageReset.textContent = 'Resets at midnight';
     }
 
-    // Show upgrade CTA when at 80%+ usage
     if (upgradeCta) {
-      const remaining = usage.limit - usage.previews;
-      if (remaining <= Math.ceil(usage.limit * 0.2)) {
-        upgradeCta.classList.remove('hidden');
-        upgradeCta.textContent = remaining <= 0 ? 'Upgrade for unlimited access →' : `${remaining} left — Upgrade →`;
-      } else {
-        upgradeCta.classList.add('hidden');
-      }
+      upgradeCta.classList.remove('hidden');
+      upgradeCta.href = UPGRADE_URL;
+      upgradeCta.textContent = 'Tired of daily limits? Get Lifetime Access ($49) →';
     }
   } catch (error) {
     console.error('❌ Failed to load usage stats:', error);
@@ -430,7 +441,7 @@ async function saveSettings() {
 // EVENT LISTENERS
 // ============================================================================
 
-const UPGRADE_URL = 'https://velomailext.netlify.app';
+const UPGRADE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
 
 function setupEventListeners() {
   // Auto-show toggle

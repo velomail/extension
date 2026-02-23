@@ -118,67 +118,62 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 // ============================================================================
-// USAGE TRACKING
+// USAGE TRACKING (daily limit; resets at local midnight)
 // ============================================================================
 
-const FREE_CHECKS_LIMIT = 15;
+const DAILY_LIMIT = 5;
+
+/** Today as YYYY-MM-DD in user's local timezone (resets at local midnight) */
+function getToday() {
+  return new Date().toLocaleDateString('en-CA');
+}
 
 /**
- * Check if user has remaining preview quota
+ * Check if user has remaining daily quota. Lifetime (isPaid) bypasses limit.
  */
 async function checkUsageLimit() {
   try {
-    const result = await chrome.storage.local.get(['monthlyUsage']);
-    const monthlyUsage = result.monthlyUsage || {};
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    const usage = monthlyUsage[currentMonth] || { previews: 0, limit: FREE_CHECKS_LIMIT, firstUse: Date.now() };
-    
-    const remaining = Math.max(0, usage.limit - usage.previews);
-    const allowed = remaining > 0;
-    const isApproachingLimit = remaining <= 5 && remaining > 0;
-    
+    const sync = await chrome.storage.sync.get(['isPaid']);
+    if (sync.isPaid === true) {
+      return { allowed: true, remaining: -1, limit: -1, isApproachingLimit: false };
+    }
+
+    const today = getToday();
+    const result = await chrome.storage.local.get(['usageData']);
+    let data = result.usageData || { date: today, count: 0 };
+
+    if (data.date !== today) {
+      data = { date: today, count: 0 };
+    }
+
+    const remaining = Math.max(0, DAILY_LIMIT - data.count);
+    const allowed = data.count < DAILY_LIMIT;
+    const isApproachingLimit = remaining <= 2 && remaining > 0;
+
     return {
       allowed,
       remaining,
-      limit: usage.limit,
+      limit: DAILY_LIMIT,
       isApproachingLimit
     };
   } catch (error) {
     console.error('❌ Failed to check usage limit:', error);
-    return { allowed: true, remaining: FREE_CHECKS_LIMIT, limit: FREE_CHECKS_LIMIT, isApproachingLimit: false };
+    return { allowed: true, remaining: DAILY_LIMIT, limit: DAILY_LIMIT, isApproachingLimit: false };
   }
 }
 
 /**
- * Track a pre-flight check (increment only when called - caller ensures green-only)
+ * Return current daily usage snapshot (read-only; does not increment).
  */
 async function trackPreviewUsage() {
   try {
-    const result = await chrome.storage.local.get(['monthlyUsage']);
-    const monthlyUsage = result.monthlyUsage || {};
-    const currentMonth = new Date().toISOString().slice(0, 7);
-    
-    if (!monthlyUsage[currentMonth]) {
-      monthlyUsage[currentMonth] = {
-        previews: 0,
-        limit: FREE_CHECKS_LIMIT,
-        firstUse: Date.now()
-      };
-    }
-    
-    monthlyUsage[currentMonth].previews += 1;
-    
-    await chrome.storage.local.set({ monthlyUsage });
-    
-    console.log(`✅ Pre-flight tracked: ${monthlyUsage[currentMonth].previews} / ${monthlyUsage[currentMonth].limit}`);
-    
-    return {
-      previews: monthlyUsage[currentMonth].previews,
-      limit: monthlyUsage[currentMonth].limit
-    };
+    const result = await checkUsageLimit();
+    const previews = result.limit >= 0 ? result.limit - result.remaining : 0;
+    const limit = result.limit >= 0 ? result.limit : DAILY_LIMIT;
+    return { previews, limit };
   } catch (error) {
-    console.error('❌ Failed to track preview usage:', error);
-    return { previews: 0, limit: FREE_CHECKS_LIMIT };
+    console.error('❌ Failed to get usage snapshot:', error);
+    return { previews: 0, limit: DAILY_LIMIT };
   }
 }
 
@@ -230,19 +225,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse(result);
       }).catch(error => {
         console.error('❌ Check usage limit failed:', error);
-        sendResponse({ allowed: true, remaining: FREE_CHECKS_LIMIT, limit: FREE_CHECKS_LIMIT, isApproachingLimit: false });
+        sendResponse({ allowed: true, remaining: DAILY_LIMIT, limit: DAILY_LIMIT, isApproachingLimit: false });
       });
       return true;
       
     case 'TRACK_PREVIEW_USAGE':
     case 'TRACK_GREEN_CHECK':
-      // Legacy messages: no longer increment quota. Return current usage snapshot instead.
-      checkUsageLimit().then(result => {
-        const previews = result.limit - result.remaining;
-        sendResponse({ previews, limit: result.limit });
+      trackPreviewUsage().then(result => {
+        sendResponse(result);
       }).catch(error => {
         console.error('❌ Track preview (legacy) failed:', error);
-        sendResponse({ previews: 0, limit: FREE_CHECKS_LIMIT });
+        sendResponse({ previews: 0, limit: DAILY_LIMIT });
       });
       return true;
       
@@ -252,9 +245,34 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'OPEN_UPGRADE_URL':
-      chrome.tabs.create({ url: 'https://velomailext.netlify.app' });
+      chrome.tabs.create({ url: 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02' });
       sendResponse({ success: true });
       break;
+
+    case 'VERIFY_AND_UNLOCK':
+      (async () => {
+        const sessionId = message.sessionId;
+        if (!sessionId || !sessionId.startsWith('cs_')) {
+          sendResponse({ success: false, error: 'Invalid session ID.' });
+          return;
+        }
+        const apiBase = 'https://velomail-api.vercel.app';
+        try {
+          const res = await fetch(`${apiBase}/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
+          const data = res.ok ? await res.json().catch(() => ({})) : {};
+          if (res.ok && data.ok === true) {
+            await chrome.storage.sync.set({ isPaid: true });
+            console.log('✅ VeloMail: Lifetime unlock applied (isPaid=true)');
+            sendResponse({ success: true });
+          } else {
+            sendResponse({ success: false, error: data.error || 'Verification failed. Please try again or contact support.' });
+          }
+        } catch (err) {
+          console.error('❌ VeloMail: Verify-and-unlock failed', err);
+          sendResponse({ success: false, error: 'Could not reach verification server. Please try again later.' });
+        }
+      })();
+      return true;
     
     // ========== FROM CONTENT SCRIPT ==========
     
@@ -329,24 +347,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       
     case 'EMAIL_SENT': {
       console.log('✉️ Email sent! Tracking usage...');
-      chrome.storage.local.get(['monthlyUsage']).then((r) => {
-        const monthlyUsage = r.monthlyUsage || {};
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        if (!monthlyUsage[currentMonth]) {
-          monthlyUsage[currentMonth] = {
-            previews: 0,
-            limit: FREE_CHECKS_LIMIT,
-            firstUse: Date.now()
-          };
+      chrome.storage.sync.get(['isPaid']).then((sync) => {
+        if (sync.isPaid === true) {
+          return { usage: { previews: -1, limit: -1 } };
         }
-        monthlyUsage[currentMonth].previews += 1;
-        const usage = {
-          previews: monthlyUsage[currentMonth].previews,
-          limit: monthlyUsage[currentMonth].limit
-        };
-        return chrome.storage.local.set({ monthlyUsage }).then(() => usage);
-      }).then((usage) => {
-        console.log(`✅ Email send tracked: ${usage.previews} / ${usage.limit} this month`);
+        return chrome.storage.local.get(['usageData']).then((r) => {
+          const today = getToday();
+          let data = r.usageData || { date: today, count: 0 };
+          if (data.date !== today) {
+            data = { date: today, count: 0 };
+          }
+          data.count += 1;
+          return chrome.storage.local.set({ usageData: data }).then(() => ({
+            usage: { previews: data.count, limit: DAILY_LIMIT }
+          }));
+        });
+      }).then(({ usage }) => {
+        console.log(`✅ Email send tracked: ${usage.previews} / ${usage.limit} today`);
         currentEmailState = {
           isActive: false,
           html: '',
@@ -547,38 +564,9 @@ chrome.runtime.onStartup.addListener(() => {
 // Keepalive to prevent service worker sleep
 chrome.alarms.create('keepalive', { periodInMinutes: 1 });
 
-// Monthly usage cleanup — runs once a day, prunes keys older than 2 months
-chrome.alarms.create('monthlyCleanup', { periodInMinutes: 1440 });
-
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'keepalive') {
     // no-op — just keeps the worker alive
-    return;
-  }
-
-  if (alarm.name === 'monthlyCleanup') {
-    chrome.storage.local.get(['monthlyUsage']).then((result) => {
-      const monthlyUsage = result.monthlyUsage || {};
-      const currentMonth = new Date().toISOString().slice(0, 7);
-
-      // Keep only the current month and the one immediately before it
-      const [year, month] = currentMonth.split('-').map(Number);
-      const prevMonth = month === 1
-        ? `${year - 1}-12`
-        : `${year}-${String(month - 1).padStart(2, '0')}`;
-
-      const pruned = {};
-      if (monthlyUsage[currentMonth]) pruned[currentMonth] = monthlyUsage[currentMonth];
-      if (monthlyUsage[prevMonth]) pruned[prevMonth] = monthlyUsage[prevMonth];
-
-      const removed = Object.keys(monthlyUsage).length - Object.keys(pruned).length;
-      if (removed > 0) {
-        chrome.storage.local.set({ monthlyUsage: pruned });
-        console.log(`🧹 Pruned ${removed} old usage month(s) from storage`);
-      }
-    }).catch((err) => {
-      console.error('❌ monthlyCleanup failed:', err);
-    });
   }
 });
 

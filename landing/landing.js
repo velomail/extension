@@ -67,31 +67,6 @@ document.querySelectorAll('.faq-q').forEach(btn => {
   });
 });
 
-// ─── Billing toggle ──────────────────────────────────────────
-const billingToggle = document.getElementById('billingToggle');
-const proPrice      = document.getElementById('proPrice');
-const proDesc       = document.getElementById('proDesc');
-const toggleMonthly = document.getElementById('toggleMonthly');
-const toggleAnnual  = document.getElementById('toggleAnnual');
-
-const MONTHLY_PRICE = '$9';
-const ANNUAL_PRICE  = '$7';
-const MONTHLY_DESC  = 'For sales reps and teams who send every day.';
-const ANNUAL_DESC   = 'Billed annually ($84/yr). Cancel anytime.';
-
-if (billingToggle && proPrice) {
-  billingToggle.addEventListener('click', () => {
-    const isAnnual = billingToggle.classList.toggle('active');
-    billingToggle.setAttribute('aria-pressed', String(isAnnual));
-
-    proPrice.textContent = isAnnual ? ANNUAL_PRICE : MONTHLY_PRICE;
-    if (proDesc) proDesc.textContent = isAnnual ? ANNUAL_DESC : MONTHLY_DESC;
-
-    if (toggleMonthly) toggleMonthly.style.color = isAnnual ? '' : 'var(--black)';
-    if (toggleAnnual)  toggleAnnual.style.color  = isAnnual ? 'var(--black)' : '';
-  });
-}
-
 // ─── Proof-stat counter animation ────────────────────────────
 const countEls = document.querySelectorAll('.count-up');
 

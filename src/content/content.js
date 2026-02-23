@@ -7,7 +7,7 @@
 // ==================== CONFIGURATION ====================
 const DEBUG = false; // Set to true for development logging
 const PERFORMANCE_MONITORING = true; // Track performance metrics
-const LANDING_BASE_URL = 'https://velomailext.netlify.app';
+const LANDING_BASE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
 
 // ==================== SETTINGS MANAGEMENT ====================
 /**
@@ -45,14 +45,14 @@ async function checkLimit() {
     
     if (!response) {
       logError('CHECK_LIMIT_NO_RESPONSE', 'Service worker did not respond to usage check');
-      return { allowed: true, remaining: 50, limit: 50, isApproachingLimit: false };
+      return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
     }
     
     return response;
   } catch (error) {
     logError('CHECK_LIMIT_FAILED', error.message);
     // Fail open - allow preview but log error
-    return { allowed: true, remaining: 50, limit: 50, isApproachingLimit: false };
+    return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
   }
 }
 
@@ -68,13 +68,13 @@ async function trackPreview() {
     
     if (!response) {
       logError('TRACK_PREVIEW_NO_RESPONSE', 'Service worker did not respond to tracking');
-      return { previews: 1, limit: 50 };
+      return { previews: 1, limit: 5 };
     }
     
     return response;
   } catch (error) {
     logError('TRACK_PREVIEW_FAILED', error.message);
-    return { previews: 1, limit: 50 };
+    return { previews: 1, limit: 5 };
   }
 }
 
@@ -737,14 +737,26 @@ function findComposeWindow() {
 // ==================== UPGRADE MODAL ====================
 
 /**
- * First day of next month for "Resets on [date]" copy
- * @returns {string} e.g. "March 1, 2026"
+ * Daily reset copy for paywall (resets at local midnight).
+ * @returns {string} e.g. "Resets at midnight" or "Resets tomorrow"
  */
 function getResetsOnDate() {
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  d.setDate(1);
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return 'Resets at midnight';
+}
+
+/**
+ * Build upgrade message for modal/sheet (daily limit + $49 Lifetime).
+ * @param {Object} limitCheck - Result from checkLimit()
+ * @returns {Promise<{title: string, message: string, cta: string, urgency: string, dismissible: boolean}>}
+ */
+async function getUpgradeMessage(limitCheck) {
+  return {
+    title: "You've hit your daily limit",
+    message: 'You get 5 free sends per day. Get Lifetime Access ($49 one-time) for unlimited sends and never wait for a reset again.',
+    cta: 'Get Lifetime Access — $49',
+    urgency: 'high',
+    dismissible: true
+  };
 }
 
 /**
@@ -761,19 +773,25 @@ async function applyAtLimitUI(limitCheck) {
   const sheet = shadowRoot.getElementById('paywallSheet');
   const resetsEl = shadowRoot.getElementById('paywallResetsDate');
   const usageEl = shadowRoot.getElementById('paywallUsageCount');
+  const headlineEl = sheet ? sheet.querySelector('.paywall-sheet-headline') : null;
+  const copyEl = sheet ? sheet.querySelector('.paywall-sheet-copy') : null;
+  const upgradeBtn = shadowRoot.getElementById('paywallUpgradeBtn');
   if (container) container.classList.add('at-limit');
-  if (resetsEl) resetsEl.textContent = `Resets on ${getResetsOnDate()}.`;
-  if (usageEl) usageEl.textContent = `${check.limit} / ${check.limit} sends used this month`;
+  if (resetsEl) resetsEl.textContent = getResetsOnDate() + '.';
+  if (usageEl) usageEl.textContent = '5 / 5 sends used today';
+  if (headlineEl) headlineEl.textContent = "You've hit your daily limit";
+  if (copyEl) copyEl.textContent = 'Upgrade to Lifetime for unlimited sends and never wait for a reset again.';
+  if (upgradeBtn) upgradeBtn.textContent = 'Get Lifetime Access — $49';
   if (sheet) {
     sheet.classList.add('visible');
     sheet.setAttribute('aria-hidden', 'false');
   }
   
-  const upgradeBtn = shadowRoot.getElementById('paywallUpgradeBtn');
   const waitBtn = shadowRoot.getElementById('paywallWaitBtn');
-  if (upgradeBtn && !upgradeBtn.hasAttribute('data-paywall-bound')) {
-    upgradeBtn.setAttribute('data-paywall-bound', '1');
-    upgradeBtn.addEventListener('click', () => {
+  const paywallUpgradeBtn = shadowRoot.getElementById('paywallUpgradeBtn');
+  if (paywallUpgradeBtn && !paywallUpgradeBtn.hasAttribute('data-paywall-bound')) {
+    paywallUpgradeBtn.setAttribute('data-paywall-bound', '1');
+    paywallUpgradeBtn.addEventListener('click', () => {
       chrome.runtime.sendMessage({ type: 'OPEN_UPGRADE_URL' });
     });
   }
@@ -877,7 +895,7 @@ async function showUpgradeModal(limitCheck) {
       <!-- Features -->
       <div style="background: #f9fafb; border-radius: 12px; padding: 24px; margin-bottom: 32px; text-align: left;">
         <h3 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 16px 0; text-align: center;">
-          ✨ Upgrade to Pro
+          ✨ Lifetime Access
         </h3>
         <div style="display: grid; gap: 12px;">
           <div style="display: flex; align-items: start; gap: 12px;">
@@ -886,7 +904,7 @@ async function showUpgradeModal(limitCheck) {
               <path d="M6 10l2.5 2.5L14 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span style="font-size: 14px; color: #374151; line-height: 1.5;">
-              <strong>Unlimited previews</strong> - No monthly limits
+              <strong>Unlimited sends</strong> - No daily limits
             </span>
           </div>
           <div style="display: flex; align-items: start; gap: 12px;">
@@ -912,10 +930,10 @@ async function showUpgradeModal(limitCheck) {
         <!-- Pricing -->
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
           <div style="font-size: 32px; font-weight: 700; color: #1a1a1a; line-height: 1;">
-            $19<span style="font-size: 16px; font-weight: 400; color: #6b7280;">/month</span>
+            $49 <span style="font-size: 16px; font-weight: 400; color: #6b7280;">one-time</span>
           </div>
           <div style="font-size: 14px; color: #6b7280; margin-top: 4px;">
-            or $159/year (save $69)
+            Never wait for a daily reset again
           </div>
         </div>
       </div>
@@ -1297,12 +1315,12 @@ function getOverlayHTML() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
           </div>
-          <p class="paywall-sheet-headline">You've hit your monthly limit</p>
-          <p class="paywall-sheet-copy">Upgrade to Pro for unlimited sends and never miss a sales opportunity.</p>
+          <p class="paywall-sheet-headline">You've hit your daily limit</p>
+          <p class="paywall-sheet-copy">Upgrade to Lifetime for unlimited sends and never wait for a reset again.</p>
           <p class="paywall-sheet-usage" id="paywallUsageCount"></p>
-          <p class="paywall-sheet-reset" id="paywallResetsDate">Resets next month.</p>
+          <p class="paywall-sheet-reset" id="paywallResetsDate">Resets at midnight.</p>
           <div class="paywall-sheet-actions">
-            <button type="button" class="paywall-btn-primary" id="paywallUpgradeBtn">Upgrade to Pro — $9/mo</button>
+            <button type="button" class="paywall-btn-primary" id="paywallUpgradeBtn">Get Lifetime Access — $49</button>
             <button type="button" class="paywall-btn-secondary" id="paywallWaitBtn">Wait for Reset</button>
           </div>
         </div>
@@ -2563,20 +2581,23 @@ function handleEmailSent() {
   }).then((response) => {
     if (response && response.usage) {
       const { previews, limit } = response.usage;
-      console.log(`✅ Email tracked: ${previews} sent this month (limit: ${limit})`);
+      console.log(`✅ Email tracked: ${previews} today (limit: ${limit})`);
+      
+      if (limit < 0) {
+        showSentToast('Sent!');
+        return;
+      }
       
       const remaining = limit - previews;
       
       if (previews >= limit) {
         applyAtLimitUI();
       } else {
-        // Show sent toast with remaining count
         const msg = remaining <= 3
-          ? `Sent! ${remaining} send${remaining === 1 ? '' : 's'} left this month`
+          ? `Sent! ${remaining} send${remaining === 1 ? '' : 's'} left today`
           : `Sent! ${remaining} of ${limit} sends remaining`;
         showSentToast(msg);
         
-        // Show approaching-limit warning banner if ≤ 3 remaining
         if (remaining <= 3) {
           showNearLimitBanner(remaining, limit);
         }
@@ -2620,7 +2641,7 @@ function showNearLimitBanner(remaining, limit) {
     const container = shadowRoot.getElementById('previewContainer');
     if (container) container.insertBefore(banner, container.firstChild);
   }
-  banner.textContent = `${remaining} send${remaining === 1 ? '' : 's'} left this month — upgrade for unlimited access`;
+  banner.textContent = `${remaining} send${remaining === 1 ? '' : 's'} left today — Get Lifetime ($49) for unlimited`;
 }
 
 /**

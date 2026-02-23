@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank you — VeloMail</title>
+  <meta name="description" content="Thank you for your VeloMail Lifetime purchase." />
+  <link rel="icon" type="image/png" href="../assets/images/icon48.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sky-surge: #5db7de;
+      --black: #07020d;
+      --white: #ffffff;
+      --bg: #f2f2f2;
+      --dim-grey: #6b6b6b;
+      --radius-card: 20px;
+      --ease-ios: cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(242, 242, 242, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+    }
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      color: var(--black);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .nav-logo img { width: 26px; height: 26px; border-radius: 6px; }
+    .nav-back { font-size: 13px; color: var(--sky-surge); text-decoration: none; font-weight: 500; }
+    .nav-back:hover { opacity: 0.8; }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+    }
+    .page-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--sky-surge);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      color: var(--black);
+      margin-bottom: 24px;
+    }
+    .success-card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      border: 0.5px solid rgba(0, 0, 0, 0.08);
+      padding: 40px 40px;
+    }
+    .success-card p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #3a3a3a;
+      margin-bottom: 16px;
+    }
+    #unlock-status {
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(93, 183, 222, 0.12);
+      border-radius: 12px;
+      font-size: 15px;
+      color: var(--black);
+      min-height: 52px;
+    }
+    #unlock-status.unlocked {
+      background: rgba(34, 197, 94, 0.12);
+      color: #166534;
+    }
+    #unlock-status.error {
+      background: rgba(239, 68, 68, 0.08);
+      color: #991b1b;
+    }
+    footer {
+      background: var(--black);
+      padding: 32px 24px;
+    }
+    .footer-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .footer-logo img { width: 22px; height: 22px; border-radius: 5px; }
+    .footer-copy { margin-left: auto; font-size: 12px; color: rgba(255, 255, 255, 0.22); }
+    @media (max-width: 640px) {
+      h1 { font-size: 28px; }
+      .success-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        <img src="../assets/images/icon48.png" alt="VeloMail" />
+        <span>VeloMail</span>
+      </a>
+      <a class="nav-back" href="index.html">← Back to home</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-label">Purchase complete</div>
+    <h1>Thank you for your purchase</h1>
+
+    <div class="success-card">
+      <p>You now have <strong>Lifetime Access</strong> to VeloMail — unlimited sends, no daily limit.</p>
+      <p>If you have the VeloMail extension installed in this browser, it will unlock automatically. You can close this tab and open the extension popup to confirm it shows <strong>Lifetime — Unlimited</strong>.</p>
+      <p id="unlock-status" role="status">Unlocking extension…</p>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <a class="footer-logo" href="index.html">
+        <img src="../assets/images/icon48.png" alt="VeloMail" />
+        <span>VeloMail</span>
+      </a>
+      <span class="footer-copy">© 2026 VeloMail. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

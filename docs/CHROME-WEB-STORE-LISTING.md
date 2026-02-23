@@ -36,8 +36,8 @@ Open Gmail or Outlook and start composing. VeloMail activates automatically. A l
 - **Zero setup** — Install once. VeloMail activates the moment you open a compose window.
 - **Private by design** — All data is stored locally on your device using chrome.storage.local. No email content, no personal data, and nothing is ever transmitted to a server.
 
-**Free plan:** 15 sends per month. Resets on the 1st. No credit card required.
-**Pro plan:** Unlimited sends, Android preview, and priority support.
+**Free plan:** 5 sends per day. Resets at midnight (your local time). No credit card required.
+**Lifetime plan:** $49 one-time. Unlimited sends, Android preview, and priority support.
 
 ---
 
@@ -62,17 +62,19 @@ sales email, email preview, mobile email, Gmail extension, Outlook extension, co
   - Capture the popup showing pre-flight tip states (pass/fail/pending)
   - Save to `assets/store/screenshot-1-1280x800.png`, `screenshot-2-1280x800.png`, etc.
 
+**Capturing from mockups:** Open `assets/store/mockup-screenshot1.html` or `mockup-screenshot2.html` in a browser (they use 1280×800 viewport), then use your OS or browser screenshot tool to capture the full view; save as PNG and upload in the dashboard. For the promo tile, open `assets/store/mockup-promo-tile.html` and capture at 440×280. Screenshot PNGs are uploaded in the Developer Dashboard and do not need to be in the extension zip.
+
 ---
 
 ## Privacy policy URL
 
-Host `landing/privacy.html` at a public URL (e.g. after deploying to Vercel/Netlify) and paste that URL here:
+After enabling GitHub Pages (see [DEPLOY.md](DEPLOY.md)), your privacy page is at:
 
 ```
-https://velomailext.netlify.app/privacy.html
+https://velomail.github.io/extension/landing/privacy.html
 ```
 
-Paste the live URL into **Privacy practices → Privacy policy** in the Developer Dashboard.
+Paste this URL into **Privacy practices → Privacy policy** in the Developer Dashboard.
 
 ---
 
@@ -82,17 +84,17 @@ The store will ask you to explain each permission. Use these:
 
 | Permission | Justification |
 |---|---|
-| `storage` | Saves user settings and monthly send count locally on the user's device. No data leaves the device. |
+| `storage` | Saves user settings and daily send count locally on the user's device. No data leaves the device. |
 | `activeTab` | Detects when the user is in a Gmail or Outlook compose window so the preview and tips can be shown in context. |
 | `notifications` | Used to show optional local in-app tips (e.g. first-use guidance). No external notifications are sent. |
-| `alarms` | Used to schedule the monthly usage counter reset on the 1st of each month. |
+| `alarms` | Used to schedule the daily usage counter reset at local midnight. |
 | Host access (Gmail, Outlook) | Required to inject the mobile preview panel and subject counter into the Gmail and Outlook compose UI. No email content is read, stored, or transmitted. |
 
 ---
 
 ## Upgrade / paywall links
 
-In-app upgrade CTAs (paywall sheet in the preview, upgrade modal, and popup "Upgrade →" link) all open the extension website/landing page: **https://velomailext.netlify.app**. Set the store listing **Website** field to this URL (or your custom domain) so users who click "Upgrade" land on your pricing/signup page.
+In-app upgrade CTAs (paywall sheet in the preview, upgrade modal, and popup "Upgrade" link) all open the extension website/landing page: **https://velomail.github.io/extension**. Set the store listing **Website** field to this URL so users who click "Upgrade" land on your pricing/signup page.
 
 ---
 

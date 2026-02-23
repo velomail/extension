@@ -11,5 +11,8 @@
   "devDependencies": {
     "prettier": "3.2.4",
     "sharp": "^0.34.5"
+  },
+  "dependencies": {
+    "stripe": "^20.3.1"
   }
 }
