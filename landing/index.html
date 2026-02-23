@@ -42,14 +42,14 @@
             Chrome Extension · Gmail &amp; Outlook · 1,200+ reps
           </div>
           <h1 class="hero-headline">Your next reply<br />starts on mobile.</h1>
-          <p class="hero-sub">67% of prospects open cold emails on their phone. VeloMail shows you exactly how yours looks — and flags every reason they'd delete it — before you hit send.</p>
+          <p class="hero-sub">67% of prospects open cold emails on their phone. VeloMail shows you exactly how yours looks — and flags every reason they'd delete it — before you hit send. Built for SDRs and AEs who send dozens of emails a day.</p>
           <div class="hero-actions">
             <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
               Add to Chrome — Free
             </a>
             <a href="#how-it-works" class="btn btn-ghost btn-lg">See how it works</a>
           </div>
-          <p class="hero-note">Free · 15 sends/month · No credit card</p>
+          <p class="hero-note">Free: 5 sends per day (resets at midnight). No credit card.</p>
         </div>
 
         <!-- Right: phone visual -->
@@ -261,17 +261,27 @@
             <span class="faq-icon" aria-hidden="true"></span>
           </button>
           <div class="faq-a">
-            <p>Yes — VeloMail supports Gmail and Outlook Web (<code>outlook.live.com</code> and <code>outlook.office.com</code>). If you use the desktop Outlook app, the extension does not apply since it's a browser-based tool.</p>
+            <p>Yes — VeloMail supports Gmail and Outlook Web (<code>outlook.live.com</code>, <code>outlook.office.com</code>, <code>outlook.office365.com</code>). If you use the desktop Outlook app, the extension does not apply since it's a browser-based tool.</p>
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-q" aria-expanded="false">
-            What happens after I use my 15 free sends?
+            What happens after I use my 5 free sends for the day?
             <span class="faq-icon" aria-hidden="true"></span>
           </button>
           <div class="faq-a">
-            <p>A paywall appears when you've hit your monthly limit. You can upgrade to Pro for unlimited sends, or wait — your counter automatically resets on the 1st of each month. Free forever means 15 sends per month, no expiry.</p>
+            <p>You'll see a paywall. You can upgrade to <strong>Lifetime ($49 one-time)</strong> for unlimited sends, or wait until midnight (your local time) — your count resets automatically. Free stays 5 sends per day, no expiry.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Who is the Lifetime plan for?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>SDRs and AEs who send 20+ emails a day. If you're hitting the 5-send limit by mid-morning, Lifetime removes the cap forever — one $49 payment, no subscription. Your status syncs across devices.</p>
           </div>
         </div>
 
@@ -281,7 +291,7 @@
             <span class="faq-icon" aria-hidden="true"></span>
           </button>
           <div class="faq-a">
-            <p>If you upgrade to Pro and aren't seeing results within 30 days, email <a href="mailto:hello@velomail.com">hello@velomail.com</a> for a full refund — no questions asked, no hoops to jump through.</p>
+            <p>If you purchase Lifetime and aren't seeing results within 30 days, email <a href="mailto:hello@velomail.com">hello@velomail.com</a> for a full refund — no questions asked, no hoops to jump through.</p>
           </div>
         </div>
 
@@ -295,14 +305,8 @@
   <section class="pricing" id="pricing">
     <div class="container">
       <div class="section-label">Pricing</div>
-      <h2 class="section-headline">Start free. Upgrade when you're ready.</h2>
-      <p class="section-sub">No contracts. Cancel anytime.</p>
-
-      <div class="billing-toggle">
-        <span class="toggle-label" id="toggleMonthly">Monthly</span>
-        <button class="toggle-switch" id="billingToggle" aria-pressed="false" aria-label="Toggle annual billing"></button>
-        <span class="toggle-label" id="toggleAnnual">Annual <span class="toggle-save">Save 20%</span></span>
-      </div>
+      <h2 class="section-headline">Simple pricing for sales reps</h2>
+      <p class="section-sub">Free tier: 5 sends per day (resets at midnight). Lifetime: $49 one-time for unlimited sends — no subscription, no daily cap.</p>
 
       <div class="pricing-grid">
         <!-- Free -->
@@ -310,12 +314,12 @@
           <div class="plan-name">Free</div>
           <div class="plan-price">
             <span class="price-amount">$0</span>
-            <span class="price-period">/ month</span>
+            <span class="price-period">forever</span>
           </div>
-          <p class="plan-desc">Perfect for trying VeloMail and occasional senders.</p>
+          <p class="plan-desc">5 sends per day. Resets at midnight (your time zone). Perfect to try before you buy.</p>
           <ul class="plan-features">
-            <li><span class="check">✓</span> 15 sends per month</li>
-            <li><span class="check">✓</span> Live mobile preview</li>
+            <li><span class="check">✓</span> 5 sends per day</li>
+            <li><span class="check">✓</span> Live mobile preview (iPhone &amp; Android)</li>
             <li><span class="check">✓</span> Pre-flight tips (3 checks)</li>
             <li><span class="check">✓</span> Subject line counter</li>
             <li><span class="check">✓</span> Dark mode simulation</li>
@@ -325,26 +329,25 @@
           <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-outline btn-full">Add to Chrome</a>
         </div>
 
-        <!-- Pro -->
+        <!-- Lifetime -->
         <div class="pricing-card pricing-card--pro">
-          <div class="plan-badge">Most popular</div>
-          <div class="plan-name">Pro</div>
+          <div class="plan-badge">For heavy senders</div>
+          <div class="plan-name">Lifetime</div>
           <div class="plan-price">
-            <span class="price-amount" id="proPrice">$9</span>
-            <span class="price-period">/ month</span>
+            <span class="price-amount" id="proPrice">$49</span>
+            <span class="price-period">one-time</span>
           </div>
-          <p class="plan-desc" id="proDesc">For sales reps and teams who send every day.</p>
+          <p class="plan-desc" id="proDesc">Unlimited sends. No daily limit. Pay once, use forever — no subscription.</p>
           <ul class="plan-features">
             <li><span class="check">✓</span> <strong>Unlimited sends</strong></li>
-            <li><span class="check">✓</span> Live mobile preview</li>
+            <li><span class="check">✓</span> Live mobile preview (iPhone &amp; Android)</li>
             <li><span class="check">✓</span> Pre-flight tips (3 checks)</li>
             <li><span class="check">✓</span> Subject line counter</li>
             <li><span class="check">✓</span> Dark mode simulation</li>
             <li><span class="check">✓</span> <strong>Multi-device preview</strong></li>
             <li><span class="check">✓</span> <strong>Priority support</strong></li>
           </ul>
-          <!-- Replace href with your Stripe payment link -->
-          <a href="https://buy.stripe.com/your_payment_link" target="_blank" rel="noopener" class="btn btn-primary btn-full">Upgrade to Pro</a>
+          <a href="https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02" target="_blank" rel="noopener" class="btn btn-primary btn-full">Get Lifetime Access — $49</a>
           <p class="plan-note">30-day money-back guarantee</p>
         </div>
       </div>
@@ -378,7 +381,7 @@
       </blockquote>
       <img src="../assets/images/icon128.png" alt="VeloMail" width="56" height="56" class="cta-logo" />
       <h2>Start sending emails that get replied to.</h2>
-      <p>Free to install. No credit card. Works with Gmail and Outlook.</p>
+      <p>Free: 5 sends/day. Upgrade to Lifetime ($49 one-time) for unlimited. Works with Gmail and Outlook.</p>
       <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Add VeloMail to Chrome</a>
     </div>
   </section>
@@ -414,3 +417,4 @@
   <script src="landing.js"></script>
 </body>
 </html>
+
