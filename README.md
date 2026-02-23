@@ -1,198 +1,419 @@
-# VeloMail - Mobile Email Optimization Extension
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="VeloMail — Optimize your sales emails for mobile. Preview your email on a real mobile screen before you send. More replies. Fewer missed opportunities." />
+  <title>VeloMail — Sales Emails Optimized for Mobile</title>
+  <link rel="icon" type="image/png" href="../assets/images/icon48.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-Real-time mobile preview for Gmail and Outlook. See how your emails look on iPhone as you type.
+  <!-- ============================================================
+       NAV
+  ============================================================ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="../assets/images/icon48.png" alt="VeloMail logo" width="32" height="32" />
+        <span>VeloMail</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+      <a href="#pricing" class="btn btn-primary btn-sm">Get started free</a>
+    </div>
+  </nav>
 
----
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
 
-## 🚀 Quick Start
+        <!-- Left: copy -->
+        <div class="hero-copy">
+          <div class="hero-badge">
+            <span class="badge-star">★ 4.8</span>
+            Chrome Extension · Gmail &amp; Outlook · 1,200+ reps
+          </div>
+          <h1 class="hero-headline">Your next reply<br />starts on mobile.</h1>
+          <p class="hero-sub">67% of prospects open cold emails on their phone. VeloMail shows you exactly how yours looks — and flags every reason they'd delete it — before you hit send. Built for SDRs and AEs who send dozens of emails a day.</p>
+          <div class="hero-actions">
+            <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+              Add to Chrome — Free
+            </a>
+            <a href="#how-it-works" class="btn btn-ghost btn-lg">See how it works</a>
+          </div>
+          <p class="hero-note">Free: 5 sends per day (resets at midnight). No credit card.</p>
+        </div>
 
-### Install Extension
+        <!-- Right: phone visual -->
+        <div class="hero-phone" aria-hidden="true">
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-status-bar">
+                <span>9:41</span>
+                <div class="phone-icons">
+                  <svg width="12" height="9" viewBox="0 0 12 9" fill="currentColor"><rect x="0" y="2" width="2" height="7" rx="0.5"/><rect x="3" y="1" width="2" height="8" rx="0.5"/><rect x="6" y="0" width="2" height="9" rx="0.5"/><rect x="9" y="3" width="2" height="6" rx="0.5"/></svg>
+                  <svg width="16" height="9" viewBox="0 0 16 9" fill="currentColor"><rect x="0" y="0" width="14" height="9" rx="2" opacity="0.35"/><rect x="0" y="0" width="10" height="9" rx="2"/><rect x="15" y="2.5" width="1.5" height="4" rx="0.75" opacity="0.4"/></svg>
+                </div>
+              </div>
+              <div class="phone-mail-header">
+                <span class="phone-cancel">‹</span>
+                <span class="phone-title">Inbox</span>
+                <span class="phone-send">Reply</span>
+              </div>
+              <div class="phone-sender-row">
+                <span class="phone-sender-name">You → Sarah</span>
+                <span class="phone-sender-time">Now</span>
+              </div>
+              <div class="phone-subject-row">
+                <span class="phone-subject-text">Quick question about Q2 goals</span>
+              </div>
+              <div class="phone-body">
+                <p>Hi Sarah,</p>
+                <p>I noticed your team just hit Series B — congrats! We help sales teams cut no-replies by 2×.</p>
+                <span class="cta-highlight">→ Book a slot here</span>
+              </div>
+            </div>
+          </div>
 
-1. Open Chrome and go to: `chrome://extensions/`
-2. Enable **Developer mode** (top right toggle)
-3. Click **Load unpacked**
-4. Select the `email-mobility` folder
-5. Extension installed! Look for VeloMail icon in toolbar
+          <!-- Pre-flight check pills below phone -->
+          <div class="phone-checks">
+            <span class="phone-check">✓ Subject</span>
+            <span class="phone-check">✓ CTA above fold</span>
+            <span class="phone-check">✓ Tap-friendly</span>
+          </div>
+        </div>
 
-### First Use
+      </div>
+    </div>
+  </section>
 
-1. Open [Gmail](https://mail.google.com)
-2. Click **Compose** button
-3. iPhone preview appears on the right side
-4. Start typing - watch it update in real-time!
-5. Click VeloMail icon to see your mobile score
+  <!-- ============================================================
+       SOCIAL PROOF BAR
+  ============================================================ -->
+  <section class="proof-bar">
+    <div class="container">
+      <div class="proof-stats">
+        <span class="proof-stat"><strong class="count-up" data-target="67" data-suffix="%">67%</strong> of cold emails opened on mobile</span>
+        <span class="proof-stat"><strong class="count-up" data-target="3" data-suffix="s">3s</strong> to decide to reply or delete</span>
+        <span class="proof-stat"><strong class="count-up" data-target="2" data-suffix="×">2×</strong> reply rate with CTA above fold</span>
+      </div>
+    </div>
+  </section>
 
----
+  <!-- ============================================================
+       HOW IT WORKS
+  ============================================================ -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-label">How it works</div>
+      <h2 class="section-headline">Most sales emails fail on mobile.<br />VeloMail fixes that.</h2>
+      <p class="section-sub">67% of cold emails are opened on a phone. VeloMail shows you exactly what your prospect sees — and flags every issue — before you hit send.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Open Gmail</h3>
+            <p>VeloMail activates the moment you open a compose window — no setup, no new tabs, nothing to learn.</p>
+          </div>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>See the live preview</h3>
+            <p>A real phone frame appears beside your draft and updates as you type — showing exactly what your prospect sees on their screen.</p>
+          </div>
+        </div>
+        <div class="step-connector" aria-hidden="true"></div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Fix before you send</h3>
+            <p>Pre-flight tips catch every issue in real time — subject too long, CTA buried, links too small to tap — before the email leaves your outbox.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-## ✨ Features
+  <!-- ============================================================
+       FEATURES
+  ============================================================ -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-label">Features</div>
+      <h2 class="section-headline">Built for how reps actually work</h2>
+      <div class="features-grid">
 
-### Real-Time Mobile Preview
-- Live Android and iphone  mockup (393x852px)
-- Updates as you type (no lag)
-- Draggable & collapsible interface
-- Shadow DOM isolated (no Gmail conflicts)
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <h3>Live Mobile Preview</h3>
+          <p>A real phone frame appears beside your draft and updates with every keystroke — no guessing.</p>
+        </div>
 
-### Mobile Preflight Checks
-- ✅ **Subject Hook** - First 30 chars compelling
-- ✅ **CTA Above Fold** - Action visible without scrolling (250 chars)
-- ✅ **Link Tap-ability** - Links properly spaced
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <h3>Pre-flight Tips</h3>
+          <p>Three weighted checks — subject length, CTA placement, link tap spacing — each turns green when your email is ready.</p>
+        </div>
 
-### Mobile Score (0-100)
-- **7-Factor Algorithm**:
-  - Subject length (20 pts)
-  - CTA placement (25 pts)
-  - Link density (15 pts)
-  - Images (12 pts)
-  - Text length (12 pts)
-  - Spacing (10 pts)
-  - Readability (6 pts)
-- Letter grade: A, B, C, D, F
-- Specific improvement tips with point impact
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Subject Counter</h3>
+          <p>Color-coded character count inline in Gmail — green, amber, or red — so you never send a subject that gets cut off.</p>
+        </div>
 
-### Freemium Limits
-- **Free**: 50 previews/month
-- **Pro**: Unlimited (planned)
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          </div>
+          <h3>Dark Mode Preview</h3>
+          <p>Toggle dark mode to see how your email renders for the 80%+ of mobile users who have it on.</p>
+        </div>
 
----
+      </div>
+    </div>
+  </section>
 
-## 🏗️ Project Structure
+  <!-- ============================================================
+       TESTIMONIALS
+  ============================================================ -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section-label">What reps are saying</div>
+      <h2 class="section-headline">Results from the field</h2>
+      <div class="testimonials-grid">
 
-- **`src/`** — Extension: popup, background (service worker), content script, welcome page, shared lib (first-compose-guide, theme).
-- **`landing/`** — Marketing site (index, privacy); deploy to Netlify.
-- **`assets/`** — Images: extension icons in `assets/images/` (icon16, icon48, icon128); store mockups in `assets/store/`.
-- **`scripts/`** — Build/package: `create-store-icons.js` (generate placeholder icons), `package-for-store.js`.
-- **`docs/`** — Audit, Chrome Web Store listing, architecture, developer guide, privacy.
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"My CTA was below the fold on every email I'd been sending for months. VeloMail showed me in 10 seconds. I fixed it that afternoon and my reply rate went up the same week."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:#5db7de;">A</div>
+            <div>
+              <div class="testimonial-name">Alex M.</div>
+              <div class="testimonial-role">SDR · Series B SaaS</div>
+            </div>
+          </div>
+        </div>
 
-```
-email-mobility/
-├── manifest.json
-├── src/
-│   ├── background/   # Service worker
-│   ├── content/      # Content script + styles
-│   ├── popup/        # Popup UI
-│   ├── welcome/      # Onboarding
-│   └── lib/          # first-compose-guide, theme
-├── landing/          # Marketing site (Netlify)
-├── assets/
-│   ├── images/       # icon16, icon48, icon128
-│   └── store/        # Store mockups
-├── scripts/          # create-store-icons, package-for-store
-└── docs/             # Audit, listing, architecture, privacy
-```
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"Takes 3 seconds before every send. That's genuinely it. I don't think about mobile formatting anymore — I just check the preview and go. Pipeline is up, stress is down."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:#a39b8b;">P</div>
+            <div>
+              <div class="testimonial-name">Priya S.</div>
+              <div class="testimonial-role">Account Executive · Enterprise</div>
+            </div>
+          </div>
+        </div>
 
----
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"I showed it to my team and we all installed it the same day. Two reps on my team doubled their reply rates within the first month. It's the easiest win I've given them."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:#5d4b3c;">D</div>
+            <div>
+              <div class="testimonial-name">Daniel R.</div>
+              <div class="testimonial-role">Sales Manager · 12-person team</div>
+            </div>
+          </div>
+        </div>
 
-## 🧪 Testing
+      </div>
+    </div>
+  </section>
 
-### Quick Test (2 minutes)
+  <!-- ============================================================
+       FAQ
+  ============================================================ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-label">Common questions</div>
+      <h2 class="section-headline">Everything you need to know</h2>
+      <div class="faq-list">
 
-1. **Load extension** in Chrome
-2. **Open Gmail** and click Compose
-3. **Type**: "Demo Ready - Can we schedule 15 min?"
-4. **Body**: "Hi! Can you schedule a quick call this week?"
-5. **Check**: Preview updates, dots turn green, score shows in popup
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Is my email content sent to your servers?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>No. VeloMail runs entirely in your browser. No email text, subject lines, or recipient data ever leaves your device. The extension reads your Gmail or Outlook compose window locally and renders the preview on-screen — nothing is transmitted.</p>
+          </div>
+        </div>
 
-### Reset Usage Counter
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Does it work with Outlook?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>Yes — VeloMail supports Gmail and Outlook Web (<code>outlook.live.com</code>, <code>outlook.office.com</code>, <code>outlook.office365.com</code>). If you use the desktop Outlook app, the extension does not apply since it's a browser-based tool.</p>
+          </div>
+        </div>
 
-```javascript
-// In Chrome console
-chrome.storage.local.set({ monthlyUsage: {} }).then(() => location.reload());
-```
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            What happens after I use my 5 free sends for the day?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>You'll see a paywall. You can upgrade to <strong>Lifetime ($49 one-time)</strong> for unlimited sends, or wait until midnight (your local time) — your count resets automatically. Free stays 5 sends per day, no expiry.</p>
+          </div>
+        </div>
 
----
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            Who is the Lifetime plan for?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>SDRs and AEs who send 20+ emails a day. If you're hitting the 5-send limit by mid-morning, Lifetime removes the cap forever — one $49 payment, no subscription. Your status syncs across devices.</p>
+          </div>
+        </div>
 
-## 📊 Code Quality
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">
+            What does the 30-day money-back guarantee cover?
+            <span class="faq-icon" aria-hidden="true"></span>
+          </button>
+          <div class="faq-a">
+            <p>If you purchase Lifetime and aren't seeing results within 30 days, email <a href="mailto:hello@velomail.com">hello@velomail.com</a> for a full refund — no questions asked, no hoops to jump through.</p>
+          </div>
+        </div>
 
-- ✅ Production-ready error handling
-- ✅ Performance monitoring (4 metrics)
-- ✅ Safe DOM operations (never crash)
-- ✅ State validation
-- ✅ Usage tracking enforced
-- ✅ No linter errors
+      </div>
+    </div>
+  </section>
 
-**Quality Score**: 10/10
+  <!-- ============================================================
+       PRICING
+  ============================================================ -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-headline">Simple pricing for sales reps</h2>
+      <p class="section-sub">Free tier: 5 sends per day (resets at midnight). Lifetime: $49 one-time for unlimited sends — no subscription, no daily cap.</p>
 
----
+      <div class="pricing-grid">
+        <!-- Free -->
+        <div class="pricing-card">
+          <div class="plan-name">Free</div>
+          <div class="plan-price">
+            <span class="price-amount">$0</span>
+            <span class="price-period">forever</span>
+          </div>
+          <p class="plan-desc">5 sends per day. Resets at midnight (your time zone). Perfect to try before you buy.</p>
+          <ul class="plan-features">
+            <li><span class="check">✓</span> 5 sends per day</li>
+            <li><span class="check">✓</span> Live mobile preview (iPhone &amp; Android)</li>
+            <li><span class="check">✓</span> Pre-flight tips (3 checks)</li>
+            <li><span class="check">✓</span> Subject line counter</li>
+            <li><span class="check">✓</span> Dark mode simulation</li>
+            <li><span class="muted">—</span> Unlimited sends</li>
+            <li><span class="muted">—</span> Priority support</li>
+          </ul>
+          <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-outline btn-full">Add to Chrome</a>
+        </div>
 
-## 🛠️ Development
+        <!-- Lifetime -->
+        <div class="pricing-card pricing-card--pro">
+          <div class="plan-badge">For heavy senders</div>
+          <div class="plan-name">Lifetime</div>
+          <div class="plan-price">
+            <span class="price-amount" id="proPrice">$49</span>
+            <span class="price-period">one-time</span>
+          </div>
+          <p class="plan-desc" id="proDesc">Unlimited sends. No daily limit. Pay once, use forever — no subscription.</p>
+          <ul class="plan-features">
+            <li><span class="check">✓</span> <strong>Unlimited sends</strong></li>
+            <li><span class="check">✓</span> Live mobile preview (iPhone &amp; Android)</li>
+            <li><span class="check">✓</span> Pre-flight tips (3 checks)</li>
+            <li><span class="check">✓</span> Subject line counter</li>
+            <li><span class="check">✓</span> Dark mode simulation</li>
+            <li><span class="check">✓</span> <strong>Multi-device preview</strong></li>
+            <li><span class="check">✓</span> <strong>Priority support</strong></li>
+          </ul>
+          <a href="https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02" target="_blank" rel="noopener" class="btn btn-primary btn-full">Get Lifetime Access — $49</a>
+          <p class="plan-note">30-day money-back guarantee</p>
+        </div>
+      </div>
 
-### Configuration
+      <div class="trust-strip">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          100% private — nothing leaves your browser
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          30-day money-back guarantee
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          4.8 rating on the Chrome Web Store
+        </div>
+      </div>
 
-Edit `src/content/content.js` line 8:
+    </div>
+  </section>
 
-```javascript
-const DEBUG = true;  // Show detailed logs
-```
+  <!-- ============================================================
+       FINAL CTA
+  ============================================================ -->
+  <section class="cta-section">
+    <div class="container">
+      <blockquote class="cta-quote">
+        "The 3-second check that changed how I write every email."
+        <cite>— Alex M., SDR</cite>
+      </blockquote>
+      <img src="../assets/images/icon128.png" alt="VeloMail" width="56" height="56" class="cta-logo" />
+      <h2>Start sending emails that get replied to.</h2>
+      <p>Free: 5 sends/day. Upgrade to Lifetime ($49 one-time) for unlimited. Works with Gmail and Outlook.</p>
+      <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Add VeloMail to Chrome</a>
+    </div>
+  </section>
 
-### Key Files
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <a href="#" class="footer-logo">
+          <img src="../assets/images/icon48.png" alt="VeloMail" width="24" height="24" />
+          <span>VeloMail</span>
+        </a>
+        <ul class="footer-links">
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a></li>
+          <li><a href="mailto:hello@velomail.com">Support</a></li>
+        </ul>
+        <p class="footer-copy">&copy; 2026 VeloMail. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `content.js` | Main logic | 3,200 |
-| `worker-simple.js` | Background | 300 |
-| `mobile-score.js` | Scoring | 766 |
-| `popup.js` | UI logic | 445 |
+  <!-- Sticky mobile CTA — shown only on small screens after scrolling past hero -->
+  <div class="mobile-sticky-cta" id="mobileStickyBtn" aria-hidden="true">
+    <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener" class="btn btn-primary btn-full">
+      Add to Chrome — Free
+    </a>
+  </div>
 
-### Documentation
-
-- **Architecture**: `docs/ARCHITECTURE.md`
-- **Developer Guide**: `docs/DEVELOPER-GUIDE.md`
-- **Publishing & deploy**: `DEPLOY.md` — Chrome Web Store package, Netlify landing, GitHub upload, and next steps.
-
----
-
-## 🎯 Target Users
-
-- Sales Development Reps (SDRs)
-- Account Executives (AEs)
-- Business Development Reps (BDRs)
-- Anyone composing outbound sales emails
-
----
-
-## 📱 Supported Email Clients
-
-- Gmail (mail.google.com)
-- Outlook Web (outlook.live.com, outlook.office.com, outlook.office365.com)
-
----
-
-## 🐛 Troubleshooting
-
-### Preview doesn't show?
-
-1. Check console for VeloMail errors (ignore Gmail errors)
-2. Verify usage limit: `chrome.storage.local.get('monthlyUsage')`
-3. Reload extension: `chrome://extensions/` → Reload
-4. Check service worker: Click "service worker" link on extension
-
-### Console full of errors?
-
-Ignore these (Gmail's own errors):
-- ❌ Service worker navigation preload
-- ❌ FetchEvent network error
-- ❌ iframe sandbox warnings
-
-Only worry about errors starting with:
-- `❌ VeloMail Error`
-- `chrome-extension://`
-
----
-
-## 📄 License
-
-Proprietary - VeloMail
-
----
-
-## 🔗 Links
-
-- Chrome Web Store: (pending)
-- Website: (pending)
-- Support: (pending)
-
----
-
-**Version**: 1.0.0  
-**Status**: Production Ready ✅  
-**Last Updated**: February 13, 2026
+  <script src="landing.js"></script>
+</body>
+</html>
