@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to VeloMail</title>
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <div class="welcome-container">
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="logo-badge" aria-hidden="true">
+        <svg class="logo-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M24 8c-8.837 0-16 6.492-16 14.5 0 4.6 2.7 8.7 6.9 11.4l-1.9 6.8 7.4-3.8c1 .3 2 .5 3.1.5 8.837 0 16-6.492 16-14.5S32.837 8 24 8z" stroke="var(--icon-grey)" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <path d="M32 22l6 4-6 4V22z" fill="var(--icon-grey)"/>
+        </svg>
+      </div>
+      <h1 class="hero-title">Welcome to VeloMail</h1>
+      <p class="hero-subtitle">Optimize your sales emails for mobile with real-time preview</p>
+    </header>
+
+    <!-- Progress Dots -->
+    <div class="progress-dots">
+      <span class="dot active" data-dot="1"></span>
+      <span class="dot" data-dot="2"></span>
+      <span class="dot" data-dot="3"></span>
+      <span class="dot" data-dot="4"></span>
+    </div>
+
+    <!-- Content Slides -->
+    <div class="slides-container">
+      <!-- Slide 1: The Problem -->
+      <div class="slide active" data-slide="1">
+        <div class="slide-content">
+          <div class="visual-demo">
+            <div class="iphone-mockup slide1-phone">
+              <div class="mockup-screen welcome-phone-screen">
+                <div class="welcome-dynamic-island" aria-hidden="true"></div>
+                <div class="welcome-home-indicator" aria-hidden="true"></div>
+                <div class="welcome-status-bar">
+                  <span class="welcome-time">9:41</span>
+                  <div class="welcome-status-icons">
+                    <svg width="10" height="7" viewBox="0 0 15 11" fill="none" aria-hidden="true"><rect x="0.5" y="1.5" width="3" height="5" rx="0.5" fill="currentColor"/><rect x="4.5" y="0.5" width="3" height="7" rx="0.5" fill="currentColor"/><rect x="8.5" y="2.5" width="3" height="5" rx="0.5" fill="currentColor"/><rect x="12.5" y="3.5" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                    <svg width="14" height="7" viewBox="0 0 24 11" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="17" height="10" rx="2.5" stroke="currentColor" fill="none"/><rect x="19" y="3" width="4" height="5" rx="1" fill="currentColor"/><rect x="2" y="2.5" width="13" height="6" rx="1" fill="currentColor"/></svg>
+                  </div>
+                </div>
+                <div class="welcome-mail-header">
+                  <span class="welcome-back-btn" aria-hidden="true"><svg width="8" height="12" viewBox="0 0 10 16" fill="none"><path d="M8.5 1L1.5 8L8.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="welcome-header-title">Inbox</span>
+                  <span class="welcome-more-btn" aria-hidden="true"><svg width="4" height="12" viewBox="0 0 4 16" fill="none"><circle cx="2" cy="2" r="2" fill="currentColor"/><circle cx="2" cy="8" r="2" fill="currentColor"/><circle cx="2" cy="14" r="2" fill="currentColor"/></svg></span>
+                </div>
+                <div class="welcome-email-container">
+                  <div class="welcome-email-subject-row">
+                    <div class="welcome-email-subject">Q1 follow-up</div>
+                  </div>
+                  <div class="welcome-email-from">
+                    <div class="welcome-from-avatar" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" fill="currentColor"/><path d="M4 16c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="welcome-from-details">
+                      <div class="welcome-from-name">You</div>
+                      <div class="welcome-from-meta">your@email.com • now</div>
+                    </div>
+                  </div>
+                  <div class="welcome-email-body preview-content-fade">
+                    <p>Hi — here’s the update we discussed.</p>
+                    <p>Let me know if you’d like to schedule a call.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h2>81% of emails are read on mobile</h2>
+          <p class="slide-description">
+            Your prospects read emails on their phone. But you're composing on desktop. What looks perfect on your screen might fail on mobile.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 2: Mobile Readiness -->
+      <div class="slide" data-slide="2">
+        <div class="slide-content">
+          <div class="visual-demo">
+            <div class="checklist-demo">
+              <div class="check-item passed check-item-reveal" style="animation-delay: 0.1s">
+                <div class="check-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="check-details">
+                  <div class="check-title">Subject Hook</div>
+                  <div class="check-desc">First 30 chars visible</div>
+                </div>
+              </div>
+              <div class="check-item passed check-item-reveal" style="animation-delay: 0.25s">
+                <div class="check-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 4L6 11L3 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="check-details">
+                  <div class="check-title">CTA Above Fold</div>
+                  <div class="check-desc">No scrolling needed</div>
+                </div>
+              </div>
+              <div class="check-item failed check-item-reveal" style="animation-delay: 0.4s">
+                <div class="check-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                <div class="check-details">
+                  <div class="check-title">Tap-Friendly Links</div>
+                  <div class="check-desc">Links too close together</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h2>Mobile readiness checks</h2>
+          <p class="slide-description">
+            VeloMail analyzes your emails for mobile-first best practices: subject line hooks, CTAs above the fold, and tap-friendly links.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 3: Real-time Preview -->
+      <div class="slide" data-slide="3">
+        <div class="slide-content">
+          <div class="visual-demo">
+            <div class="realtime-demo">
+              <div class="typing-indicator">
+                <span class="typing-label">Typing...</span>
+                <div class="cursor-blink">|</div>
+              </div>
+              <div class="preview-phone">
+                <div class="phone-mini slide3-phone">
+                  <div class="screen-mini welcome-phone-screen welcome-phone-mini">
+                    <div class="welcome-dynamic-island welcome-dynamic-island-mini" aria-hidden="true"></div>
+                    <div class="welcome-home-indicator welcome-home-indicator-mini" aria-hidden="true"></div>
+                    <div class="welcome-status-bar welcome-status-bar-mini">
+                      <span class="welcome-time">9:41</span>
+                    </div>
+                    <div class="welcome-mail-header welcome-mail-header-mini">
+                      <span class="welcome-back-btn" aria-hidden="true"><svg width="6" height="10" viewBox="0 0 10 16" fill="none"><path d="M8.5 1L1.5 8L8.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                      <span class="welcome-header-title">Inbox</span>
+                      <span class="welcome-more-btn" aria-hidden="true"><svg width="3" height="10" viewBox="0 0 4 16" fill="none"><circle cx="2" cy="2" r="2" fill="currentColor"/><circle cx="2" cy="8" r="2" fill="currentColor"/><circle cx="2" cy="14" r="2" fill="currentColor"/></svg></span>
+                    </div>
+                    <div class="welcome-email-container welcome-email-container-mini">
+                      <div class="welcome-email-subject-row welcome-email-subject-row-mini">
+                        <div class="welcome-email-subject">Q1 follow-up</div>
+                      </div>
+                      <div class="welcome-email-from welcome-email-from-mini">
+                        <div class="welcome-from-avatar welcome-from-avatar-mini" aria-hidden="true">
+                          <svg width="10" height="10" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" fill="currentColor"/><path d="M4 16c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div class="welcome-from-details">
+                          <div class="welcome-from-name">You</div>
+                          <div class="welcome-from-meta">your@email.com &bull; now</div>
+                        </div>
+                      </div>
+                      <div class="welcome-email-body welcome-email-body-mini">
+                        <div class="welcome-preview-placeholder">Start typing to see preview</div>
+                        <div class="welcome-preview-body">
+                      <div class="mini-body line-reveal" style="animation-delay: 0s">Hi — here’s the update we discussed.</div>
+                      <div class="mini-body line-reveal" style="animation-delay: 0.3s">Let me know if you’d like to schedule a call.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h2>See changes instantly</h2>
+          <p class="slide-description">
+            As you type in Gmail or Outlook, your email updates in real-time on a beautiful phone preview. No refresh, no delay.
+          </p>
+        </div>
+      </div>
+
+      <!-- Slide 4: Get Started -->
+      <div class="slide" data-slide="4">
+        <div class="slide-content">
+          <div class="visual-demo">
+            <div class="ready-icon">
+              <svg class="ready-icon-svg" width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <circle cx="32" cy="32" r="30" stroke="var(--icon-grey)" stroke-width="2" fill="none"/>
+                <path d="M44 24L28 40L20 32" stroke="var(--icon-grey)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <h2>You're all set!</h2>
+          <p class="slide-description">
+            Open Gmail and start composing. VeloMail will automatically appear when you write emails.
+          </p>
+          <div class="quick-actions">
+            <button class="action-button primary" id="openGmailBtn">
+              <svg class="action-button-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M2 6L10 11L18 6M2 6V14C2 14.53 2.21 15.04 2.59 15.41 2.96 15.79 3.47 16 4 16h12c.53 0 1.04-.21 1.41-.59.38-.37.59-.88.59-1.41V6M2 6l7.4-3.7c.19-.09.4-.15.61-.15.22 0 .42.05.61.15L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Open Gmail
+            </button>
+          </div>
+          <div class="feature-grid">
+            <div class="feature-item feature-item-reveal" style="animation-delay: 0.1s">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" stroke="var(--icon-grey)" stroke-width="2"/><path d="M12 18h.01" stroke="var(--icon-grey)" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="feature-text">Pixel-perfect phone preview</div>
+            </div>
+            <div class="feature-item feature-item-reveal" style="animation-delay: 0.2s">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="var(--icon-grey)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="feature-text">Real-time sync</div>
+            </div>
+            <div class="feature-item feature-item-reveal" style="animation-delay: 0.3s">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="var(--icon-grey)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="feature-text">Mobile readiness checks</div>
+            </div>
+            <div class="feature-item feature-item-reveal" style="animation-delay: 0.4s">
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="var(--icon-grey)" stroke-width="2"/><circle cx="12" cy="12" r="6" stroke="var(--icon-grey)" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="var(--icon-grey)"/></svg></div>
+              <div class="feature-text">Collapsible & draggable</div>
+            </div>
+          </div>
+          <div class="help-section">
+            <p class="help-text">Need help? <a href="#" id="helpLink">View quick start guide</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+      <button class="btn-text" id="skipBtn">Skip</button>
+      <button class="btn-primary" id="nextBtn">Continue</button>
+      <button class="btn-primary" id="doneBtn" style="display: none;">Get Started</button>
+    </div>
+
+    <!-- Quick Start Guide Modal -->
+    <div class="modal-backdrop modal-hidden" id="quickStartBackdrop" aria-hidden="true">
+      <div class="modal" id="quickStartModal" role="dialog" aria-modal="true" aria-labelledby="quickStartTitle">
+        <div class="modal-header">
+          <h2 id="quickStartTitle">Quick Start Guide</h2>
+          <button type="button" class="modal-close" id="quickStartClose" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body" id="quickStartBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="welcome.js"></script>
+</body>
+</html>

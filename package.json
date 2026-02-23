@@ -1,0 +1,15 @@
+{
+  "name": "velomail",
+  "displayName": "VeloMail",
+  "version": "1.0.1",
+  "description": "Optimize your sales emails for mobile viewing with VeloMail.",
+  "author": "VeloMail",
+  "scripts": {
+    "format": "prettier --write src/",
+    "package-store": "node scripts/package-for-store.js"
+  },
+  "devDependencies": {
+    "prettier": "3.2.4",
+    "sharp": "^0.34.5"
+  }
+}

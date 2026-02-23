@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=440"/>
+<title>VeloMail — Promo Tile</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:440px;height:280px;overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+    background:#07020d;
+    display:flex;align-items:center;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+  }
+
+  body::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 72% 50%,rgba(93,183,222,.12) 0%,transparent 60%);
+    pointer-events:none;
+  }
+
+  .inner{display:flex;align-items:center;gap:24px;padding:0 30px;position:relative;z-index:1;width:100%}
+
+  /* ── LEFT: copy ── */
+  .left{flex:1}
+  .brand-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .brand-logo{width:30px;height:30px;border-radius:7px;overflow:hidden;flex-shrink:0}
+  .brand-logo img{width:100%;height:100%;display:block}
+  .brand-name{font-size:16px;font-weight:800;color:#fff;letter-spacing:-.5px}
+
+  .tagline{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.7px;line-height:1.15;margin-bottom:10px}
+  .tagline em{font-style:normal;color:#5db7de}
+  .sub{font-size:11px;color:rgba(255,255,255,.42);line-height:1.5;letter-spacing:-.1px;margin-bottom:12px}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.1);
+    border-radius:20px;padding:4px 9px;
+  }
+  .badge-text{font-size:9.5px;font-weight:600;color:rgba(255,255,255,.55)}
+
+  /* ── RIGHT: accurate iPhone frame (0.3× real dimensions) ──
+     Real: 375w, 12 border, 55 radius, 8 padding, 812h screen, 43 screen-radius
+     0.35×: 131w, 4 border, 19 radius, 3 padding, 248h screen, 15 screen-radius */
+  .phone-bezel{
+    width:131px;flex-shrink:0;
+    background:#1a1a1a;border:4px solid #1a1a1a;border-radius:19px;
+    padding:3px;position:relative;
+    box-shadow:0 14px 36px rgba(0,0,0,.55),inset 0 0 0 0.5px rgba(255,255,255,.04);
+  }
+
+  /* Dynamic Island — 0.35×: 44×13, top 6 */
+  .dynamic-island{
+    position:absolute;top:6px;left:50%;transform:translateX(-50%);
+    width:44px;height:13px;background:#000;border-radius:7px;z-index:2;
+    box-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
+
+  .phone-screen{
+    background:#f2f2f2;border-radius:15px;overflow:hidden;
+    position:relative;height:248px;display:flex;flex-direction:column;
+  }
+
+  /* Home indicator — 0.35×: 47×2, bottom 3 */
+  .home-indicator{
+    position:absolute;bottom:3px;left:50%;transform:translateX(-50%);
+    width:47px;height:2px;background:rgba(0,0,0,.22);border-radius:1px;z-index:10;
+  }
+
+  /* Status bar — 0.35× */
+  .ps-status{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:19px 8px 3px;min-height:14px;flex-shrink:0;
+  }
+  .ps-time{font-size:6px;font-weight:700;color:#07020d;letter-spacing:-0.1px}
+  .ps-icons{display:flex;gap:2px;align-items:center}
+
+  /* Mail header — 0.35× */
+  .ps-mail-header{
+    display:flex;align-items:center;justify-content:space-between;
+    height:19px;padding:0 6px;background:#fff;
+    border-bottom:0.5px solid #c6c6c8;flex-shrink:0;
+  }
+  .ps-cancel{font-size:5px;color:#0d6efd}
+  .ps-title{font-size:5px;font-weight:600;color:#1a1a1a}
+  .ps-send{
+    background:#1976d2;color:#fff;border:none;border-radius:6px;
+    padding:2px 6px;font-size:4.5px;font-weight:600;
+  }
+
+  /* Email rows — 0.35× */
+  .ps-row{
+    display:flex;align-items:center;min-height:14px;
+    padding:3px 6px;border-bottom:0.5px solid #c6c6c8;background:#fff;
+    font-size:5px;
+  }
+  .ps-label{flex:0 0 18px;color:#6b7280;font-size:4.5px}
+  .ps-value{color:#1a1a1a;flex:1;font-size:5px}
+  .ps-char{
+    font-size:4px;font-weight:700;color:#166534;background:#dcfce7;
+    padding:1px 3px;border-radius:3px;flex-shrink:0;
+  }
+
+  /* Email body — 0.35× */
+  .ps-body{
+    padding:5px 6px;font-size:5px;color:#07020d;line-height:1.45;
+    background:#fff;margin-top:4px;border-radius:5px 5px 0 0;flex:1;
+    overflow:hidden;letter-spacing:-0.1px;
+  }
+  .ps-body p{margin-bottom:3px}
+  .ps-body a{color:#5db7de;text-decoration:none;font-weight:600}
+  .ps-body .sig{color:#716a5c;font-size:4px}
+</style>
+</head>
+<body>
+<div class="inner">
+
+  <div class="left">
+    <div class="brand-row">
+      <div class="brand-logo"><img src="../images/icon48.png" alt="VeloMail" /></div>
+      <span class="brand-name">VeloMail</span>
+    </div>
+    <div class="tagline">See your email<br/>on mobile <em>before</em><br/>you hit send.</div>
+    <div class="sub">Live phone preview &amp; pre-flight<br/>tips, right inside Gmail.</div>
+    <div class="badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.12)"/><path d="M8 12l2.5 2.5L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="badge-text">Free on Chrome Web Store</span>
+    </div>
+  </div>
+
+  <!-- Accurate iPhone frame at 0.3× real dimensions -->
+  <div class="phone-bezel">
+    <div class="dynamic-island"></div>
+    <div class="phone-screen">
+      <div class="home-indicator"></div>
+
+      <div class="ps-status">
+        <span class="ps-time">9:41</span>
+        <div class="ps-icons">
+          <svg width="5" height="4" viewBox="0 0 15 11" fill="none"><rect x="0.5" y="1.5" width="3" height="5" rx="0.5" fill="#07020d"/><rect x="4.5" y="0.5" width="3" height="7" rx="0.5" fill="#07020d"/><rect x="8.5" y="2.5" width="3" height="5" rx="0.5" fill="#07020d"/><rect x="12.5" y="3.5" width="2" height="4" rx="0.5" fill="#07020d"/></svg>
+          <svg width="8" height="4" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="17" height="10" rx="2.5" stroke="#07020d" fill="none"/><rect x="19" y="3" width="4" height="5" rx="1" fill="#07020d"/><rect x="2" y="2.5" width="13" height="6" rx="1" fill="#07020d"/></svg>
+        </div>
+      </div>
+
+      <div class="ps-mail-header">
+        <span class="ps-cancel">Cancel</span>
+        <span class="ps-title">New Message</span>
+        <span class="ps-send">Send</span>
+      </div>
+
+      <div class="ps-row">
+        <span class="ps-label">To</span>
+        <span class="ps-value">sarah@prospect.co</span>
+      </div>
+      <div class="ps-row">
+        <span class="ps-label">From</span>
+        <span class="ps-value">you@company.com</span>
+      </div>
+      <div class="ps-row">
+        <span class="ps-label">Subj</span>
+        <span class="ps-value">Quick win for Q2 outbound</span>
+        <span class="ps-char">25</span>
+      </div>
+
+      <div class="ps-body">
+        <p>Hi Sarah,</p>
+        <p>Saw you're scaling outbound this quarter — congrats on the Series B.</p>
+        <p>We help sales teams improve reply rates by showing how each email renders on mobile before it's sent.</p>
+        <p><a href="#">Book a 15-min call →</a></p>
+        <p class="sig">30 seconds to install, no credit card.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

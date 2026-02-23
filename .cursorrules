@@ -1,0 +1,1 @@
+Always use Manifest V3. Prioritize ES Modules. Keep the UI minimalist using a utility-first CSS approach. All background tasks must be handled in service-worker.js. Never use remotely hosted code.

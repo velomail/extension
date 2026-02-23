@@ -1,0 +1,620 @@
+/**
+ * VeloMail Popup - iOS Professional Design
+ * Following iOS Human Interface Guidelines
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* App-wide color palette (solid only, no gradients) */
+  --black: #07020d;
+  --sky-surge: #5db7de;
+  --soft-linen: #f1e9db;
+  --khaki-beige: #a39b8b;
+  --dim-grey: #716a5c;
+  --bg-page: #f2f2f2;
+
+  /* Glass tokens (Apple-style glassmorphism) */
+  --glass-bg-light: rgba(255, 255, 255, 0.72);
+  --glass-bg-dark: rgba(28, 28, 30, 0.72);
+  --glass-border-light: rgba(0, 0, 0, 0.06);
+  --glass-border-dark: rgba(255, 255, 255, 0.12);
+  --glass-blur: blur(20px) saturate(180%);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --glass-shadow-dark: 0 4px 24px rgba(0, 0, 0, 0.2);
+
+  /* Semantic mapping for popup */
+  --ios-bg-primary: var(--bg-page);
+  --ios-bg-secondary: var(--bg-page);
+  --ios-bg-tertiary: var(--bg-page);
+  --ios-label: var(--black);
+  --ios-label-secondary: var(--dim-grey);
+  --ios-label-tertiary: var(--dim-grey);
+  --ios-separator: var(--khaki-beige);
+  --ios-separator-opaque: var(--khaki-beige);
+  --ios-blue: var(--sky-surge);
+  --ios-green: #34C759;
+  --ios-red: #FF3B30;
+  --ios-orange: #FF9500;
+  --ios-gray4: var(--khaki-beige);
+  --ios-gray5: var(--khaki-beige);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* Spacing (8pt grid) */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-card: 20px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page: #0a0a0c;
+    --ios-bg-primary: #0a0a0c;
+    --ios-bg-secondary: #0a0a0c;
+    --ios-bg-tertiary: #0a0a0c;
+    --ios-label: var(--soft-linen);
+    --ios-label-secondary: var(--khaki-beige);
+    --ios-separator: var(--dim-grey);
+    --ios-separator-opaque: var(--dim-grey);
+    --ios-blue: var(--sky-surge);
+    --ios-gray4: var(--dim-grey);
+    --ios-gray5: var(--dim-grey);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+    --glass-shadow: var(--glass-shadow-dark);
+  }
+
+  .tip-card--pending {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  .tip-card--pass {
+    background: rgba(34,197,94,0.12);
+    border-color: rgba(34,197,94,0.25);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  .tip-card--fail {
+    background: rgba(239,68,68,0.12);
+    border-color: rgba(239,68,68,0.25);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  .tip-card--pending .tip-card-label { color: var(--soft-linen); }
+  .tip-card--pending .tip-card-description { color: var(--khaki-beige); }
+
+  .usage-card,
+  .settings {
+    background: var(--glass-bg-dark);
+    border-color: var(--glass-border-dark);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+  }
+
+  body {
+    background: linear-gradient(180deg, #0c0c0e 0%, #07020d 100%);
+  }
+
+  .header {
+    background: var(--glass-bg-dark);
+    border-bottom-color: var(--glass-border-dark);
+  }
+}
+
+body {
+  width: 320px;
+  min-height: 400px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(180deg, #f5f5f7 0%, #e8e8ed 100%);
+  color: var(--ios-label);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 0.5px solid var(--glass-border-light);
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  margin: calc(-1 * var(--spacing-4)) calc(-1 * var(--spacing-4)) 0;
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-text h1 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  color: var(--ios-label);
+}
+
+.status {
+  font-size: 13px;
+  color: var(--ios-label-secondary);
+  font-weight: 400;
+  letter-spacing: -0.1px;
+}
+
+.status.active {
+  color: var(--ios-green);
+  font-weight: 500;
+}
+
+/* ============================================================================
+   TIPS CONTAINER (when email is active)
+   ============================================================================ */
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Pre-flight check cards */
+#tipsBubbles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tips-list-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dim-grey);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.tip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 14px;
+  width: 100%;
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 12px;
+  border: 0.5px solid var(--glass-border-light);
+  box-shadow: var(--glass-shadow);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  animation: bubbleSlideIn 0.3s ease both;
+}
+
+/* Pending — neutral */
+.tip-card--pending {
+  border-color: var(--glass-border-light);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Pass — green */
+.tip-card--pass {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(240, 253, 244, 0.88);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+/* Fail — red */
+.tip-card--fail {
+  border-color: rgba(254, 202, 202, 0.6);
+  background: rgba(255, 245, 245, 0.88);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.tip-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tip-card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.3;
+}
+
+.tip-card--pass .tip-card-label { color: #166534; }
+.tip-card--fail .tip-card-label { color: #991b1b; }
+
+/* Badge (icon + weight %) */
+.tip-card-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.05);
+  color: var(--dim-grey);
+  flex-shrink: 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.badge--pass {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge--fail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-icon {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.badge-weight {
+  font-variant-numeric: tabular-nums;
+}
+
+.tip-card-description {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--dim-grey);
+  margin: 0;
+}
+
+.tip-card--pass .tip-card-description { color: #166534; opacity: 0.8; }
+.tip-card--fail .tip-card-description { color: #7f1d1d; opacity: 0.9; }
+
+/* Progress bar */
+.tip-card-bar {
+  height: 3px;
+  background: rgba(0,0,0,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.tip-card-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  background: #22c55e;
+}
+
+.tip-card--fail .tip-card-bar-fill {
+  background: #ef4444;
+}
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-6) var(--spacing-4);
+}
+
+.empty-icon {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dim-grey);
+  margin-bottom: var(--spacing-4);
+}
+
+.empty-state h3 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  margin-bottom: var(--spacing-2);
+  color: var(--ios-label);
+}
+
+.empty-state p {
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: -0.1px;
+  color: var(--ios-label-secondary);
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.empty-state-cta {
+  display: inline-block;
+  margin-top: var(--spacing-2);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  text-decoration: none;
+}
+
+.empty-state-cta:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================================
+   USAGE CARD
+   ============================================================================ */
+
+.usage-card {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 0.5px solid var(--glass-border-light);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-4);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.usage-card:hover {
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+}
+
+.usage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+  font-size: 13px;
+}
+
+.usage-header span:first-child {
+  color: var(--ios-label-secondary);
+  font-weight: 400;
+  letter-spacing: -0.1px;
+}
+
+.usage-count {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ios-label);
+  letter-spacing: -0.2px;
+}
+
+.usage-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--ios-gray5);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.usage-fill {
+  height: 100%;
+  background: var(--sky-surge);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  width: 0%;
+}
+
+.usage-fill.warning {
+  background: var(--ios-orange);
+}
+
+.usage-fill.danger {
+  background: var(--ios-red);
+}
+
+.usage-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-2);
+}
+
+.usage-reset {
+  font-size: 12px;
+  color: var(--ios-label-secondary);
+}
+
+.upgrade-cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.upgrade-cta:hover {
+  opacity: 0.75;
+}
+
+.how-it-works {
+  font-size: 12px !important;
+  color: var(--ios-label-secondary) !important;
+  margin-top: var(--spacing-2) !important;
+  font-style: italic;
+}
+
+/* ============================================================================
+   SETTINGS
+   ============================================================================ */
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 0.5px solid var(--glass-border-light);
+  box-shadow: var(--glass-shadow);
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-row label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--ios-label);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--spacing-3) var(--spacing-4);
+  transition: background 0.15s ease;
+  letter-spacing: -0.2px;
+}
+
+.setting-row label:active {
+  background: var(--ios-gray5);
+}
+
+.setting-row input[type="checkbox"] {
+  width: 51px;
+  height: 31px;
+  border-radius: 31px;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  background: var(--ios-gray4);
+  transition: background 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.setting-row input[type="checkbox"]:checked {
+  background: var(--sky-surge);
+}
+
+.setting-row input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.setting-row input[type="checkbox"]:checked::after {
+  transform: translateX(20px);
+}
+
+/* ============================================================================
+   UTILITIES
+   ============================================================================ */
+
+.hidden {
+  display: none !important;
+}
+
+/* ============================================================================
+   ANIMATIONS (iOS Spring Physics)
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes iosSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes iosHaptic {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bubbleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.usage-card,
+.settings {
+  animation: fadeIn 0.3s ease;
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}

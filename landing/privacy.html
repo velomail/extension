@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — VeloMail</title>
+  <meta name="description" content="VeloMail Privacy Policy — how we handle your data." />
+  <link rel="icon" type="image/png" href="../assets/images/icon48.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sky-surge: #5db7de;
+      --black: #07020d;
+      --white: #ffffff;
+      --bg: #f2f2f2;
+      --dim-grey: #6b6b6b;
+      --radius-card: 20px;
+      --ease-ios: cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(242, 242, 242, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+    }
+
+    .nav-logo span {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -0.4px;
+    }
+
+    .nav-back {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--sky-surge);
+      text-decoration: none;
+      font-weight: 500;
+      letter-spacing: -0.1px;
+      transition: opacity 0.15s var(--ease-ios);
+    }
+
+    .nav-back:hover { opacity: 0.7; }
+
+    /* MAIN */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+    }
+
+    .page-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--sky-surge);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+
+    .last-updated {
+      font-size: 13px;
+      color: var(--dim-grey);
+      margin-bottom: 48px;
+      letter-spacing: -0.1px;
+    }
+
+    /* CONTENT CARD */
+    .policy-card {
+      background: var(--white);
+      border-radius: var(--radius-card);
+      border: 0.5px solid rgba(0, 0, 0, 0.08);
+      padding: 40px 40px;
+    }
+
+    .policy-card section {
+      padding: 0;
+      margin-bottom: 36px;
+    }
+
+    .policy-card section:last-child { margin-bottom: 0; }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #3a3a3a;
+      letter-spacing: -0.1px;
+    }
+
+    p + p { margin-top: 10px; }
+
+    ul {
+      list-style: none;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    li {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #3a3a3a;
+      padding-left: 20px;
+      position: relative;
+      letter-spacing: -0.1px;
+    }
+
+    li::before {
+      content: "–";
+      position: absolute;
+      left: 0;
+      color: var(--sky-surge);
+      font-weight: 700;
+    }
+
+    strong {
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    a {
+      color: var(--sky-surge);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    .divider {
+      border: none;
+      border-top: 0.5px solid rgba(0, 0, 0, 0.07);
+      margin: 36px 0;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--black);
+      padding: 32px 24px;
+    }
+
+    .footer-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .footer-logo img { width: 22px; height: 22px; border-radius: 5px; }
+
+    .footer-logo span {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: -0.3px;
+    }
+
+    .footer-copy {
+      margin-left: auto;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.22);
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 28px; }
+      .policy-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        <img src="../assets/images/icon48.png" alt="VeloMail logo" />
+        <span>VeloMail</span>
+      </a>
+      <a class="nav-back" href="index.html">← Back</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-label">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p class="last-updated">Last updated: February 2026</p>
+
+    <div class="policy-card">
+
+      <section>
+        <p>VeloMail ("we", "our") is a browser extension that helps you optimize sales emails for mobile viewing. This policy describes how we handle information when you use the extension.</p>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Data we store</h2>
+        <p>VeloMail stores the following data <strong>only on your device</strong> using the browser's local storage (<code>chrome.storage.local</code>):</p>
+        <ul>
+          <li><strong>Settings:</strong> Your preferences (e.g. tip notifications on or off).</li>
+          <li><strong>Onboarding state:</strong> Whether you have completed the welcome flow so we do not show it again.</li>
+          <li><strong>Usage counter:</strong> A local count of emails sent through the extension, used only to enforce the free tier limit and show your usage in the popup. This resets on the 1st of each month.</li>
+        </ul>
+        <p>We do <strong>not</strong> collect, send, or upload this data to any server. All of it stays on your computer.</p>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Data we do not collect</h2>
+        <p>We do not collect, store, or transmit:</p>
+        <ul>
+          <li>The content of your emails</li>
+          <li>Your email address, name, or contact list</li>
+          <li>Any personally identifiable information (PII)</li>
+          <li>Browsing history or any data outside of Gmail and Outlook compose windows</li>
+        </ul>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Permissions and why we use them</h2>
+        <ul>
+          <li><strong>Storage:</strong> To save your settings and usage counter locally on your device.</li>
+          <li><strong>Active tab:</strong> To know when you are composing mail so we can show the preview and tips in context.</li>
+          <li><strong>Notifications / Alarms:</strong> To optionally show in-app tips (e.g. reminder to try the preview). These are local only and never sent to a server.</li>
+          <li><strong>Host access (Gmail, Outlook):</strong> So the extension can run on mail.google.com and outlook.live.com / office.com to display the mobile preview and run the in-page UI. We do not read or send your email content to any third party.</li>
+        </ul>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Third-party services</h2>
+        <p>VeloMail does not use any third-party analytics, tracking pixels, or data-collection services. No data is shared with or sold to any third party.</p>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Changes to this policy</h2>
+        <p>We may update this policy from time to time. The "Last updated" date at the top will be revised when we do. Continued use of the extension after changes means you accept the updated policy.</p>
+      </section>
+
+      <hr class="divider" />
+
+      <section>
+        <h2>Contact</h2>
+        <p>If you have questions about this policy, contact us at <a href="mailto:hello@velomail.com">hello@velomail.com</a> or through the support option listed for VeloMail in the Chrome Web Store.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <a class="footer-logo" href="index.html">
+        <img src="../assets/images/icon48.png" alt="VeloMail" />
+        <span>VeloMail</span>
+      </a>
+      <span class="footer-copy">© 2026 VeloMail. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+/**
+ * VeloMail - App-wide color palette and overlay base
+ * Palette: black, sky-surge, soft-linen, khaki-beige, dim-grey
+ * Most styles are in Shadow DOM (see content.js getOverlayStyles())
+ */
+
+/* App-wide color palette */
+#email-mobility-overlay {
+  --black: #07020d;
+  --sky-surge: #5db7de;
+  --soft-linen: #f1e9db;
+  --khaki-beige: #a39b8b;
+  --dim-grey: #716a5c;
+  --bg-page: #f2f2f2;
+}
+
+/* ============================================================================
+   OVERLAY CONTAINER - Root Element
+   ============================================================================ */
+
+#email-mobility-overlay {
+  position: fixed !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  isolation: isolate;
+}
+
+/* ============================================================================
+   FONT SYSTEM - SF Pro (Apple's System Font Stack)
+   ============================================================================ */
+
+#email-mobility-overlay * {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  /* Prevent text selection for better native feel */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================================
+   iOS SPRING PHYSICS ANIMATIONS
+   Based on Apple's animation curves
+   ============================================================================ */
+
+@keyframes em-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes em-slide-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes em-ios-modal {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes em-ios-haptic {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.04); 
+  }
+}
+
+/* iOS Bounce Effect */
+@keyframes em-ios-bounce {
+  0% { 
+    transform: scale(0.9); 
+    opacity: 0;
+  }
+  60% { 
+    transform: scale(1.02); 
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1); 
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.em-hidden {
+  display: none !important;
+}
+
+.em-visible {
+  display: block !important;
+}
+
+/* iOS Standard Transition - 0.35s with spring physics */
+.em-ios-transition {
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* iOS Fast Transition - 0.25s for quick interactions */
+.em-ios-transition-fast {
+  transition: all 0.25s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+}
+
+/* iOS Smooth Transition - 0.4s for deliberate actions */
+.em-ios-transition-smooth {
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
