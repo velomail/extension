@@ -12,11 +12,21 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 
 ## Features
 
-### Real-Time Mobile Preview
-- Live iPhone and Android-style phone preview (393x852px)
-- Updates as you type (no lag)
-- Draggable & collapsible interface
-- Shadow DOM isolated (no Gmail conflicts)
+### Live Mobile Preview
+- Real phone frame beside your draft; updates with every keystroke
+- iPhone and Android-style preview (393×852px), draggable & collapsible
+- Shadow DOM isolated (no Gmail/Outlook conflicts)
+
+### Pre-flight Tips
+- Three weighted checks: **subject length**, **CTA placement**, **link tap spacing**
+- Each turns green when your email is ready; fix before you send
+
+### Subject Counter
+- Color-coded character count inline in Gmail — green, amber, or red
+- Never send a subject that gets cut off on mobile
+
+### Dark Mode Preview
+- Toggle dark mode to see how your email renders for the 80%+ of mobile users who have it on
 
 ### Freemium Limits
 - **Free**: 5 sends/day (resets at midnight)
