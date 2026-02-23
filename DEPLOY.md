@@ -18,21 +18,18 @@ The extension points to **https://velomailext.netlify.app** for upgrade and priv
 
 ## Next steps: Upload to GitHub
 
-1. If the project is not a git repo:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-2. Create a new repository on GitHub (e.g. `email-mobility` or `velomail-extension`). Do **not** add a README or .gitignore (you already have them).
-3. Add the remote and push:
+**Done already:** This repo has `git init`, an initial commit, and branch `main`. Do the following next:
+
+1. **Create the repo on GitHub:** Go to [github.com](https://github.com) → **+** → **New repository**. Name it (e.g. `email-mobility`). Do not add a README, .gitignore, or license. Click **Create repository**.
+
+2. **Add remote and push** (replace `YOUR_USERNAME` and `YOUR_REPO`):
    ```bash
    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git branch -M main
    git push -u origin main
    ```
-4. If it’s already a repo, add the remote if missing and push. Ensure `.gitignore` excludes `node_modules/`, build artifacts, and secrets.
-5. Use tags for store submissions (e.g. `git tag v1.0.1` then `git push origin v1.0.1`).
+   If GitHub prompts for auth, use a Personal Access Token as the password.
+
+3. **Optional – tag a release:** `git tag v1.0.1` then `git push origin v1.0.1`.
 
 ## Next steps: Deploy landing page
 
