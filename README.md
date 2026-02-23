@@ -1,6 +1,6 @@
 # VeloMail - Mobile Email Optimization Extension
 
-Real-time mobile preview for Gmail and Outlook. See how your emails look on iPhone as you type.
+Real-time mobile preview for Gmail and Outlook. See how your emails look on iPhone and Android as you type.
 
 ---
 
@@ -18,7 +18,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 
 1. Open [Gmail](https://mail.google.com)
 2. Click **Compose** button
-3. iPhone preview appears on the right side
+3. Mobile preview (iPhone/Android) appears on the right side
 4. Start typing - watch it update in real-time!
 5. Click VeloMail icon to see your mobile score
 
@@ -27,7 +27,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 ## ✨ Features
 
 ### Real-Time Mobile Preview
-- Live iPhone 15 Pro mockup (393x852px)
+- Live iPhone and Android-style phone preview (393x852px)
 - Updates as you type (no lag)
 - Draggable & collapsible interface
 - Shadow DOM isolated (no Gmail conflicts)
@@ -50,8 +50,8 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 - Specific improvement tips with point impact
 
 ### Freemium Limits
-- **Free**: 50 previews/month
-- **Pro**: Unlimited (planned)
+- **Free**: 5 sends/day (resets at midnight)
+- **Lifetime**: $49 one-time, unlimited sends (see landing/upgrade)
 
 ---
 
@@ -60,7 +60,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 - **`src/`** — Extension: popup, background (service worker), content script, welcome page, shared lib (first-compose-guide, theme).
 - **`landing/`** — Marketing site (index, privacy); deploy to Netlify.
 - **`assets/`** — Images: extension icons in `assets/images/` (icon16, icon48, icon128); store mockups in `assets/store/`.
-- **`scripts/`** — Build/package: `create-store-icons.js` (generate placeholder icons), `package-for-store.js`.
+- **`scripts/`** — Build/package: `build-icons-from-logo.js` (build icon16/48/128 from arrow logo), `create-store-icons.js` (placeholder icons; skips if icons exist), `package-for-store.js`.
 - **`docs/`** — Audit, Chrome Web Store listing, architecture, developer guide, privacy.
 
 ```
@@ -76,7 +76,7 @@ email-mobility/
 ├── assets/
 │   ├── images/       # icon16, icon48, icon128
 │   └── store/        # Store mockups
-├── scripts/          # create-store-icons, package-for-store
+├── scripts/          # build-icons-from-logo, create-store-icons, package-for-store
 └── docs/             # Audit, listing, architecture, privacy
 ```
 
@@ -126,12 +126,13 @@ const DEBUG = true;  // Show detailed logs
 
 ### Key Files
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `content.js` | Main logic | 3,200 |
-| `worker-simple.js` | Background | 300 |
-| `mobile-score.js` | Scoring | 766 |
-| `popup.js` | UI logic | 445 |
+| File | Purpose |
+|------|---------|
+| `content.js` | Main logic, scoring, preview UI |
+| `worker-simple.js` | Background / service worker |
+| `popup.js` | Popup UI |
+| `first-compose-guide.js` | Onboarding overlay |
+| `theme.js` | Dark mode |
 
 ### Documentation
 
@@ -193,6 +194,6 @@ Proprietary - VeloMail
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Status**: Production Ready ✅  
-**Last Updated**: February 13, 2026
+**Last Updated**: February 22, 2026
