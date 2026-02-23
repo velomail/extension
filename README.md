@@ -27,7 +27,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 ## ✨ Features
 
 ### Real-Time Mobile Preview
-- Live iPhone 15 Pro mockup (393x852px)
+- Live Android and iphone  mockup (393x852px)
 - Updates as you type (no lag)
 - Draggable & collapsible interface
 - Shadow DOM isolated (no Gmail conflicts)
