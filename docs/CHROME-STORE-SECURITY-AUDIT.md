@@ -90,7 +90,7 @@ Copy this into the “Justification for Permissions” (or equivalent) field in 
 
 **Justification for Permissions**
 
-VeloMail needs **storage** to remember the user’s daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **notifications** and **alarms** are used for optional in-app tips and daily reset. No data is sent to external servers except when the user explicitly clicks Upgrade and is taken to the purchase/landing page.
+VeloMail needs **storage** to remember the user’s daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **notifications** and **alarms** are used for daily limit reset. **webNavigation** and **tabs** are used to detect the compose frame and show the correct state in the extension popup. No email content or personal data is sent to external servers; the user is only taken to the purchase/landing page when they explicitly click Upgrade.
 
 ---
 

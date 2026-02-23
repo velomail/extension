@@ -1,0 +1,7 @@
+Copy the text below into the Chrome Web Store Developer Dashboard under "Justification for Permissions" (or equivalent field).
+
+-------------------------------------------------------------------------------
+
+VeloMail needs storage to remember the user's daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. activeTab is used so the extension can run when the user interacts with the extension on Gmail or Outlook. Host access to mail.google.com and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. notifications and alarms are used for daily limit reset. webNavigation and tabs are used to detect the compose frame and to show the correct state in the extension popup when the user has a compose window open. No email content or personal data is sent to external servers; the user is only taken to the purchase/landing page when they explicitly click Upgrade.
+
+-------------------------------------------------------------------------------

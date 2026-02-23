@@ -25,10 +25,14 @@
       ],
       "js": ["src/content/content.js"],
       "css": ["src/content/styles.css"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "all_frames": true
     },
     {
-      "matches": ["https://velomail.github.io/extension/landing/success.html*"],
+      "matches": [
+        "https://velomail.github.io/extension/landing/success.html*",
+        "https://velomail.vercel.app/landing/success.html*"
+      ],
       "js": ["src/content/success-unlock.js"],
       "run_at": "document_idle"
     }
@@ -37,7 +41,9 @@
     "storage",
     "activeTab",
     "notifications",
-    "alarms"
+    "alarms",
+    "webNavigation",
+    "tabs"
   ],
   "commands": {
     "toggle-preview": {
@@ -54,6 +60,7 @@
     "https://outlook.office365.com/*",
     "https://outlook.office.com/*",
     "https://velomail.github.io/extension/*",
+    "https://velomail.vercel.app/*",
     "https://velomail-api.vercel.app/*"
   ],
   "minimum_chrome_version": "88",

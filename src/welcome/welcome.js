@@ -59,12 +59,12 @@ function setupEventListeners() {
     openGmailBtn.addEventListener('click', openGmail);
   }
 
-  // Help link — opens GitHub landing page in a new tab
+  // Help link — opens landing page in a new tab
   const helpLink = document.getElementById('helpLink');
   if (helpLink && typeof chrome !== 'undefined' && chrome.tabs) {
     helpLink.addEventListener('click', (e) => {
       e.preventDefault();
-      chrome.tabs.create({ url: 'https://velomail.github.io/extension' });
+      chrome.tabs.create({ url: 'https://velomail.vercel.app/landing/' });
     });
   }
 

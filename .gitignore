@@ -1,7 +1,17 @@
+# Chrome Web Store package
 *.zip
+.chrome-store-staging/
+
+# Dependencies and build
 node_modules/
+dist/
+public/
+.plasmo/
+
+# Environment and secrets
+.env
+.env.*
+
+# OS and editor
 .DS_Store
 Thumbs.db
-dist/
-.plasmo/
-public/

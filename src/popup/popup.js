@@ -131,19 +131,45 @@ function connectToServiceWorker() {
 // STATE MANAGEMENT
 // ============================================================================
 
-async function requestInitialState() {
+async function requestInitialState(retryCount = 0) {
+  const maxRetries = 2;
+  const retryDelayMs = 500;
   try {
     const response = await chrome.runtime.sendMessage({
       type: 'GET_CURRENT_EMAIL_STATE'
     });
     
     if (response && response.state) {
-      currentState = response.state;
-      updateUI(currentState);
-      console.log('✅ Initial state loaded:', currentState);
+      const state = response.state;
+      const isActive = state.isActive === true;
+      const hasTips = state.preflightChecks != null || (state.mobileScore != null && state.mobileScore.score != null);
+      if (isActive || hasTips) {
+        currentState = state;
+        updateUI(currentState);
+        console.log('✅ Initial state loaded (active:', isActive, ')');
+        return;
+      }
+      currentState = null;
+      showEmptyState();
+      updateStatus('Ready', false);
+      return;
     }
+    if (retryCount < maxRetries) {
+      setTimeout(() => requestInitialState(retryCount + 1), retryDelayMs);
+      return;
+    }
+    currentState = null;
+    showEmptyState();
+    updateStatus('Ready', false);
   } catch (error) {
     console.error('❌ Failed to get initial state:', error);
+    if (retryCount < maxRetries) {
+      setTimeout(() => requestInitialState(retryCount + 1), retryDelayMs);
+    } else {
+      currentState = null;
+      showEmptyState();
+      updateStatus('Ready', false);
+    }
   }
 }
 
@@ -167,40 +193,17 @@ function updateUI(state) {
 }
 
 function performUIUpdate(state) {
-  console.log('🔄 Updating UI with state:', {
-    hasState: !!state,
-    isActive: state?.isActive,
-    hasScore: !!state?.mobileScore,
-    score: state?.mobileScore?.score
-  });
+  const isActive = state && state.isActive === true;
+  const hasTips = state && (state.preflightChecks != null || (state.mobileScore != null && typeof state.mobileScore.score === 'number'));
+  console.log('🔄 Updating UI:', { isActive, hasTips, hasState: !!state });
   
-  if (!state) {
-    console.log('❌ No state - showing empty');
+  if (!state || (!isActive && !hasTips)) {
     showEmptyState();
     updateStatus('Ready', false);
     return;
   }
-  
-  // Check if state has meaningful data
-  const hasContent = state.characterCount > 0 || state.wordCount > 0;
-  const hasScore = state.mobileScore && typeof state.mobileScore.score === 'number';
-  
-  if (hasScore || state.isActive) {
-    // Show preflight cards any time compose is active (even before full score)
-    console.log('✅ Showing checks:', state.preflightChecks, 'active:', state.isActive);
-    showChatBubbles(state.mobileScore, state.preflightChecks);
-
-    if (state.isActive) {
-      updateStatus('Composing', true);
-    } else {
-      updateStatus('Last Email', false);
-    }
-  } else {
-    // No meaningful data
-    console.log('⚠️ No score data - showing empty');
-    showEmptyState();
-    updateStatus('Ready', false);
-  }
+  showChatBubbles(state.mobileScore, state.preflightChecks);
+  updateStatus(isActive ? 'Composing' : 'Last Email', isActive);
 }
 
 function updateStatus(text, isActive) {
@@ -384,17 +387,11 @@ async function updateUsageStats() {
 async function loadSettings() {
   try {
     const result = await chrome.storage.local.get(['settings']);
-    const settings = result.settings || { autoShow: true, showNotifications: true };
+    const settings = result.settings || { autoShow: true };
     
     const autoShow = document.getElementById('autoShow');
-    const notifications = document.getElementById('notifications');
-    
     if (autoShow) {
       autoShow.checked = settings.autoShow !== false;
-    }
-    
-    if (notifications) {
-      notifications.checked = settings.showNotifications !== false;
     }
   } catch (error) {
     console.error('❌ Failed to load settings:', error);
@@ -404,26 +401,12 @@ async function loadSettings() {
 async function saveSettings() {
   try {
     const autoShow = document.getElementById('autoShow');
-    const notifications = document.getElementById('notifications');
-    
     const settings = {
-      autoShow: autoShow ? autoShow.checked : true,
-      showNotifications: notifications ? notifications.checked : true
+      autoShow: autoShow ? autoShow.checked : true
     };
     
     await chrome.storage.local.set({ settings });
     console.log('✅ Settings saved:', settings);
-    
-    // Also update notification preferences to sync with notification system
-    const notificationPreferences = {
-      enabled: settings.showNotifications,
-      scoreAlerts: settings.showNotifications
-    };
-    
-    const currentPrefs = await chrome.storage.local.get('notificationPreferences');
-    const updatedPrefs = { ...(currentPrefs.notificationPreferences || {}), ...notificationPreferences };
-    await chrome.storage.local.set({ notificationPreferences: updatedPrefs });
-    console.log('✅ Notification preferences updated:', updatedPrefs);
     
     // Notify service worker
     chrome.runtime.sendMessage({
@@ -437,11 +420,19 @@ async function saveSettings() {
   }
 }
 
+// Compose URLs: open compose in same tab for Gmail/Outlook
+function getComposeUrlForTab(tab) {
+  if (!tab || !tab.url) return 'https://mail.google.com/mail/#compose';
+  const u = tab.url.toLowerCase();
+  if (u.includes('mail.google.com')) return 'https://mail.google.com/mail/#compose';
+  if (u.includes('outlook.live.com')) return 'https://outlook.live.com/mail/compose/v';
+  if (u.includes('outlook.office.com') || u.includes('outlook.office365.com')) return 'https://outlook.office.com/mail/0/compose';
+  return 'https://mail.google.com/mail/#compose';
+}
+
 // ============================================================================
 // EVENT LISTENERS
 // ============================================================================
-
-const UPGRADE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
 
 function setupEventListeners() {
   // Auto-show toggle
@@ -450,13 +441,31 @@ function setupEventListeners() {
     autoShow.addEventListener('change', saveSettings);
   }
   
-  // Notifications toggle
-  const notifications = document.getElementById('notifications');
-  if (notifications) {
-    notifications.addEventListener('change', saveSettings);
+  // Start now: open compose in current Gmail/Outlook tab (or new Gmail tab)
+  const startNowBtn = document.getElementById('startNowBtn');
+  if (startNowBtn) {
+    startNowBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab || !tab.id) {
+          [tab] = await chrome.tabs.query({ active: true });
+        }
+        const composeUrl = getComposeUrlForTab(tab);
+        const isMailTab = tab && tab.url && (tab.url.includes('mail.google.com') || tab.url.includes('outlook'));
+        if (tab && tab.id && isMailTab) {
+          await chrome.tabs.update(tab.id, { url: composeUrl });
+        } else {
+          await chrome.tabs.create({ url: composeUrl });
+        }
+      } catch (_) {
+        await chrome.tabs.create({ url: 'https://mail.google.com/mail/#compose' });
+      }
+      window.close();
+    });
   }
-
-  // Upgrade CTA: open in new tab via chrome.tabs.create (store policy–friendly, no UI blocking)
+  
+  // Upgrade CTA
   const upgradeCta = document.getElementById('upgradeCta');
   if (upgradeCta) {
     upgradeCta.addEventListener('click', (e) => {

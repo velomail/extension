@@ -12,23 +12,21 @@ const LANDING_BASE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
 // ==================== SETTINGS MANAGEMENT ====================
 /**
  * Load settings from chrome storage
- * @returns {Promise<{autoShow: boolean, showNotifications: boolean}>}
+ * @returns {Promise<{autoShow: boolean}>}
  */
 async function loadSettings() {
   try {
     const result = await chrome.storage.local.get(['settings']);
-    const loadedSettings = result.settings || { autoShow: true, showNotifications: true };
+    const loadedSettings = result.settings || { autoShow: true };
     
     // Update cached settings
     settings.autoShow = loadedSettings.autoShow !== false;
-    settings.showNotifications = loadedSettings.showNotifications !== false;
     
     log('Settings loaded:', settings);
     return settings;
   } catch (error) {
     logError('SETTINGS_LOAD_FAILED', error.message);
-    // Return defaults on error
-    return { autoShow: true, showNotifications: true };
+    return { autoShow: true };
   }
 }
 
@@ -264,8 +262,7 @@ let isAttachedToCompose = false; // Track if we're syncing with compose (separat
 
 // Settings cache
 let settings = {
-  autoShow: true,
-  showNotifications: true
+  autoShow: true
 };
 
 // Pre-flight checklist state
@@ -277,6 +274,9 @@ let preflightChecks = {
 
 // Track last logged warning state to prevent duplicates
 let lastWarningState = null;
+
+// Last state sent to worker (for popup REQUEST_EMAIL_STATE)
+let lastSentEmailState = null;
 
 // ==================== STATE VALIDATION ====================
 /**
@@ -3340,6 +3340,8 @@ function sendEmailStateToServiceWorker(htmlContent, textContent, subject, mobile
     },
     sentAt: Date.now()
   };
+
+  lastSentEmailState = { ...emailState, isActive: true };
   
   chrome.runtime.sendMessage({
     type: 'EMAIL_CONTENT_UPDATED',
@@ -3377,6 +3379,33 @@ const throttledServiceWorkerUpdate = throttle(sendEmailStateToServiceWorker, 500
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('📨 Message received from extension:', message.type);
   
+  if (message.type === 'REQUEST_EMAIL_STATE') {
+    if (overlayContainer) {
+      if (lastSentEmailState) {
+        sendResponse(lastSentEmailState);
+      } else {
+        const checks = preflightChecks && typeof preflightChecks === 'object'
+          ? preflightChecks
+          : { subjectFrontLoaded: false, ctaAboveFold: false, linkTapability: false };
+        sendResponse({
+          isActive: true,
+          preflightChecks: checks,
+          mobileScore: mobileScore || null,
+          characterCount: 0,
+          wordCount: 0,
+          subject: '',
+          text: '',
+          html: '',
+          environment: window.location.hostname.includes('mail.google.com') ? 'gmail' : window.location.hostname.includes('outlook') ? 'outlook' : 'unknown',
+          trafficLight: null
+        });
+      }
+    } else {
+      sendResponse({ isActive: false, preflightChecks: null, mobileScore: null });
+    }
+    return true;
+  }
+  
   if (message.type === 'TOGGLE_PREVIEW') {
     if (shadowRoot) {
       const collapseBtn = shadowRoot.getElementById('collapseBtn');
@@ -3400,10 +3429,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.settings.autoShow !== undefined) {
       settings.autoShow = message.settings.autoShow;
     }
-    if (message.settings.showNotifications !== undefined) {
-      settings.showNotifications = message.settings.showNotifications;
-    }
-    
     console.log('✅ Settings cache updated:', settings);
     
     // Apply dark mode to overlay if needed
@@ -3428,6 +3453,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         overlayContainer.parentNode.removeChild(overlayContainer);
         overlayContainer = null;
         shadowRoot = null;
+        lastSentEmailState = null;
       }
     } else if (message.settings.autoShow === true && !overlayContainer && isAttachedToCompose) {
       // Show overlay if auto-show enabled and we're attached to compose
@@ -3734,7 +3760,6 @@ function updatePreflightUI() {
   // Only log if state has changed
   if (currentState !== lastWarningState) {
     lastWarningState = currentState;
-    
     if (allPassed) {
       console.log('🎉 All mobile pre-flight checks passed!');
     } else {
@@ -3742,7 +3767,6 @@ function updatePreflightUI() {
       if (!preflightChecks.subjectFrontLoaded) failedChecks.push('Subject Front-Loading');
       if (!preflightChecks.ctaAboveFold) failedChecks.push('CTA Above Fold');
       if (!preflightChecks.linkTapability) failedChecks.push('Link Tap-Ability');
-      
       console.warn('⚠️ Mobile optimization issues detected:', failedChecks.join(', '));
     }
   }
@@ -3911,6 +3935,7 @@ function removePreview() {
   overlayContainer.remove();
   overlayContainer = null;
   shadowRoot = null;
+  lastSentEmailState = null;
   
   // Clean up measurement container
   if (measurementContainer && measurementContainer.parentNode) {

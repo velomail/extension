@@ -32,13 +32,14 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 - **Free**: 5 sends/day (resets at midnight)
 - **Lifetime**: $49 one-time, unlimited sends (see landing/upgrade)
 
-## Project layout
+## Project structure
 
 - **`src/`** — Extension: popup, background (service worker), content script, welcome page, shared lib (first-compose-guide, theme).
-- **`landing/`** — Marketing site (index, privacy); deploy to Netlify.
+- **`landing/`** — Marketing/landing site (index, privacy); deploy via GitHub Pages or Vercel.
+- **`api/`** — Vercel serverless (e.g. verify-session for post-purchase unlock).
 - **`assets/`** — Images: extension icons in `assets/images/` (icon16, icon48, icon128); store mockups in `assets/store/`.
-- **`scripts/`** — Build/package: `build-icons-from-logo.js` (build icon16/48/128 from arrow logo), `create-store-icons.js` (placeholder icons; skips if icons exist), `package-for-store.js`.
-- **`docs/`** — Audit, Chrome Web Store listing, architecture, developer guide, privacy.
+- **`scripts/`** — Build/package: `build-icons-from-logo.js`, `create-store-icons.js`, `package-for-store.js`, `build-landing.js`.
+- **`docs/`** — Chrome Web Store audit, listing, pre-submit checklist, architecture, developer guide, privacy.
 
 ```
 email-mobility/
@@ -48,13 +49,14 @@ email-mobility/
 │   ├── content/      # Content script + styles
 │   ├── popup/        # Popup UI
 │   ├── welcome/      # Onboarding
-│   └── lib/          # first-compose-guide, theme
-├── landing/          # Marketing site (Netlify)
+│   └── lib/          # first-compose-guide
+├── landing/          # Marketing site
+├── api/              # Vercel serverless (verify-session)
 ├── assets/
 │   ├── images/       # icon16, icon48, icon128
 │   └── store/        # Store mockups
-├── scripts/          # build-icons-from-logo, create-store-icons, package-for-store
-└── docs/             # Audit, listing, architecture, privacy
+├── scripts/          # build-icons, create-store-icons, package-for-store, build-landing
+└── docs/             # Audit, listing, pre-submit checklist, privacy
 ```
 
 | File | Purpose |
@@ -67,9 +69,10 @@ email-mobility/
 
 ### Documentation
 
+- **Chrome Web Store:** `docs/PRE-SUBMIT-CHECKLIST.md` (before submit), `docs/PERMISSIONS-JUSTIFICATION.txt` (copy into dashboard), `docs/CHROME-WEB-STORE-LISTING.md` (listing copy)
 - **Architecture**: `docs/ARCHITECTURE.md`
 - **Developer Guide**: `docs/DEVELOPER-GUIDE.md`
-- **Publishing & deploy**: `DEPLOY.md` — Chrome Web Store package, Netlify landing, GitHub upload, and next steps.
+- **Publishing & deploy**: `DEPLOY.md` — CWS package script, icons, landing, GitHub, store URLs
 
 ---
 

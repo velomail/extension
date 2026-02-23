@@ -43,8 +43,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       emailsComposed: 0,
       settings: {
         darkMode: false,
-        autoShow: true,
-        showNotifications: true
+        autoShow: true
       }
     });
     
@@ -105,6 +104,14 @@ const MAIL_HOST_PATTERNS = [
   '*://outlook.office365.com/*',
   '*://outlook.office.com/*'
 ];
+
+/** Safe get all frames for a tab; never throws, always returns an array. */
+function safeGetAllFrames(tabId) {
+  const p = chrome.webNavigation && typeof chrome.webNavigation.getAllFrames === 'function'
+    ? chrome.webNavigation.getAllFrames({ tabId })
+    : Promise.resolve([]);
+  return Promise.resolve(p).then(f => (f && Array.isArray(f) ? f : [])).catch(() => []);
+}
 
 chrome.commands.onCommand.addListener((command) => {
   if (command !== 'toggle-preview') return;
@@ -389,12 +396,69 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // ========== FROM POPUP ==========
     
     case 'GET_CURRENT_EMAIL_STATE':
-      console.log('📤 Popup requesting state');
-      sendResponse({
-        success: true,
-        state: currentEmailState
-      });
-      break;
+      (async () => {
+        console.log('📤 Popup requesting state');
+        try {
+          let [activeTab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+            url: MAIL_HOST_PATTERNS
+          });
+          if (!activeTab || !activeTab.id) {
+            [activeTab] = await chrome.tabs.query({ active: true, url: MAIL_HOST_PATTERNS });
+          }
+          const allMailTabs = await chrome.tabs.query({ url: MAIL_HOST_PATTERNS });
+          const sorted = (allMailTabs || []).slice().sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
+          const tabIdsSeen = new Set();
+          const tabsToTry = [];
+          if (activeTab && activeTab.id) {
+            tabsToTry.push(activeTab);
+            tabIdsSeen.add(activeTab.id);
+          }
+          for (const tab of sorted) {
+            if (tab && tab.id && !tabIdsSeen.has(tab.id)) {
+              tabsToTry.push(tab);
+              tabIdsSeen.add(tab.id);
+            }
+          }
+          console.log('📤 GET_CURRENT_EMAIL_STATE: tabsToTry=', tabsToTry.length);
+          for (const tab of tabsToTry) {
+            if (!tab || !tab.id) continue;
+            const frames = await safeGetAllFrames(tab.id);
+            const frameList = frames.length > 0 ? frames : [{ frameId: 0 }];
+            console.log('📤 GET_CURRENT_EMAIL_STATE: tabId=', tab.id, 'frames=', frameList.length);
+            for (const frame of frameList) {
+              const opts = frame.frameId !== undefined ? { frameId: frame.frameId } : {};
+              const fresh = await chrome.tabs.sendMessage(tab.id, { type: 'REQUEST_EMAIL_STATE' }, opts).then(r => r || null).catch(() => null);
+              const hasActive = fresh && (fresh.preflightChecks != null || fresh.mobileScore != null || fresh.isActive);
+              if (hasActive) {
+                console.log('📤 GET_CURRENT_EMAIL_STATE: got active state from tabId=', tab.id, 'frameId=', frame.frameId);
+                const state = {
+                  isActive: fresh.isActive !== false,
+                  html: fresh.html || '',
+                  text: fresh.text || '',
+                  subject: fresh.subject || '',
+                  characterCount: fresh.characterCount || 0,
+                  wordCount: fresh.wordCount || 0,
+                  environment: fresh.environment || null,
+                  url: tab.url || null,
+                  mobileScore: fresh.mobileScore || null,
+                  trafficLight: fresh.trafficLight || null,
+                  preflightChecks: fresh.preflightChecks || null,
+                  timestamp: Date.now()
+                };
+                currentEmailState = state;
+                sendResponse({ success: true, state });
+                return;
+              }
+            }
+          }
+          console.log('📤 GET_CURRENT_EMAIL_STATE: no frame returned active state');
+        } catch (_) {}
+        const fallbackState = { ...currentEmailState, isActive: false };
+        sendResponse({ success: true, state: fallbackState });
+      })();
+      return true;
       
     case 'SETTINGS_UPDATED':
       console.log('⚙️ Settings updated:', message.settings);

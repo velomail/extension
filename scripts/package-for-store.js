@@ -1,6 +1,7 @@
 /**
  * Creates a zip for Chrome Web Store upload.
- * Includes: manifest.json, src/, assets/
+ * Includes only what the extension needs: manifest.json, src/, assets/
+ * Excludes: landing/, api/, docs/, scripts/, node_modules/, .git (not in package).
  * Run: node scripts/package-for-store.js
  * Output: velomail-chrome-web-store.zip (in project root)
  * Uses PowerShell on Windows, zip on macOS/Linux (no extra npm deps).

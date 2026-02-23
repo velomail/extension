@@ -2,9 +2,9 @@
 
 ## Extension (Chrome Web Store)
 
-- **Package:** Use `scripts/package-for-store.js` to build a zip (or zip the project root excluding `landing/`, `node_modules/`, `.git` as needed). Upload the zip in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-- **Icons:** Store assets live in `assets/images/` (icon16, icon48, icon128) and `assets/store/` (mockups). Run `node scripts/create-store-icons.js` if icons are missing.
-- **Justification:** Use the 2-sentence justification in `docs/CHROME-STORE-SECURITY-AUDIT.md` in the Developer Dashboard "Justification for Permissions" field.
+- **Package:** Run `node scripts/package-for-store.js` from the project root. This creates `velomail-chrome-web-store.zip` containing only `manifest.json`, `src/`, and `assets/` (no landing, api, docs, scripts, or node_modules). Upload the zip in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
+- **Icons:** Extension icons must be in `assets/images/` (icon16.png, icon48.png, icon128.png). Run `node scripts/create-store-icons.js` if they are missing.
+- **Eligibility:** Before submitting, complete [docs/PRE-SUBMIT-CHECKLIST.md](docs/PRE-SUBMIT-CHECKLIST.md). Copy the permissions justification from [docs/PERMISSIONS-JUSTIFICATION.txt](docs/PERMISSIONS-JUSTIFICATION.txt) into the Developer Dashboard "Justification for Permissions" field.
 
 ## Landing page (GitHub Pages)
 
