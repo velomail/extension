@@ -6,7 +6,8 @@
   "author": "VeloMail",
   "scripts": {
     "format": "prettier --write src/",
-    "package-store": "node scripts/package-for-store.js"
+    "package-store": "node scripts/package-for-store.js",
+    "store-release": "node scripts/validate-for-store.js && node scripts/package-for-store.js"
   },
   "devDependencies": {
     "prettier": "3.2.4",

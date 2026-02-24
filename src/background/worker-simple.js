@@ -26,13 +26,22 @@ let currentEmailState = {
 
 let popupPorts = new Set(); // Track all connected popup instances
 
+// Open extension icon click in Side Panel instead of popup (avoids blocking compose window)
+if (chrome.sidePanel) {
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+}
+
 // ============================================================================
 // INSTALLATION
 // ============================================================================
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   console.log('✅ Extension installed:', details.reason);
-  
+
+  if (chrome.sidePanel) {
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  }
+
   if (details.reason === 'install') {
     console.log('🎉 First time installation!');
     
@@ -340,7 +349,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'COMPOSE_CLOSED':
       console.log('❌ Compose closed');
       
-      currentEmailState.isActive = false;
+      // Full reset so popup shows inactive state (no stale tips)
+      currentEmailState = {
+        isActive: false,
+        html: '',
+        text: '',
+        subject: '',
+        characterCount: 0,
+        wordCount: 0,
+        environment: null,
+        url: null,
+        mobileScore: null,
+        preflightChecks: null,
+        timestamp: null
+      };
       
       // Set badge to Idle (grey dot)
       updateBadgeWithTrafficLight('idle');
@@ -424,7 +446,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           console.log('📤 GET_CURRENT_EMAIL_STATE: tabsToTry=', tabsToTry.length);
           for (const tab of tabsToTry) {
             if (!tab || !tab.id) continue;
-            const frames = await safeGetAllFrames(tab.id);
+            let frames = await safeGetAllFrames(tab.id);
+            if (frames.length === 0) {
+              await new Promise((r) => setTimeout(r, 150));
+              frames = await safeGetAllFrames(tab.id);
+            }
             const frameList = frames.length > 0 ? frames : [{ frameId: 0 }];
             console.log('📤 GET_CURRENT_EMAIL_STATE: tabId=', tab.id, 'frames=', frameList.length);
             for (const frame of frameList) {

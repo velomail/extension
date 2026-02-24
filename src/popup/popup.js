@@ -78,7 +78,7 @@ function connectToServiceWorker() {
         case 'COMPOSE_OPENED':
           console.log('   ✅ Compose opened');
           updateStatus('Composing', true);
-          // Don't clear the UI yet - wait for actual content
+          requestInitialState();
           break;
           
         case 'COMPOSE_CLOSED':

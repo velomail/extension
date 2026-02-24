@@ -9,11 +9,13 @@
     "128": "assets/images/icon128.png"
   },
   "action": {
-    "default_icon": "assets/images/icon16.png",
-    "default_popup": "src/popup/index.html"
+    "default_icon": "assets/images/icon16.png"
   },
   "background": {
     "service_worker": "src/background/worker-simple.js"
+  },
+  "side_panel": {
+    "default_path": "src/popup/index.html"
   },
   "content_scripts": [
     {
@@ -43,7 +45,8 @@
     "notifications",
     "alarms",
     "webNavigation",
-    "tabs"
+    "tabs",
+    "sidePanel"
   ],
   "commands": {
     "toggle-preview": {

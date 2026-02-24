@@ -8,243 +8,276 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     width:1280px;height:800px;overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
-    background:#f2f2f2;
-    display:flex;align-items:center;justify-content:center;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
     -webkit-font-smoothing:antialiased;
+    position:relative;
+    background:#fff;
   }
 
-  .scene{display:flex;align-items:center;gap:80px;padding:0 80px;width:100%}
+  /* ── Gmail full background (same as screenshot 1) ── */
+  .gmail-bg{
+    position:absolute;inset:0;z-index:1;
+    display:flex;flex-direction:column;
+    background:#fff;
+  }
+  .browser-bar{
+    height:44px;background:#f1f3f4;border-bottom:1px solid #dde1e6;
+    display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;
+  }
+  .traffic{display:flex;gap:6px}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot-r{background:#ff5f57}.dot-y{background:#ffbd2e}.dot-g{background:#28c840}
+  .url-bar{flex:1;max-width:520px;margin:0 auto;height:26px;background:#fff;border-radius:13px;border:1px solid #dde1e6;display:flex;align-items:center;padding:0 10px;gap:5px}
+  .url-bar svg{opacity:.4;flex-shrink:0}
+  .url-text{font-size:12px;color:#555}
+  .ext-icon{width:20px;height:20px;border-radius:4px;overflow:hidden;flex-shrink:0;margin-left:auto}
+  .ext-icon img{width:100%;height:100%;display:block}
+  .gmail-inner{flex:1;display:flex;overflow:hidden;min-height:0}
+  .gmail-sidebar{width:220px;background:#fff;border-right:1px solid #e8e8e8;padding:12px 0;flex-shrink:0}
+  .sidebar-compose{margin:6px 14px 14px;background:#c2e7ff;border-radius:20px;padding:14px 18px;display:flex;align-items:center;gap:8px}
+  .sidebar-compose svg{opacity:.7}
+  .sidebar-compose span{font-size:14px;font-weight:600;color:#001d35}
+  .sidebar-item{padding:7px 20px;font-size:13px;color:#444;display:flex;align-items:center;gap:10px;border-radius:0 20px 20px 0;margin-right:14px}
+  .sidebar-item.active{background:#d3e3fd;color:#001d35;font-weight:600}
+  .sidebar-item svg{opacity:.5}
+  .sidebar-count{margin-left:auto;font-size:11px;font-weight:600;color:#333}
+  .gmail-main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#fff;position:relative}
+  .gmail-toolbar{height:48px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 16px;flex-shrink:0}
+  .gmail-search{flex:1;max-width:480px;height:36px;background:#eaf1fb;border-radius:18px;display:flex;align-items:center;padding:0 14px;gap:8px}
+  .gmail-search svg{opacity:.5;flex-shrink:0}
+  .gmail-search-text{font-size:14px;color:#888}
+  .inbox-list{flex:1;overflow:auto;min-height:0}
+  .email-row{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid #f1f1f1;gap:10px}
+  .email-row.unread .e-sender,.email-row.unread .e-subject{font-weight:700;color:#202124}
+  .e-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+  .e-body{flex:1;overflow:hidden}
+  .e-sender{font-size:13px;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .e-subject{font-size:12.5px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .e-snippet{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .e-time{font-size:11px;color:#888;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+  .compose-overlay{
+    position:absolute;bottom:0;right:420px;width:400px;background:#fff;border-radius:10px 10px 0 0;
+    box-shadow:0 8px 40px rgba(0,0,0,0.22);z-index:10;display:flex;flex-direction:column;max-height:85%;
+  }
+  .compose-header{height:40px;background:#404040;border-radius:10px 10px 0 0;display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0}
+  .compose-title{font-size:13px;font-weight:600;color:#fff;flex:1}
+  .compose-actions{display:flex;gap:10px}
+  .compose-actions svg{opacity:.6}
+  .compose-field{display:flex;align-items:center;padding:7px 12px;border-bottom:1px solid #e0e0e0;gap:6px}
+  .compose-label{font-size:12px;color:#888;width:28px;flex-shrink:0}
+  .compose-value{font-size:13px;color:#202124;flex:1}
+  .compose-subject-row{display:flex;align-items:center;padding:7px 12px;border-bottom:1px solid #e0e0e0}
+  .compose-subject-val{font-size:13px;color:#202124;flex:1;font-weight:500}
+  .compose-char-count{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;flex-shrink:0;font-variant-numeric:tabular-nums;color:#166534;background:#dcfce7}
+  .compose-body{flex:1;padding:10px 12px;font-size:13px;color:#202124;line-height:1.55;min-height:100px;overflow:auto}
+  .compose-body p{margin-bottom:7px}
+  .compose-body a{color:#1a73e8;text-decoration:underline}
+  .compose-footer{padding:8px 12px;border-top:1px solid #e0e0e0;display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .compose-send-btn{background:#0b57d0;color:#fff;border:none;border-radius:20px;padding:7px 20px;font-size:13px;font-weight:600}
+  .compose-toolbar-icons{display:flex;gap:12px;margin-left:6px;opacity:.5}
 
-  /* ── LEFT: feature copy ── */
-  .copy{flex:1;max-width:500px}
-  .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:24px}
-  .brand-logo{width:36px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0}
-  .brand-logo img{width:100%;height:100%;display:block}
-  .brand-name{font-size:18px;font-weight:700;color:#07020d;letter-spacing:-0.4px}
-  .label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5db7de;margin-bottom:14px}
-  h1{font-size:42px;font-weight:800;letter-spacing:-1.5px;line-height:1.08;color:#07020d;margin-bottom:20px}
-  h1 em{font-style:normal;color:#5db7de}
-  .sub{font-size:16px;color:#716a5c;line-height:1.6;letter-spacing:-.1px;margin-bottom:36px}
-
-  /* Feature pills - represent the 3 real pre-flight checks */
-  .pills{display:flex;flex-direction:column;gap:12px}
-  .pill{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:16px 18px;border:0.5px solid rgba(0,0,0,.08);box-shadow:0 2px 8px rgba(0,0,0,.04),0 1px 2px rgba(0,0,0,.04)}
-  .pill-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-  .pill-dot.pass{background:#34c759}
-  .pill-dot.fail{background:#ff3b30}
-  .pill-text{flex:1}
-  .pill-title{font-size:14px;font-weight:700;color:#07020d;letter-spacing:-.2px}
-  .pill-desc{font-size:12.5px;color:#a39b8b;margin-top:2px;letter-spacing:-.1px}
-  .pill-badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0}
-  .pill-badge.pass{color:#15803d;background:#dcfce7}
-  .pill-badge.fail{color:#991b1b;background:#fee2e2}
-
-  /* ── RIGHT: actual popup card recreation ──
-     Matches real popup: header with logo img, tip cards with
-     header/badge/description/progress bar, usage card, settings */
-  .popup-card{
-    width:320px;flex-shrink:0;
+  /* ── Extension popup (anchored below toolbar, left of phone) ── */
+  .popup-overlay{
+    position:absolute;top:52px;right:368px;z-index:25;width:320px;
     background:#f2f2f2;border-radius:20px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.14),0 8px 20px rgba(0,0,0,0.08);
-    overflow:hidden;border:0.5px solid rgba(0,0,0,.08);
-    display:flex;flex-direction:column;gap:16px;padding:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.18),0 8px 24px rgba(0,0,0,0.1);
+    border:0.5px solid rgba(0,0,0,0.08);
+    overflow:hidden;
+    display:flex;flex-direction:column;gap:0;
+    padding:16px;
   }
-
-  /* Header - matches real .header */
   .popup-header{
     display:flex;align-items:center;gap:12px;
-    padding-bottom:16px;border-bottom:0.5px solid #a39b8b;
+    padding-bottom:16px;border-bottom:0.5px solid rgba(163,155,139,0.5);
   }
   .popup-logo{width:32px;height:32px;border-radius:8px;overflow:hidden;flex-shrink:0}
   .popup-logo img{width:100%;height:100%;display:block}
   .popup-header-text{display:flex;flex-direction:column;gap:2px}
   .popup-brand{font-size:17px;font-weight:600;color:#07020d;letter-spacing:-0.4px}
-  .popup-status{font-size:13px;color:#34c759;font-weight:500;letter-spacing:-0.1px}
-
-  /* Tips label */
-  .tips-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#716a5c;margin-bottom:-8px}
-
-  /* Tip cards - matches real .tip-card, .tip-card--pass, .tip-card--fail */
+  .popup-status{font-size:13px;color:#34c759;font-weight:500}
+  .tips-list-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#716a5c;margin-bottom:8px;margin-top:4px}
   .tip-cards{display:flex;flex-direction:column;gap:10px}
   .tip-card{
     display:flex;flex-direction:column;gap:6px;
-    padding:13px 14px;background:#fafafa;border-radius:12px;
-    border:1.5px solid rgba(0,0,0,.07);
+    padding:13px 14px;border-radius:12px;
+    border:0.5px solid rgba(0,0,0,0.08);
+    background:rgba(255,255,255,0.72);backdrop-filter:blur(20px);
   }
-  .tip-card.pass{background:#f0fdf4;border-color:#bbf7d0}
-  .tip-card.fail{background:#fff5f5;border-color:#fecaca}
-
+  .tip-card.pass{border-color:rgba(34,197,94,0.35);background:rgba(240,253,244,0.65)}
+  .tip-card.fail{border-color:rgba(254,202,202,0.6);background:rgba(255,245,245,0.65)}
   .tip-card-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
   .tip-card-label{font-size:13px;font-weight:600;color:#07020d;line-height:1.3}
   .tip-card.pass .tip-card-label{color:#166534}
   .tip-card.fail .tip-card-label{color:#991b1b}
-
-  /* Badge - matches real .tip-card-badge */
-  .tip-card-badge{
-    display:flex;align-items:center;gap:4px;border-radius:20px;
-    padding:2px 8px;font-size:11px;font-weight:700;
-    background:rgba(0,0,0,.05);color:#716a5c;flex-shrink:0;
-  }
+  .tip-card-badge{display:flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0}
   .tip-card.pass .tip-card-badge{background:#dcfce7;color:#15803d}
   .tip-card.fail .tip-card-badge{background:#fee2e2;color:#b91c1c}
-
-  .tip-card-desc{font-size:12px;line-height:1.5;color:#716a5c}
-  .tip-card.pass .tip-card-desc{color:#166534;opacity:.8}
-  .tip-card.fail .tip-card-desc{color:#7f1d1d;opacity:.9}
-
-  /* Progress bar - matches real .tip-card-bar */
-  .tip-bar{height:3px;background:rgba(0,0,0,.07);border-radius:2px;overflow:hidden;margin-top:2px}
-  .tip-bar-fill{height:100%;border-radius:2px}
-  .tip-bar-fill.pass{background:#22c55e}
-  .tip-bar-fill.fail{background:#ef4444}
-
-  /* Usage card - matches real .usage-card */
+  .tip-card-description{font-size:12px;line-height:1.5;color:#716a5c}
+  .tip-card.pass .tip-card-description{color:#166534;opacity:.9}
+  .tip-card.fail .tip-card-description{color:#7f1d1d;opacity:.9}
+  .tip-card-bar{height:3px;background:rgba(0,0,0,.07);border-radius:2px;overflow:hidden;margin-top:2px}
+  .tip-card-bar-fill{height:100%;border-radius:2px}
+  .tip-card.pass .tip-card-bar-fill{background:#22c55e}
+  .tip-card.fail .tip-card-bar-fill{background:#ef4444}
   .usage-card{
-    background:#fff;border:0.5px solid rgba(0,0,0,.08);
-    border-radius:20px;padding:16px;box-shadow:0 2px 4px rgba(0,0,0,.06);
+    background:rgba(255,255,255,0.72);backdrop-filter:blur(20px);
+    border:0.5px solid rgba(0,0,0,0.08);border-radius:20px;
+    padding:16px;margin-top:4px;box-shadow:0 2px 4px rgba(0,0,0,.06);
   }
-  .usage-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .usage-label{font-size:13px;color:#716a5c;letter-spacing:-0.1px}
-  .usage-count{font-size:13px;font-weight:600;color:#07020d;font-variant-numeric:tabular-nums;letter-spacing:-0.2px}
-  .usage-bar{height:6px;background:#a39b8b;border-radius:3px;overflow:hidden;margin-bottom:8px}
-  .usage-bar-fill{height:100%;width:20%;background:#5db7de;border-radius:3px}
-  .usage-footer{display:flex;align-items:center;justify-content:space-between}
+  .usage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13px}
+  .usage-header span:first-child{color:#716a5c;font-weight:400}
+  .usage-count{font-weight:600;font-variant-numeric:tabular-nums;color:#07020d;letter-spacing:-0.2px}
+  .usage-bar{height:6px;background:rgba(163,155,139,0.3);border-radius:3px;overflow:hidden;margin-bottom:8px}
+  .usage-fill{height:100%;width:60%;background:#5db7de;border-radius:3px}
+  .usage-footer{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:4px;text-align:center}
   .usage-reset{font-size:12px;color:#716a5c}
-  .usage-upgrade{font-size:12px;font-weight:600;color:#5db7de;text-decoration:none}
-
-  /* Settings - matches real .settings */
-  .settings-card{
-    background:#fff;border:0.5px solid rgba(0,0,0,.08);
-    border-radius:20px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.06);
+  .upgrade-cta{font-size:12px;font-weight:600;color:#5db7de;text-decoration:none}
+  .settings{
+    background:rgba(255,255,255,0.72);backdrop-filter:blur(20px);
+    border:0.5px solid rgba(0,0,0,0.08);border-radius:20px;
+    overflow:hidden;margin-top:12px;box-shadow:0 2px 4px rgba(0,0,0,.06);
   }
-  .setting-row{
-    display:flex;align-items:center;justify-content:space-between;
-    min-height:44px;padding:12px 16px;border-bottom:0.5px solid #a39b8b;
-    font-size:15px;color:#07020d;letter-spacing:-0.2px;
-  }
+  .setting-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:12px 16px;border-bottom:0.5px solid rgba(163,155,139,0.3);font-size:15px;color:#07020d}
   .setting-row:last-child{border-bottom:none}
-  /* iOS toggle */
   .ios-toggle{width:51px;height:31px;border-radius:31px;background:#5db7de;position:relative;flex-shrink:0}
-  .ios-toggle::after{content:'';position:absolute;width:27px;height:27px;border-radius:50%;background:#fff;top:2px;left:22px;box-shadow:0 2px 4px rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.1)}
-  .ios-toggle.off{background:#a39b8b}
-  .ios-toggle.off::after{left:2px}
+  .ios-toggle::after{content:'';position:absolute;width:27px;height:27px;border-radius:50%;background:#fff;top:2px;left:22px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+
+  /* ── VeloMail floating phone (same as screenshot 1) ── */
+  .preview-overlay{
+    position:absolute;top:80px;right:40px;z-index:30;
+    display:flex;flex-direction:column;align-items:center;
+    filter:drop-shadow(0 20px 60px rgba(0,0,0,0.25)) drop-shadow(0 8px 24px rgba(0,0,0,0.15));
+  }
+  .collapse-btn{
+    position:absolute;top:-10px;right:10px;width:36px;height:36px;
+    border-radius:50%;background:rgba(0,0,0,0.75);backdrop-filter:blur(20px);
+    border:0.5px solid rgba(255,255,255,0.15);color:#fff;
+    display:flex;align-items:center;justify-content:center;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  }
+  .preview-toggles{position:absolute;top:-10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:1001}
+  .toggle-btn{padding:6px 12px;font-size:12px;border-radius:12px;border:0.5px solid rgba(255,255,255,0.25);background:rgba(0,0,0,0.5);backdrop-filter:blur(12px);color:#fff;font-weight:500}
+  .phone-mockup{position:relative;width:307px}
+  .phone-bezel{background:#1a1a1a;border:10px solid #1a1a1a;border-radius:45px;padding:6px;box-shadow:0 24px 64px rgba(0,0,0,0.25),0 12px 32px rgba(0,0,0,0.15),inset 0 0 0 1px rgba(255,255,255,0.04)}
+  .dynamic-island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:103px;height:30px;background:#000;border-radius:16px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+  .phone-screen{background:linear-gradient(180deg,rgba(245,245,247,0.98) 0%,rgba(232,232,237,0.95) 100%);border-radius:35px;overflow:hidden;position:relative;height:665px;display:flex;flex-direction:column}
+  .home-indicator{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:110px;height:4px;background:rgba(0,0,0,0.25);border-radius:100px;z-index:50}
+  .status-bar{display:flex;align-items:center;justify-content:space-between;padding:46px 20px 6px;background:rgba(255,255,255,0.5);backdrop-filter:blur(12px);min-height:36px;flex-shrink:0}
+  .time{font-size:13px;font-weight:590;color:#07020d;letter-spacing:-0.3px}
+  .status-icons{display:flex;align-items:center;gap:5px;color:#07020d}
+  .mail-header{display:flex;align-items:center;justify-content:space-between;height:46px;min-height:46px;padding:0 14px;background:rgba(255,255,255,0.72);backdrop-filter:blur(20px);border-bottom:0.5px solid rgba(0,0,0,0.08);flex-shrink:0}
+  .header-cancel{background:none;border:none;color:#0d6efd;font-size:14px}
+  .header-title{font-size:14px;font-weight:600;color:#1a1a1a}
+  .header-send{background:#1976d2;color:#fff;border:none;border-radius:16px;padding:6px 14px;font-size:13px;font-weight:600}
+  .email-container{flex:1;overflow:hidden;background:linear-gradient(180deg,rgba(250,250,252,0.95) 0%,rgba(242,242,247,0.98) 100%);display:flex;flex-direction:column}
+  .email-row-app{display:flex;align-items:center;min-height:36px;padding:10px 14px;border-bottom:0.5px solid rgba(0,0,0,0.08);background:rgba(255,255,255,0.72);backdrop-filter:blur(20px)}
+  .email-row-label{flex:0 0 46px;font-size:12px;color:#6b7280;margin-right:8px}
+  .email-row-value{font-size:13px;color:#1a1a1a;flex:1}
+  .email-subject-row .email-row-value{font-weight:400}
+  .subject-char-count{font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;flex-shrink:0;font-variant-numeric:tabular-nums;color:#166534;background:#dcfce7}
+  .email-body-app{padding:16px 14px;font-size:14px;color:#07020d;line-height:1.47;letter-spacing:-0.3px;background:rgba(255,255,255,0.72);margin-top:8px;border-radius:10px 10px 0 0;flex:1;overflow:auto;backdrop-filter:blur(20px);border:0.5px solid rgba(0,0,0,0.06);border-bottom:none}
+  .email-body-app p{margin-bottom:10px}
+  .email-body-app a{color:#5db7de;text-decoration:none}
+  .email-body-app .sig{font-size:12px;color:#716a5c;margin-top:4px}
 </style>
 </head>
 <body>
-<div class="scene">
 
-  <!-- LEFT — feature explanation -->
-  <div class="copy">
-    <div class="brand-row">
-      <div class="brand-logo"><img src="../images/icon48.png" alt="VeloMail" /></div>
-      <span class="brand-name">VeloMail</span>
+<!-- Gmail full background -->
+<div class="gmail-bg">
+  <div class="browser-bar">
+    <div class="traffic"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+    <div class="url-bar">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="url-text">mail.google.com/mail/u/0/#inbox</span>
     </div>
-    <div class="label">Pre-flight tips</div>
-    <h1>Know your email<br/>is ready before<br/>you <em>hit send.</em></h1>
-    <p class="sub">Three weighted checks run every time you compose — subject hook, CTA placement, and link tap-spacing. Each turns green when your email passes.</p>
-    <div class="pills">
-      <div class="pill">
-        <div class="pill-dot pass"></div>
-        <div class="pill-text">
-          <div class="pill-title">Subject hooks first</div>
-          <div class="pill-desc">Green at ≤ 30 chars, amber at 31–50, red above 50</div>
-        </div>
-        <span class="pill-badge pass">35%</span>
+    <div class="ext-icon"><img src="../images/icon48.png" alt="VeloMail" /></div>
+  </div>
+  <div class="gmail-inner">
+    <div class="gmail-sidebar">
+      <div class="sidebar-compose"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#001d35" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Compose</span></div>
+      <div class="sidebar-item active"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Inbox <span class="sidebar-count">24</span></div>
+      <div class="sidebar-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Starred</div>
+      <div class="sidebar-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Sent</div>
+      <div class="sidebar-item"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Trash</div>
+    </div>
+    <div class="gmail-main">
+      <div class="gmail-toolbar">
+        <div class="gmail-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="gmail-search-text">Search mail</span></div>
       </div>
-      <div class="pill">
-        <div class="pill-dot pass"></div>
-        <div class="pill-text">
-          <div class="pill-title">CTA above the fold</div>
-          <div class="pill-desc">Link or button visible without scrolling on mobile</div>
-        </div>
-        <span class="pill-badge pass">45%</span>
+      <div class="inbox-list">
+        <div class="email-row unread"><div class="e-avatar" style="background:#5db7de;">M</div><div class="e-body"><div class="e-sender">Marcus W.</div><div class="e-subject">Re: Q2 targets</div><div class="e-snippet">Let's connect this week...</div></div><div class="e-time">10:42 am</div></div>
+        <div class="email-row unread"><div class="e-avatar" style="background:#a39b8b;">S</div><div class="e-body"><div class="e-sender">Sarah K.</div><div class="e-subject">Quick demo</div><div class="e-snippet">We're evaluating tools...</div></div><div class="e-time">9:17 am</div></div>
+        <div class="email-row"><div class="e-avatar" style="background:#6b7280;">T</div><div class="e-body"><div class="e-sender">Tom R.</div><div class="e-subject">Following up</div><div class="e-snippet">Good conversation...</div></div><div class="e-time">Yesterday</div></div>
       </div>
-      <div class="pill">
-        <div class="pill-dot fail"></div>
-        <div class="pill-text">
-          <div class="pill-title">Links are tap-friendly</div>
-          <div class="pill-desc">Links need spacing so they're easy to tap on mobile</div>
-        </div>
-        <span class="pill-badge fail">20%</span>
+      <div class="compose-overlay">
+        <div class="compose-header"><span class="compose-title">New Message</span><div class="compose-actions"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>
+        <div class="compose-field"><span class="compose-label">To</span><span class="compose-value">sarah.k@prospectco.com</span></div>
+        <div class="compose-subject-row"><span class="compose-label">Subj</span><span class="compose-subject-val">Quick win for your outbound in Q2</span><span class="compose-char-count">34</span></div>
+        <div class="compose-body"><p>Hi Sarah,</p><p>Saw you're scaling outbound — congrats on the Series B.</p><p>We help reps improve reply rates by previewing how emails render on mobile.</p><p><a href="#">Book a 15-min call →</a></p></div>
+        <div class="compose-footer"><button class="compose-send-btn">Send</button><div class="compose-toolbar-icons"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></div></div>
       </div>
     </div>
   </div>
-
-  <!-- RIGHT — accurate popup reproduction -->
-  <div class="popup-card">
-
-    <!-- Header with real logo -->
-    <div class="popup-header">
-      <div class="popup-logo"><img src="../images/icon48.png" alt="VeloMail" /></div>
-      <div class="popup-header-text">
-        <div class="popup-brand">VeloMail v1.0.1 ✓</div>
-        <div class="popup-status">Composing email…</div>
-      </div>
-    </div>
-
-    <!-- Tips label -->
-    <div class="tips-label">Pre-flight tips</div>
-
-    <!-- Tip cards - exact structure from real popup -->
-    <div class="tip-cards">
-
-      <div class="tip-card pass">
-        <div class="tip-card-header">
-          <div class="tip-card-label">Subject hooks first</div>
-          <div class="tip-card-badge">✓ 35%</div>
-        </div>
-        <div class="tip-card-desc">Strong hook in the first 30 characters.</div>
-        <div class="tip-bar"><div class="tip-bar-fill pass" style="width:100%"></div></div>
-      </div>
-
-      <div class="tip-card pass">
-        <div class="tip-card-header">
-          <div class="tip-card-label">CTA above the fold</div>
-          <div class="tip-card-badge">✓ 45%</div>
-        </div>
-        <div class="tip-card-desc">Call-to-action visible without scrolling.</div>
-        <div class="tip-bar"><div class="tip-bar-fill pass" style="width:100%"></div></div>
-      </div>
-
-      <div class="tip-card fail">
-        <div class="tip-card-header">
-          <div class="tip-card-label">Links are tap-friendly</div>
-          <div class="tip-card-badge">✗ 20%</div>
-        </div>
-        <div class="tip-card-desc">Too many links close together. One focused CTA gets higher tap-through.</div>
-        <div class="tip-bar"><div class="tip-bar-fill fail" style="width:0%"></div></div>
-      </div>
-
-    </div>
-
-    <!-- Usage card -->
-    <div class="usage-card">
-      <div class="usage-row">
-        <span class="usage-label">Sends This Month</span>
-        <span class="usage-count">3 / 15</span>
-      </div>
-      <div class="usage-bar"><div class="usage-bar-fill"></div></div>
-      <div class="usage-footer">
-        <span class="usage-reset">Resets Mar 1</span>
-        <a class="usage-upgrade" href="#">Upgrade →</a>
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div class="settings-card">
-      <div class="setting-row">
-        <span>Auto-show preview</span>
-        <div class="ios-toggle"></div>
-      </div>
-      <div class="setting-row">
-        <span>Tip notifications</span>
-        <div class="ios-toggle"></div>
-      </div>
-    </div>
-
-  </div>
-
 </div>
+
+<!-- Extension popup: Pre-flight checks + usage (matches real popup) -->
+<div class="popup-overlay">
+  <div class="popup-header">
+    <div class="popup-logo"><img src="../images/icon48.png" alt="VeloMail" /></div>
+    <div class="popup-header-text">
+      <div class="popup-brand">VeloMail v1.0.1 ✓</div>
+      <div class="popup-status">Composing</div>
+    </div>
+  </div>
+  <div class="tips-list-label">Pre-flight Checks</div>
+  <div class="tip-cards">
+    <div class="tip-card pass">
+      <div class="tip-card-header"><div class="tip-card-label">Subject grabs attention</div><div class="tip-card-badge">✓ 35%</div></div>
+      <div class="tip-card-description">Your value prop lands in the first glance. Strong open bait.</div>
+      <div class="tip-card-bar"><div class="tip-card-bar-fill" style="width:100%"></div></div>
+    </div>
+    <div class="tip-card pass">
+      <div class="tip-card-header"><div class="tip-card-label">CTA in the hot zone</div><div class="tip-card-badge">✓ 45%</div></div>
+      <div class="tip-card-description">Your ask is above the fold — prospects can act without scrolling.</div>
+      <div class="tip-card-bar"><div class="tip-card-bar-fill" style="width:100%"></div></div>
+    </div>
+    <div class="tip-card fail">
+      <div class="tip-card-header"><div class="tip-card-label">Clear next step</div><div class="tip-card-badge">✕ 20%</div></div>
+      <div class="tip-card-description">No clickable link found. Every sales email needs a next step — add a booking link, demo URL, or reply CTA.</div>
+      <div class="tip-card-bar"><div class="tip-card-bar-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="usage-card">
+    <div class="usage-header"><span>Free Plan</span><span class="usage-count">3 / 5</span></div>
+    <div class="usage-bar"><div class="usage-fill"></div></div>
+    <div class="usage-footer"><span class="usage-reset">Resets at midnight</span><a class="upgrade-cta" href="#">Tired of daily limits? Get Lifetime ($49) →</a></div>
+  </div>
+  <div class="settings">
+    <div class="setting-row"><span>Auto-show preview</span><div class="ios-toggle"></div></div>
+  </div>
+</div>
+
+<!-- VeloMail mobile preview — floating over Gmail -->
+<div class="preview-overlay">
+  <div class="phone-mockup">
+    <button class="collapse-btn" type="button" aria-label="Collapse"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="preview-toggles"><span class="toggle-btn">Dark</span></div>
+    <div class="phone-bezel">
+      <div class="dynamic-island"></div>
+      <div class="phone-screen">
+        <div class="home-indicator"></div>
+        <div class="status-bar"><span class="time">9:41</span><div class="status-icons"><svg width="13" height="10" viewBox="0 0 15 11" fill="none"><rect x="0.5" y="1.5" width="3" height="5" rx="0.5" fill="#07020d"/><rect x="4.5" y="0.5" width="3" height="7" rx="0.5" fill="#07020d"/><rect x="8.5" y="2.5" width="3" height="5" rx="0.5" fill="#07020d"/><rect x="12.5" y="3.5" width="2" height="4" rx="0.5" fill="#07020d"/></svg><svg width="20" height="10" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="17" height="10" rx="2.5" stroke="#07020d" fill="none"/><rect x="19" y="3" width="4" height="5" rx="1" fill="#07020d"/><rect x="2" y="2.5" width="13" height="6" rx="1" fill="#07020d"/></svg></div></div>
+        <div class="mail-header"><span class="header-cancel">Cancel</span><span class="header-title">New Message</span><span class="header-send">Send</span></div>
+        <div class="email-container">
+          <div class="email-row-app"><span class="email-row-label">To</span><span class="email-row-value">sarah.k@prospectco.com</span></div>
+          <div class="email-row-app"><span class="email-row-label">From</span><span class="email-row-value">you@company.com</span></div>
+          <div class="email-row-app email-subject-row"><span class="email-row-label">Subject</span><span class="email-row-value">Quick win for your outbound in Q2</span><span class="subject-char-count">34</span></div>
+          <div class="email-body-app"><p>Hi Sarah,</p><p>Saw you're scaling outbound — congrats on the Series B.</p><p>We help reps improve reply rates by previewing how emails render on mobile.</p><p><a href="#">Book a 15-min call →</a></p><p class="sig">—</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
