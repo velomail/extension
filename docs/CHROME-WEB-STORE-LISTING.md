@@ -66,6 +66,32 @@ sales email, email preview, mobile email, Gmail extension, Outlook extension, co
 
 ---
 
+## Promo screenshot email copy (pasteable)
+
+Use this subject and body in the Gmail compose when capturing store screenshots. It passes VeloMail’s pre-flight checks (subject front-loaded, CTA above fold, link tapability) so tips show green.
+
+**Subject (paste into subject field):**
+
+```
+See your email on mobile before you send
+```
+
+**Body (paste into compose — Gmail will auto-link the URL):**
+
+```
+You're writing on desktop. They're reading on a phone.
+
+VeloMail shows you exactly what they see — live, as you type in Gmail or Outlook. Pre-flight tips turn green when your subject, CTA, and link are mobile-ready.
+
+One click to add it:
+
+https://chrome.google.com/webstore
+
+No setup. It activates the next time you compose.
+```
+
+---
+
 ## Privacy policy URL
 
 After enabling GitHub Pages (see [DEPLOY.md](DEPLOY.md)), your privacy page is at:

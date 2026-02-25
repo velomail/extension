@@ -337,6 +337,7 @@ function getDefaultState() {
 let updatePreviewRAF = null;
 let heavyOperationsTimer = null;
 let serviceWorkerThrottle = null;
+let preflightRefreshInterval = null;  // Periodic full update so tips stay current when not typing
 let lastContentHash = null;
 let lastSubjectHash = null;
 
@@ -402,10 +403,12 @@ function getMeasurementContainer() {
       position: absolute;
       left: -9999px;
       width: 343px;
-      font-size: 17px;
-      line-height: 1.47;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-      padding: 24px 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 400;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
+      color: #1a1a1a;
+      padding: 18px 16px;
       visibility: hidden;
       pointer-events: none;
     `;
@@ -1245,14 +1248,17 @@ function getOverlayHTML() {
         
         <!-- iPhone Frame -->
         <div class="phone-bezel">
-          <!-- Dynamic Island -->
-          <div class="dynamic-island"></div>
-          
+          <!-- Notch -->
+          <div class="phone-notch">
+            <div class="phone-notch-speaker"></div>
+            <div class="phone-notch-cam"></div>
+          </div>
+
           <!-- Screen -->
           <div class="phone-screen" id="phoneScreen">
             <!-- iOS Home Indicator -->
             <div class="home-indicator"></div>
-            
+
             <!-- Status Bar -->
             <div class="status-bar">
               <span class="time">9:41</span>
@@ -1270,10 +1276,13 @@ function getOverlayHTML() {
                 </svg>
               </div>
             </div>
-            
-            <!-- Mail Interface (Gmail Mobile clone) -->
+
+            <!-- Mail Interface -->
             <div class="mail-header">
-              <button type="button" class="header-cancel">Cancel</button>
+              <button type="button" class="header-cancel">
+                <svg width="9" height="15" viewBox="0 0 9 15" fill="none" style="flex-shrink:0"><path d="M8 1L1.5 7.5L8 14" stroke="#007AFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Cancel
+              </button>
               <div class="header-title">New Message</div>
               <button type="button" class="header-send">Send</button>
             </div>
@@ -1361,7 +1370,7 @@ function getOverlayStyles() {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -1497,45 +1506,66 @@ function getOverlayStyles() {
     }
     
     /* ============================================================================
-       IPHONE BEZEL - Authentic iPhone 15 Pro Design
+       IPHONE BEZEL - Notch-style design
        ============================================================================ */
-    
+
     .phone-bezel {
-      background: #1a1a1a;
-      border: 12px solid #1a1a1a;
-      border-radius: 55px;
-      padding: 8px;
+      background: #1c1c1e;
+      border: 10px solid #1c1c1e;
+      border-radius: 50px;
+      padding: 0;
       box-shadow:
-        0 16px 48px rgba(0, 0, 0, 0.2),
-        0 8px 24px rgba(0, 0, 0, 0.12),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        0 20px 60px rgba(0, 0, 0, 0.35),
+        0 8px 24px rgba(0, 0, 0, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.07);
       position: relative;
+      overflow: hidden;
     }
-    
+
     /* ============================================================================
-       DYNAMIC ISLAND - iPhone 15 Pro Feature
+       NOTCH - Classic iPhone Notch
        ============================================================================ */
-    
-    .dynamic-island {
+
+    .phone-notch {
       position: absolute;
-      top: 16px;
+      top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 126px;
-      height: 37px;
-      background: #000000;
-      border-radius: 20px; /* Squircle to match iOS design */
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      width: 154px;
+      height: 28px;
+      background: #1c1c1e;
+      border-radius: 0 0 18px 18px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 18px;
     }
-    
+
+    .phone-notch-speaker {
+      flex: 1;
+      height: 5px;
+      background: #0a0a0a;
+      border-radius: 3px;
+    }
+
+    .phone-notch-cam {
+      width: 12px;
+      height: 12px;
+      background: #0d0d0d;
+      border-radius: 50%;
+      border: 1.5px solid #2a2a2a;
+      flex-shrink: 0;
+    }
+
     /* ============================================================================
-       PHONE SCREEN - iOS System Background
+       PHONE SCREEN - Pure white, clean
        ============================================================================ */
-    
+
     .phone-screen {
-      background: linear-gradient(180deg, rgba(245, 245, 247, 0.98) 0%, rgba(232, 232, 237, 0.95) 100%);
-      border-radius: 43px;
+      background: #ffffff;
+      border-radius: 42px;
       overflow: hidden;
       position: relative;
       height: 812px;
@@ -1570,29 +1600,28 @@ function getOverlayStyles() {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 56px 24px 8px;
-      background: rgba(255, 255, 255, 0.5);
-      backdrop-filter: blur(12px) saturate(180%);
-      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      padding: 36px 20px 8px;
+      background: #ffffff;
       position: relative;
       z-index: 1;
       min-height: 44px;
+      flex-shrink: 0;
     }
-    
+
     .time {
       font-size: 15px;
-      font-weight: 590;
-      color: var(--black);
-      letter-spacing: -0.3px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.2px;
     }
-    
+
     .status-icons {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: var(--black);
+      color: #1a1a1a;
     }
-    
+
     .status-icons svg {
       display: block;
     }
@@ -1605,41 +1634,43 @@ function getOverlayStyles() {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 56px;
-      min-height: 56px;
+      height: 52px;
+      min-height: 52px;
       padding: 0 16px;
-      background: var(--glass-bg-light);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       position: sticky;
       top: 0;
       z-index: 10;
       flex-shrink: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
     }
-    
+
     .header-cancel {
       background: none;
       border: none;
-      color: #0d6efd;
-      font-size: 17px;
+      color: #007AFF;
+      font-size: 16px;
       cursor: pointer;
       padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
     }
-    
+
     .header-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: #1a1a1a;
     }
-    
+
     .header-send {
-      background: #1976d2;
+      background: #007AFF;
       color: #fff;
       border: none;
-      border-radius: 20px;
-      padding: 8px 16px;
+      border-radius: 18px;
+      padding: 7px 16px;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
@@ -1682,59 +1713,61 @@ function getOverlayStyles() {
       display: flex;
       align-items: center;
       min-height: 44px;
-      padding: 12px 16px;
-      border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
-      background: var(--glass-bg-light);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
     }
-    
+
     .email-row-label {
-      flex: 0 0 56px;
+      flex: 0 0 52px;
       font-size: 14px;
-      color: #6b7280;
-      margin-right: 12px;
+      color: #8a8a8e;
+      font-weight: 400;
+      margin-right: 8px;
     }
-    
+
     .email-row-value {
       font-size: 15px;
       color: #1a1a1a;
+      font-weight: 600;
     }
-    
+
     .email-from-row .from-details {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      gap: 8px;
     }
-    
+
     .email-from-row .from-name {
       font-size: 15px;
       font-weight: 600;
-      color: var(--black);
+      color: #1a1a1a;
     }
-    
+
     .email-from-row .from-email {
       font-size: 14px;
-      color: var(--dim-grey);
+      color: #8a8a8e;
+      font-weight: 400;
     }
-    
+
     .email-subject-row {
       align-items: flex-start;
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
-    
+
     .email-subject-row .email-subject {
       flex: 1;
       font-size: 15px;
       font-weight: 400;
-      min-height: 22px;
+      min-height: 20px;
     }
-    
+
     .email-subject {
       word-wrap: break-word;
       overflow-wrap: break-word;
-      letter-spacing: -0.2px;
-      color: var(--black);
+      color: #1a1a1a;
     }
     
     /* ============================================================================
@@ -1791,80 +1824,82 @@ function getOverlayStyles() {
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      background: linear-gradient(180deg, rgba(250, 250, 252, 0.95) 0%, rgba(242, 242, 247, 0.98) 100%);
+      background: #ffffff;
       padding-bottom: 34px;
     }
-    
+
     .email-body-wrapper {
-      background: var(--glass-bg-light);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border-top: 0.5px solid var(--glass-border-light);
-      border-bottom: 0.5px solid var(--glass-border-light);
+      background: #ffffff;
     }
-    
+
     .from-time {
-      color: var(--dim-grey);
+      color: #8a8a8e;
     }
-    
+
     /* ============================================================================
-       EMAIL BODY - iOS Mail Content Typography
+       EMAIL BODY - Clean plain typography (matches iOS Mail)
        ============================================================================ */
-    
+
     .email-body {
-      padding: 20px 16px;
-      font-size: 17px;
-      line-height: 1.47;
-      color: var(--black);
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      padding: 18px 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
+      font-weight: 400 !important;
       min-height: 300px;
       word-wrap: break-word;
       overflow-wrap: break-word;
-      letter-spacing: -0.4px;
-      background: var(--glass-bg-light);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      margin-top: 12px;
-      border-radius: 12px 12px 0 0;
-      border: 0.5px solid var(--glass-border-light);
-      border-bottom: none;
+      background: #ffffff;
+      -webkit-font-smoothing: antialiased;
     }
-    
+
     .email-body * {
       max-width: 100%;
       word-wrap: break-word;
       overflow-wrap: break-word;
+      font-weight: 400 !important;
+      color: #1a1a1a;
     }
-    
+
     .email-body p {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       max-width: 100%;
+      line-height: 1.5;
     }
-    
+
     .email-body p:last-child {
       margin-bottom: 0;
     }
-    
+
+    .email-body div {
+      line-height: 1.5;
+    }
+
     .email-body img {
       max-width: 100%;
       height: auto;
-      border-radius: 12px; /* iOS squircle for images */
-      margin: 12px 0;
+      border-radius: 8px;
+      margin: 10px 0;
     }
-    
+
     .email-body a {
-      color: var(--sky-surge);
+      color: #007AFF;
       text-decoration: none;
-      word-break: break-all;
+      word-break: break-word;
+      font-weight: 400 !important;
     }
-    
+
     .email-body a:hover {
       text-decoration: underline;
     }
-    
+
     .email-body strong,
-    .email-body b {
-      font-weight: 600; /* SF Pro Semibold */
+    .email-body b,
+    .email-body h1,
+    .email-body h2,
+    .email-body h3 {
+      font-weight: 400 !important;
     }
     
     /* ============================================================================
@@ -2841,7 +2876,7 @@ function setupLiveSync(composeBody) {
     handleTextSelection();
   });
   
-  // MutationObserver for paste, formatting, etc. (LIGHT)
+  // MutationObserver for paste, formatting, link insertion, etc.
   const observer = new MutationObserver((mutations) => {
     updatePreviewLight();
     updatePreviewHeavy();
@@ -2850,12 +2885,39 @@ function setupLiveSync(composeBody) {
   observer.observe(composeBody, {
     childList: true,
     subtree: true,
-    characterData: true
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['href', 'contenteditable']
   });
+  
+  // Paste/cut so tips update as soon as link or content is added/removed
+  composeBody.addEventListener('paste', () => {
+    updatePreviewLight();
+    updatePreviewHeavy();
+  });
+  composeBody.addEventListener('cut', () => {
+    updatePreviewLight();
+    updatePreviewHeavy();
+  });
+  
+  // Focus: refresh tips when user clicks back into compose (e.g. after pasting elsewhere)
+  composeBody.addEventListener('focus', () => {
+    updatePreviewHeavy();
+  });
+  
+  // Periodic full update so tips stay current even when no input/mutation fires (e.g. link auto-insert, external edit)
+  const PREFLIGHT_REFRESH_MS = 2500;
+  if (preflightRefreshInterval) clearInterval(preflightRefreshInterval);
+  preflightRefreshInterval = setInterval(() => {
+    if (currentComposeBody && currentComposeBody.isConnected && shadowRoot) {
+      updatePreview(false);
+    }
+  }, PREFLIGHT_REFRESH_MS);
   
   console.log('✅ Live sync activated (OPTIMIZED):');
   console.log('   - Light updates: RAF batching');
   console.log('   - Heavy operations: 200ms debounce');
+  console.log('   - Pre-flight refresh: every ' + (PREFLIGHT_REFRESH_MS / 1000) + 's + paste/cut/focus');
   console.log('   - Service worker: Throttled messaging');
 }
 
@@ -3894,6 +3956,12 @@ function removePreview() {
   // Remove global event listeners (prevent memory leaks)
   document.removeEventListener('mousemove', handleDragging);
   document.removeEventListener('mouseup', stopDragging);
+  
+  // Stop periodic pre-flight refresh
+  if (preflightRefreshInterval) {
+    clearInterval(preflightRefreshInterval);
+    preflightRefreshInterval = null;
+  }
   
   // Clear all caches
   operationCache.ctaCheck.clear();

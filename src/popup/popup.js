@@ -142,11 +142,10 @@ async function requestInitialState(retryCount = 0) {
     if (response && response.state) {
       const state = response.state;
       const isActive = state.isActive === true;
-      const hasTips = state.preflightChecks != null || (state.mobileScore != null && state.mobileScore.score != null);
-      if (isActive || hasTips) {
+      if (isActive) {
         currentState = state;
         updateUI(currentState);
-        console.log('✅ Initial state loaded (active:', isActive, ')');
+        console.log('✅ Initial state loaded (composing)');
         return;
       }
       currentState = null;
@@ -194,16 +193,15 @@ function updateUI(state) {
 
 function performUIUpdate(state) {
   const isActive = state && state.isActive === true;
-  const hasTips = state && (state.preflightChecks != null || (state.mobileScore != null && typeof state.mobileScore.score === 'number'));
-  console.log('🔄 Updating UI:', { isActive, hasTips, hasState: !!state });
-  
-  if (!state || (!isActive && !hasTips)) {
+  console.log('🔄 Updating UI:', { isActive, hasState: !!state });
+
+  if (!state || !isActive) {
     showEmptyState();
     updateStatus('Ready', false);
     return;
   }
   showChatBubbles(state.mobileScore, state.preflightChecks);
-  updateStatus(isActive ? 'Composing' : 'Last Email', isActive);
+  updateStatus('Composing', true);
 }
 
 function updateStatus(text, isActive) {
