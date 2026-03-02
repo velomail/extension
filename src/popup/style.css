@@ -127,6 +127,21 @@ body {
   font-weight: 500;
   color: var(--label);
   letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.premium-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #1A7F3C;
+  background: rgba(52, 199, 89, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .status {
@@ -364,6 +379,21 @@ body {
 }
 
 .usage-card:hover { box-shadow: none; }
+
+.usage-card--premium {
+  background: rgba(52, 199, 89, 0.06);
+  border-color: rgba(52, 199, 89, 0.2);
+}
+
+.usage-card--premium .usage-plan-label {
+  color: #1A7F3C;
+  font-weight: 600;
+}
+
+.usage-card--premium .usage-count {
+  color: #1A7F3C;
+  font-weight: 600;
+}
 
 .usage-header {
   display: flex;

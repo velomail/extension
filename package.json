@@ -7,10 +7,13 @@
   "scripts": {
     "format": "prettier --write src/",
     "package-store": "node scripts/package-for-store.js",
-    "store-release": "node scripts/validate-for-store.js && node scripts/package-for-store.js"
+    "store-release": "node scripts/validate-for-store.js && node scripts/package-for-store.js",
+    "build-landing": "node scripts/build-landing.js",
+    "preview-landing": "node scripts/build-landing.js && npx serve public -p 3000"
   },
   "devDependencies": {
     "prettier": "3.2.4",
+    "puppeteer": "^24.37.5",
     "sharp": "^0.34.5"
   },
   "dependencies": {

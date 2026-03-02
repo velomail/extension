@@ -8,7 +8,7 @@ VeloMail ("we", "our") is a browser extension that helps you optimize sales emai
 
 VeloMail stores the following data **only on your device** using the browser's local storage (Chrome's `chrome.storage.local`):
 
-- **Settings:** Your preferences (e.g. tip notifications on or off).
+- **Settings:** Your preferences (e.g. auto-show preview on or off).
 - **Onboarding state:** Whether you have completed the welcome/onboarding flow so we do not show it again.
 - **Usage milestones:** Local counters (e.g. number of emails previewed) used only to show optional tips or celebrate progress inside the extension.
 
@@ -26,7 +26,7 @@ We do not collect, store, or transmit:
 
 - **Storage:** To save your settings and onboarding state locally on your device.
 - **Active tab:** To know when you are composing mail so we can show the preview and tips in context.
-- **Notifications / Alarms:** To optionally show in-app tips (e.g. reminder to try the preview). These are local only.
+- **Alarms:** To reset the free daily usage counter at local midnight and keep the limit accurate. Alarm data stays on your device.
 - **Host access (Gmail, Outlook):** So the extension can run on mail.google.com and outlook.live.com / office.com to display the mobile preview and run the in-page UI. We do not read or send your email content to any third party.
 
 ## Changes

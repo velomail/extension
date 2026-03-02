@@ -11,6 +11,11 @@ console.log('⚙️ VeloMail Popup Loading...');
 
 let port = null;
 let currentState = null;
+let extensionContextInvalidated = false;
+
+function isContextInvalidatedError(err) {
+  return err && String(err.message || '').includes('Extension context invalidated');
+}
 
 // ============================================================================
 // INITIALIZATION
@@ -37,7 +42,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     console.log('✅ Popup Initialized');
   } catch (error) {
-    console.error('❌ Init error:', error);
+    if (isContextInvalidatedError(error)) extensionContextInvalidated = true;
+    else console.error('❌ Init error:', error);
   }
 });
 
@@ -46,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ============================================================================
 
 function connectToServiceWorker() {
+  if (extensionContextInvalidated) return;
   try {
     // Create long-lived connection to service worker
     port = chrome.runtime.connect({ name: 'popup-realtime' });
@@ -70,8 +77,7 @@ function connectToServiceWorker() {
           if (message.state) {
             currentState = message.state;
             updateUI(currentState);
-            // Also refresh usage stats when content updates
-            updateUsageStats();
+            updateUsageStats().catch(() => {});
           }
           break;
           
@@ -90,7 +96,7 @@ function connectToServiceWorker() {
           console.log('   ✅ Email sent - refreshing stats');
           showEmptyState();
           updateStatus('Ready', false);
-          updateUsageStats();
+          updateUsageStats().catch(() => {});
           break;
           
         case 'ACTIVE_TAB_CLOSED':
@@ -116,13 +122,19 @@ function connectToServiceWorker() {
       console.log('🔌 Disconnected from service worker');
       port = null;
       
-      // Try to reconnect after a delay
+      // Try to reconnect after a delay (skip if extension was reloaded)
       setTimeout(() => {
+        if (extensionContextInvalidated) return;
         console.log('🔄 Attempting to reconnect...');
         connectToServiceWorker();
       }, 1000);
     });
   } catch (error) {
+    if (isContextInvalidatedError(error)) {
+      extensionContextInvalidated = true;
+      console.warn('⚠️ Extension was reloaded; close and reopen the popup');
+      return;
+    }
     console.error('❌ Connection error:', error);
   }
 }
@@ -161,6 +173,10 @@ async function requestInitialState(retryCount = 0) {
     showEmptyState();
     updateStatus('Ready', false);
   } catch (error) {
+    if (isContextInvalidatedError(error)) {
+      extensionContextInvalidated = true;
+      return;
+    }
     console.error('❌ Failed to get initial state:', error);
     if (retryCount < maxRetries) {
       setTimeout(() => requestInitialState(retryCount + 1), retryDelayMs);
@@ -331,14 +347,23 @@ async function updateUsageStats() {
     const usageBar = document.getElementById('usageBar');
     const usageReset = document.getElementById('usageReset');
     const upgradeCta = document.getElementById('upgradeCta');
+    const usagePlanLabel = document.getElementById('usagePlanLabel');
+    const usageCard = document.getElementById('usageCard');
+    const premiumBadge = document.getElementById('premiumBadge');
 
     if (sync.isPaid === true) {
-      if (usageCount) usageCount.textContent = 'Lifetime — Unlimited';
+      if (usagePlanLabel) usagePlanLabel.textContent = 'Premium';
+      if (usageCount) usageCount.textContent = 'Unlimited';
       if (usageBar) usageBar.classList.add('hidden');
       if (usageReset) usageReset.textContent = '';
       if (upgradeCta) upgradeCta.classList.add('hidden');
+      if (usageCard) usageCard.classList.add('usage-card--premium');
+      if (premiumBadge) premiumBadge.classList.remove('hidden');
       return;
     }
+
+    if (usageCard) usageCard.classList.remove('usage-card--premium');
+    if (premiumBadge) premiumBadge.classList.add('hidden');
 
     const today = new Date().toLocaleDateString('en-CA');
     let data = local.usageData || { date: today, count: 0 };
@@ -374,7 +399,8 @@ async function updateUsageStats() {
       upgradeCta.textContent = 'Tired of daily limits? Get Lifetime Access ($49) →';
     }
   } catch (error) {
-    console.error('❌ Failed to load usage stats:', error);
+    if (isContextInvalidatedError(error)) extensionContextInvalidated = true;
+    else console.error('❌ Failed to load usage stats:', error);
   }
 }
 
@@ -392,7 +418,8 @@ async function loadSettings() {
       autoShow.checked = settings.autoShow !== false;
     }
   } catch (error) {
-    console.error('❌ Failed to load settings:', error);
+    if (isContextInvalidatedError(error)) extensionContextInvalidated = true;
+    else console.error('❌ Failed to load settings:', error);
   }
 }
 
@@ -478,7 +505,7 @@ function setupEventListeners() {
 // CLEANUP
 // ============================================================================
 
-window.addEventListener('unload', () => {
+window.addEventListener('pagehide', () => {
   if (port) {
     port.disconnect();
   }

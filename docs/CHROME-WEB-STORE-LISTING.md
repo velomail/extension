@@ -57,12 +57,13 @@ sales email, email preview, mobile email, Gmail extension, Outlook extension, co
 
 - **Extension icon (store):** `assets/images/icon128.png` (128×128 — already in the zip)
 - **Small promo tile:** 440×280 PNG — create a tile showing the VeloMail logo, name, and tagline
+- **Marquee promo (optional):** 1400×560 PNG — for featured/editors' choice slots. Use `assets/store/mockup-marquee-promo.html`; open in browser and capture at 1400×560.
 - **Screenshots (required):** At least 1 at **1280×800** or **640×400**
   - Capture Gmail with the mobile preview panel open and an email being composed
   - Capture the popup showing pre-flight tip states (pass/fail/pending)
   - Save to `assets/store/screenshot-1-1280x800.png`, `screenshot-2-1280x800.png`, etc.
 
-**Capturing from mockups:** Open `assets/store/mockup-screenshot1.html` or `mockup-screenshot2.html` in a browser (they use 1280×800 viewport), then use your OS or browser screenshot tool to capture the full view; save as PNG and upload in the dashboard. For the promo tile, open `assets/store/mockup-promo-tile.html` and capture at 440×280. Screenshot PNGs are uploaded in the Developer Dashboard and do not need to be in the extension zip.
+**Capturing from mockups:** Open `assets/store/mockup-screenshot1.html` or `mockup-screenshot2.html` in a browser (1280×800), then capture the full view; save as PNG. For the small promo tile, open `assets/store/mockup-promo-tile.html` and capture at 440×280. For the marquee promo (optional), open `assets/store/mockup-marquee-promo.html` and capture at 1400×560. Screenshot PNGs are uploaded in the Developer Dashboard and do not need to be in the extension zip.
 
 ---
 
@@ -112,8 +113,7 @@ The store will ask you to explain each permission. Use these:
 |---|---|
 | `storage` | Saves user settings and daily send count locally on the user's device. No data leaves the device. |
 | `activeTab` | Detects when the user is in a Gmail or Outlook compose window so the preview and tips can be shown in context. |
-| `notifications` | Used to show optional local in-app tips (e.g. first-use guidance). No external notifications are sent. |
-| `alarms` | Used to schedule the daily usage counter reset at local midnight. |
+| `alarms` | Used for the daily usage counter reset at local midnight and a lightweight keepalive so the limit is applied reliably. All alarm data stays on the device. |
 | Host access (Gmail, Outlook) | Required to inject the mobile preview panel and subject counter into the Gmail and Outlook compose UI. No email content is read, stored, or transmitted. |
 
 ---

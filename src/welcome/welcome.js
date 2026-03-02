@@ -1,6 +1,6 @@
 /**
  * VeloMail Welcome Page - Interactive Onboarding
- * Apple iOS-inspired onboarding for mobile email optimizer
+ * Desktop-first onboarding for the Chrome extension
  */
 
 // Import theme system
@@ -14,6 +14,7 @@ let themeCleanup = null;
 const nextBtn = document.getElementById('nextBtn');
 const doneBtn = document.getElementById('doneBtn');
 const skipBtn = document.getElementById('skipBtn');
+const stepCurrent = document.getElementById('stepCurrent');
 const slides = document.querySelectorAll('.slide');
 const dots = document.querySelectorAll('.dot');
 const quickStartBackdrop = document.getElementById('quickStartBackdrop');
@@ -104,10 +105,15 @@ function showSlide(slideNumber) {
   // Update buttons
   if (slideNumber === totalSlides) {
     nextBtn.style.display = 'none';
-    doneBtn.style.display = 'block';
+    doneBtn.style.display = 'inline-flex';
   } else {
-    nextBtn.style.display = 'block';
+    nextBtn.style.display = 'inline-flex';
     doneBtn.style.display = 'none';
+  }
+
+  // Update step indicator
+  if (stepCurrent) {
+    stepCurrent.textContent = slideNumber;
   }
 
   console.log(`Showing slide ${slideNumber}`);
@@ -261,8 +267,8 @@ document.addEventListener('keydown', (e) => {
 
 console.log('✅ Welcome page ready - Use arrow keys or click buttons');
 
-// Cleanup theme watcher on page unload
-window.addEventListener('beforeunload', () => {
+// Cleanup theme watcher on page unload (pagehide is the non-deprecated replacement)
+window.addEventListener('pagehide', () => {
   if (themeCleanup) {
     themeCleanup();
   }

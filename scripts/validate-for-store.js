@@ -10,6 +10,7 @@ const path = require('path');
 
 const root = path.join(__dirname, '..');
 const errors = [];
+const warnings = [];
 
 // 1. manifest.json exists and is valid JSON
 const manifestPath = path.join(root, 'manifest.json');
@@ -40,6 +41,55 @@ if (!fs.existsSync(manifestPath)) {
       const full = path.join(root, rel);
       if (!fs.existsSync(full)) {
         errors.push('Missing icon: ' + rel);
+      }
+    }
+
+    // Lightweight permission sanity check – warn (non-fatal) if a permission
+    // appears unused in code so we don't ship future unused permissions.
+    const permissionPatterns = {
+      storage: /chrome\.storage\./,
+      alarms: /chrome\.alarms\./,
+      webNavigation: /chrome\.webNavigation\./,
+      tabs: /chrome\.tabs\./,
+      sidePanel: /chrome\.sidePanel\./
+    };
+    const permissionUsage = {};
+    if (Array.isArray(manifest.permissions)) {
+      for (const perm of manifest.permissions) {
+        if (permissionPatterns[perm]) {
+          permissionUsage[perm] = false;
+        }
+      }
+    }
+
+    const srcDir = path.join(root, 'src');
+    function walkDirForPermissions(dir) {
+      if (!fs.existsSync(dir)) return;
+      for (const name of fs.readdirSync(dir)) {
+        const full = path.join(dir, name);
+        const stat = fs.statSync(full);
+        if (stat.isDirectory()) {
+          walkDirForPermissions(full);
+        } else if (path.extname(full) === '.js') {
+          const content = fs.readFileSync(full, 'utf8');
+          for (const [perm, regex] of Object.entries(permissionPatterns)) {
+            if (permissionUsage.hasOwnProperty(perm) && !permissionUsage[perm] && regex.test(content)) {
+              permissionUsage[perm] = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (Object.keys(permissionUsage).length > 0) {
+      walkDirForPermissions(srcDir);
+      for (const [perm, used] of Object.entries(permissionUsage)) {
+        if (!used) {
+          warnings.push(
+            `Permission "${perm}" is declared in manifest.json but no matching chrome.${perm} usage was found in src/. ` +
+              'Double-check that this permission is still required.',
+          );
+        }
       }
     }
   }

@@ -24,20 +24,33 @@
     return;
   }
 
-  chrome.runtime.sendMessage(
-    { type: 'VERIFY_AND_UNLOCK', sessionId },
-    (response) => {
-      if (chrome.runtime.lastError) {
-        setStatus('Extension not found. Install VeloMail from the Chrome Web Store, then visit this page again after purchasing.', 'error');
-        return;
+  try {
+    chrome.runtime.sendMessage(
+      { type: 'VERIFY_AND_UNLOCK', sessionId },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          const msg = chrome.runtime.lastError.message || '';
+          if (msg.includes('Extension context invalidated')) {
+            setStatus('Extension was reloaded. Please refresh this page and try again.', 'error');
+            return;
+          }
+          setStatus('Extension not found. Install VeloMail from the Chrome Web Store, then visit this page again after purchasing.', 'error');
+          return;
+        }
+        if (response && response.success) {
+          setStatus('✓ Unlocked! Your extension now has Lifetime access. You can close this tab.', 'unlocked');
+        } else if (response && response.error) {
+          setStatus(response.error, 'error');
+        } else {
+          setStatus('Verification did not complete. You can try refreshing this page, or contact support with your receipt.', 'error');
+        }
       }
-      if (response && response.success) {
-        setStatus('✓ Unlocked! Your extension now has Lifetime access. You can close this tab.', 'unlocked');
-      } else if (response && response.error) {
-        setStatus(response.error, 'error');
-      } else {
-        setStatus('Verification did not complete. You can try refreshing this page, or contact support with your receipt.', 'error');
-      }
+    );
+  } catch (e) {
+    if (e && String(e.message || '').includes('Extension context invalidated')) {
+      setStatus('Extension was reloaded. Please refresh this page and try again.', 'error');
+    } else {
+      setStatus('Could not reach the extension. Please ensure VeloMail is installed and try again.', 'error');
     }
-  );
+  }
 })();

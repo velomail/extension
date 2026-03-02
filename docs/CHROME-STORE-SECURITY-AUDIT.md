@@ -16,7 +16,7 @@ Audit date: Feb 22, 2026. Covers Manifest V3 review risk, remote-code policy, an
 
 **Verdict:** Your permissions are **low risk**. You use:
 
-- `storage`, `activeTab`, `notifications`, `alarms` (no special justification needed for typical use).
+- `storage`, `activeTab`, `alarms` (no special justification needed for typical use).
 - `host_permissions`: `https://mail.google.com/*`, `https://outlook.live.com/*`, `https://outlook.office365.com/*`, `https://outlook.office.com/*` – all narrowly scoped to mail UIs where the extension runs.
 
 No `webRequest`, `debugger`, or `<all_urls>` – this helps avoid long manual review.
@@ -90,7 +90,7 @@ Copy this into the “Justification for Permissions” (or equivalent) field in 
 
 **Justification for Permissions**
 
-VeloMail needs **storage** to remember the user’s daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **notifications** and **alarms** are used for daily limit reset. **webNavigation** and **tabs** are used to detect the compose frame and show the correct state in the extension popup. No email content or personal data is sent to external servers; the user is only taken to the purchase/landing page when they explicitly click Upgrade.
+VeloMail needs **storage** to remember the user’s daily preview count (5 free sends per day, resets at midnight), settings, and onboarding state. **activeTab** is used so the extension can run only when the user is on Gmail or Outlook. **Host access** to `mail.google.com` and Outlook URLs is required to inject the mobile preview UI and read compose content only on those tabs. **alarms** are used for the daily usage reset and a lightweight keepalive so the service worker can reliably enforce the limit. **webNavigation** and **tabs** are used to detect the compose frame and show the correct state in the extension popup. No email content or personal data is sent to external servers; the user is only taken to the purchase/landing page when they explicitly click Upgrade.
 
 ---
 

@@ -260,7 +260,7 @@
         <h2>Data we store</h2>
         <p>VeloMail stores the following data <strong>only on your device</strong> using the browser's local storage (<code>chrome.storage.local</code>):</p>
         <ul>
-          <li><strong>Settings:</strong> Your preferences (e.g. tip notifications on or off).</li>
+          <li><strong>Settings:</strong> Your preferences (e.g. auto-show preview on or off).</li>
           <li><strong>Onboarding state:</strong> Whether you have completed the welcome flow so we do not show it again.</li>
           <li><strong>Usage counter:</strong> A local count of emails sent through the extension each day, used only to enforce the free tier daily limit (5 sends per day) and to show your usage in the popup. It resets at local midnight each day.</li>
         </ul>
@@ -287,7 +287,7 @@
         <ul>
           <li><strong>Storage:</strong> To save your settings and daily usage counter locally on your device.</li>
           <li><strong>Active tab:</strong> To know when you are composing mail so we can show the preview and tips in context.</li>
-          <li><strong>Notifications / Alarms:</strong> To optionally show in-app tips (e.g. reminder to try the preview). These are local only and never sent to a server.</li>
+          <li><strong>Alarms:</strong> To reset the free daily usage counter at local midnight and keep the limit accurate. Alarm data stays on your device.</li>
           <li><strong>Host access (Gmail, Outlook):</strong> So the extension can run on mail.google.com and outlook.live.com / office.com to display the mobile preview and run the in-page UI. We do not read or send your email content to any third party.</li>
         </ul>
       </section>

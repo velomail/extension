@@ -9,6 +9,13 @@ const DEBUG = false; // Set to true for development logging
 const PERFORMANCE_MONITORING = true; // Track performance metrics
 const LANDING_BASE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
 
+/** Set when extension is reloaded/disabled; prevents further chrome API calls */
+let extensionContextInvalidated = false;
+
+function isContextInvalidatedError(err) {
+  return err && String(err.message || '').includes('Extension context invalidated');
+}
+
 // ==================== SETTINGS MANAGEMENT ====================
 /**
  * Load settings from chrome storage
@@ -25,6 +32,11 @@ async function loadSettings() {
     log('Settings loaded:', settings);
     return settings;
   } catch (error) {
+    if (isContextInvalidatedError(error)) {
+      extensionContextInvalidated = true;
+      if (typeof removePreview === 'function') removePreview();
+      return { autoShow: true };
+    }
     logError('SETTINGS_LOAD_FAILED', error.message);
     return { autoShow: true };
   }
@@ -48,8 +60,12 @@ async function checkLimit() {
     
     return response;
   } catch (error) {
+    if (isContextInvalidatedError(error)) {
+      extensionContextInvalidated = true;
+      if (typeof removePreview === 'function') removePreview();
+      return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
+    }
     logError('CHECK_LIMIT_FAILED', error.message);
-    // Fail open - allow preview but log error
     return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
   }
 }
@@ -71,6 +87,11 @@ async function trackPreview() {
     
     return response;
   } catch (error) {
+    if (isContextInvalidatedError(error)) {
+      extensionContextInvalidated = true;
+      if (typeof removePreview === 'function') removePreview();
+      return { previews: 1, limit: 5 };
+    }
     logError('TRACK_PREVIEW_FAILED', error.message);
     return { previews: 1, limit: 5 };
   }
@@ -111,15 +132,14 @@ function logError(code, message, context = {}) {
   }
   
   // Send to service worker for potential analytics
+  if (extensionContextInvalidated) return;
   try {
     chrome.runtime.sendMessage({
       type: 'ERROR_LOGGED',
       error
-    }).catch(() => {
-      // Service worker may not be available, fail silently
-    });
+    }).catch(() => {});
   } catch (e) {
-    // Ignore messaging errors
+    if (isContextInvalidatedError(e)) extensionContextInvalidated = true;
   }
 }
 
@@ -530,6 +550,7 @@ const GMAIL_SELECTORS = {
  * Initialize the content script
  */
 async function initialize() {
+  if (extensionContextInvalidated) return;
   console.log('🚀 Initializing VeloMail');
   
   // Wait for Gmail to fully load
@@ -543,6 +564,16 @@ async function initialize() {
   
   // Load settings from storage
   await loadSettings();
+  
+  // Listen for isPaid changes (e.g. after purchase on success page)
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (extensionContextInvalidated) return;
+    if (area === 'sync' && changes.isPaid) {
+      updatePreviewPremiumBadge().catch((e) => {
+        if (isContextInvalidatedError(e)) extensionContextInvalidated = true;
+      });
+    }
+  });
   
   // Check if we should show first compose guide
   checkAndShowOnboarding();
@@ -1021,6 +1052,7 @@ async function showUpgradeModal(limitCheck) {
  * @param {HTMLElement} composeWindow - The detected compose window element
  */
 async function createPreviewUI(composeWindow) {
+  if (extensionContextInvalidated) return;
   // Check both JS variable AND actual DOM element
   const existingOverlay = document.getElementById('velomail-overlay');
   
@@ -1126,8 +1158,31 @@ async function createPreviewUI(composeWindow) {
     applyAtLimitUI(limitCheck);
   }
   
+  // ==================== PREMIUM BADGE ====================
+  updatePreviewPremiumBadge();
+  
   // ==================== ONBOARDING: FIRST PREVIEW MILESTONE ====================
   checkFirstPreviewMilestone();
+}
+
+/**
+ * Show or hide the Premium badge in the preview based on isPaid status
+ */
+async function updatePreviewPremiumBadge() {
+  if (!shadowRoot) return;
+  try {
+    const { isPaid } = await chrome.storage.sync.get(['isPaid']);
+    const badge = shadowRoot.getElementById('previewPremiumBadge');
+    if (badge) {
+      if (isPaid === true) {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+  } catch (e) {
+    console.warn('VeloMail: Could not update premium badge', e);
+  }
 }
 
 /**
@@ -1244,6 +1299,7 @@ function getOverlayHTML() {
         <!-- Preview toggles (dark mode simulation) - locked when at limit -->
         <div class="preview-toggles">
           <button type="button" class="toggle-btn" id="darkSimToggle" data-dark-toggle title="Simulate device dark mode">Dark</button>
+          <span class="preview-premium-badge hidden" id="previewPremiumBadge" title="Lifetime member">Premium</span>
         </div>
         
         <!-- iPhone Frame -->
@@ -1807,6 +1863,22 @@ function getOverlayStyles() {
       backdrop-filter: blur(12px) saturate(180%);
       -webkit-backdrop-filter: blur(12px) saturate(180%);
     }
+    
+    .preview-premium-badge {
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fff;
+      background: rgba(52, 199, 89, 0.5);
+      border: 0.5px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+    }
+    
+    .preview-premium-badge.hidden { display: none !important; }
     
     /* ============================================================================
        DARK MODE SIMULATION (in-frame only)
@@ -3992,12 +4064,12 @@ function removePreview() {
     performanceMetrics.cacheMisses = 0;
   }
   
-  // Notify service worker that compose closed
-  chrome.runtime.sendMessage({
-    type: 'COMPOSE_CLOSED'
-  }).catch(error => {
-    console.error('❌ Error notifying service worker:', error);
-  });
+  // Notify service worker that compose closed (may throw if extension was reloaded)
+  try {
+    chrome.runtime.sendMessage({ type: 'COMPOSE_CLOSED' }).catch(() => {});
+  } catch (e) {
+    if (!isContextInvalidatedError(e)) console.error('❌ Error notifying service worker:', e);
+  }
   
   // Remove from DOM
   overlayContainer.remove();
@@ -4031,9 +4103,9 @@ function removePreview() {
 }
 
 /**
- * Cleanup on page unload
+ * Cleanup on page unload (pagehide is the non-deprecated replacement for beforeunload/unload)
  */
-window.addEventListener('beforeunload', () => {
+window.addEventListener('pagehide', () => {
   removePreview();
 });
 
