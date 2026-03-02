@@ -333,7 +333,7 @@ function showEmptyState() {
 // USAGE STATS
 // ============================================================================
 
-const UPGRADE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
+const UPGRADE_URL = 'https://velomail.vercel.app/landing/#pricing';
 
 async function updateUsageStats() {
   try {

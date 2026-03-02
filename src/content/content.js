@@ -7,7 +7,7 @@
 // ==================== CONFIGURATION ====================
 const DEBUG = false; // Set to true for development logging
 const PERFORMANCE_MONITORING = true; // Track performance metrics
-const LANDING_BASE_URL = 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02';
+const LANDING_BASE_URL = 'https://velomail.vercel.app/landing/#pricing';
 
 /** Set when extension is reloaded/disabled; prevents further chrome API calls */
 let extensionContextInvalidated = false;

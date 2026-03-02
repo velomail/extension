@@ -261,7 +261,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'OPEN_UPGRADE_URL':
-      chrome.tabs.create({ url: 'https://buy.stripe.com/7sY3cvbLWgU3fMA0DKbZe02' });
+      chrome.tabs.create({ url: 'https://velomail.vercel.app/landing/#pricing' });
       sendResponse({ success: true });
       break;
 
@@ -272,7 +272,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ success: false, error: 'Invalid session ID.' });
           return;
         }
-        const apiBase = 'https://velomail-api.vercel.app';
+        const apiBase = 'https://velomail.vercel.app';
         try {
           const res = await fetch(`${apiBase}/api/verify-session?session_id=${encodeURIComponent(sessionId)}`);
           const data = res.ok ? await res.json().catch(() => ({})) : {};
