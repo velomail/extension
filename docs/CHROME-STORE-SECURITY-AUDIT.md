@@ -55,7 +55,7 @@ No `webRequest`, `debugger`, or `<all_urls>` – this helps avoid long manual re
 
 ### External URLs in the project
 
-- `https://buy.stripe.com/...` – used for **navigation** (upgrade/purchase) when user clicks Upgrade. OK.
+- `https://velomail.vercel.app/landing/#pricing` – used for **navigation** (upgrade) when user clicks Upgrade; landing page links to Stripe. OK.
 - `https://velomail.github.io/extension` – used in welcome/help for **navigation** (landing, support). OK.
 - `https://mail.google.com` and Outlook URLs – host patterns and links only. OK.
 - Landing page links (Chrome Web Store, Stripe, etc.) – normal links, not script sources. OK.
@@ -75,7 +75,7 @@ No `webRequest`, `debugger`, or `<all_urls>` – this helps avoid long manual re
 
 ### Changes made for store policy
 
-- **Content script (paywall sheet + upgrade modal):** “Upgrade” sends `OPEN_UPGRADE_URL` to the background; the service worker calls `chrome.tabs.create({ url: 'https://buy.stripe.com/...' })`. This avoids popup-blocking and keeps behavior consistent and non-malicious.
+- **Content script (paywall sheet + upgrade modal):** “Upgrade” sends `OPEN_UPGRADE_URL` to the background; the service worker calls `chrome.tabs.create({ url: 'https://velomail.vercel.app/landing/#pricing' })`. This avoids popup-blocking and keeps behavior consistent and non-malicious.
 - **Popup:** Upgrade CTA click is handled in JS: `e.preventDefault()` and `chrome.tabs.create({ url: UPGRADE_URL })` then `window.close()`.
 
 Result: Redirect to the upgrade/purchase page at the daily limit is done via **`chrome.tabs.create`** and does not block the browser UI in a way that looks like malware.

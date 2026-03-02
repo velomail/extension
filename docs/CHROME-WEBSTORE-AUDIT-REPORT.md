@@ -51,7 +51,7 @@
 | `tabs` | ✅ | ✅ | Popup state, upgrade links |
 | `sidePanel` | ✅ | ✅ | `chrome.sidePanel.setPanelBehavior` |
 
-**Host permissions:** Gmail, Outlook, velomail.github.io, velomail.vercel.app, velomail-api.vercel.app — all narrowly scoped.
+**Host permissions:** Gmail, Outlook, velomail.github.io, velomail.vercel.app — all narrowly scoped.
 
 **Note:** `PERMISSIONS-JUSTIFICATION.txt` does not explicitly mention `sidePanel`. Consider adding: *"sidePanel is used to open the extension panel when the user clicks the toolbar icon."*
 
@@ -74,7 +74,7 @@
 |-----------|----------------|
 | **Unlimited usage** | `checkUsageLimit()` returns `allowed: true, remaining: -1, limit: -1` when `isPaid === true` |
 | **Usage tracking bypass** | `EMAIL_SENT` handler skips increment when `isPaid === true` |
-| **Post-purchase unlock** | Success page → `VERIFY_AND_UNLOCK` → API verifies Stripe session → `chrome.storage.sync.set({ isPaid: true })` |
+| **Post-purchase unlock** | Success page → `VERIFY_AND_UNLOCK` → velomail.vercel.app/api/verify-session verifies Stripe → `chrome.storage.sync.set({ isPaid: true })` |
 | **Popup premium UI** | Shows "Premium", "Unlimited", green badge, hides upgrade CTA |
 | **Preview premium badge** | "Premium" pill in preview frame when `isPaid === true` |
 | **Storage listener** | `chrome.storage.onChanged` updates preview badge when `isPaid` changes |

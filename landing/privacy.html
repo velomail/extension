@@ -258,13 +258,14 @@
 
       <section>
         <h2>Data we store</h2>
-        <p>VeloMail stores the following data <strong>only on your device</strong> using the browser's local storage (<code>chrome.storage.local</code>):</p>
+        <p>VeloMail stores the following data using the browser's storage (<code>chrome.storage</code>):</p>
         <ul>
-          <li><strong>Settings:</strong> Your preferences (e.g. auto-show preview on or off).</li>
-          <li><strong>Onboarding state:</strong> Whether you have completed the welcome flow so we do not show it again.</li>
+          <li><strong>Settings:</strong> Your preferences (e.g. auto-show preview on or off). Stored locally on your device.</li>
+          <li><strong>Onboarding state:</strong> Whether you have completed the welcome flow so we do not show it again. Stored locally.</li>
           <li><strong>Usage counter:</strong> A local count of emails sent through the extension each day, used only to enforce the free tier daily limit (5 sends per day) and to show your usage in the popup. It resets at local midnight each day.</li>
+          <li><strong>Premium status:</strong> Whether you have Lifetime access, used to unlock unlimited sends. Stored in synced storage so it follows you across devices. We do not store payment card details.</li>
         </ul>
-        <p>We do <strong>not</strong> collect, send, or upload this data to any server. All of it stays on your computer.</p>
+        <p>We do <strong>not</strong> collect, send, or upload settings, usage, or onboarding data to any server. Premium status is set only after we verify your purchase (see Third-party services).</p>
       </section>
 
       <hr class="divider" />
@@ -285,9 +286,9 @@
       <section>
         <h2>Permissions and why we use them</h2>
         <ul>
-          <li><strong>Storage:</strong> To save your settings and daily usage counter locally on your device.</li>
+          <li><strong>Storage:</strong> To save your settings, daily usage counter, onboarding state, and premium status on your device (synced across your Chrome profile for premium status).</li>
           <li><strong>Active tab:</strong> To know when you are composing mail so we can show the preview and tips in context.</li>
-          <li><strong>Alarms:</strong> To reset the free daily usage counter at local midnight and keep the limit accurate. Alarm data stays on your device.</li>
+          <li><strong>Alarms:</strong> To keep the service worker active so it can enforce the daily usage limit (5 per day, resets at local midnight). Alarm data stays on your device.</li>
           <li><strong>Host access (Gmail, Outlook):</strong> So the extension can run on mail.google.com and outlook.live.com / office.com to display the mobile preview and run the in-page UI. We do not read or send your email content to any third party.</li>
         </ul>
       </section>
@@ -296,7 +297,8 @@
 
       <section>
         <h2>Third-party services</h2>
-        <p>VeloMail does not use any third-party analytics, tracking pixels, or data-collection services. No data is shared with or sold to any third party.</p>
+        <p><strong>Stripe (payments):</strong> When you purchase Lifetime access, payment is processed by Stripe. We do not collect or store your payment card details. After you complete a purchase, our server verifies the transaction with Stripe once to unlock your extension. We send only a one-time checkout session ID for verification; we do not retain it.</p>
+        <p>VeloMail does not use analytics, tracking pixels, or other data-collection services. No data is shared with or sold to any third party.</p>
       </section>
 
       <hr class="divider" />

@@ -34,7 +34,7 @@ Open Gmail or Outlook and start composing. VeloMail activates automatically. A l
 - **Subject line counter** — A color-coded character counter appears inside the Gmail subject field: green (30–50 chars), amber (51–60), red (above 60). Never send a subject that gets cut off again.
 - **Works where you write** — Gmail (mail.google.com) and Outlook Web (outlook.live.com, outlook.office.com, outlook.office365.com).
 - **Zero setup** — Install once. VeloMail activates the moment you open a compose window.
-- **Private by design** — All data is stored locally on your device using chrome.storage.local. No email content, no personal data, and nothing is ever transmitted to a server.
+- **Private by design** — All data is stored locally (or in Chrome sync for premium status). No email content, no personal data, and nothing is ever transmitted to a server except a one-time purchase verification.
 
 **Free plan:** 5 sends per day. Resets at midnight (your local time). No credit card required.
 **Lifetime plan:** $49 one-time. Unlimited sends, Android preview, and priority support.
