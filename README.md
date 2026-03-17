@@ -30,7 +30,7 @@ Real-time mobile preview for Gmail and Outlook. See how your emails look on iPho
 
 ### Freemium Limits
 - **Free**: 5 sends/day (resets at midnight)
-- **Lifetime**: $49 one-time, unlimited sends (see landing/upgrade)
+- **Lifetime**: $29 one-time, unlimited sends (see landing/upgrade)
 
 ## Project structure
 

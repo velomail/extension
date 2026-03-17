@@ -7,10 +7,10 @@ Use this when filling out the [Chrome Web Store Developer Dashboard](https://chr
 ## Short description (max 132 characters)
 
 ```
-See your email on a live mobile preview before you send. Pre-flight tips catch every issue in real time.
+67% of cold emails open on mobile. See yours on a live phone preview before you send — Gmail & Outlook.
 ```
 
-(Current length: ~103 characters.)
+(Current length: ~95 characters.)
 
 ---
 
@@ -20,24 +20,17 @@ Paste this into the "Detailed description" field on the store listing:
 
 ---
 
-**VeloMail — Mobile Preview & Pre-flight Tips for Gmail and Outlook**
-
-67% of sales emails are opened on a phone. VeloMail shows you exactly what your prospect sees — and flags every issue — before you hit send.
-
-**How it works:**
-Open Gmail or Outlook and start composing. VeloMail activates automatically. A live phone frame appears beside your draft and updates in real time as you type. When you're ready to send, three pre-flight tips confirm your email is optimized for mobile.
+67% of sales emails are opened on a phone. Most get deleted in 3 seconds. VeloMail shows you exactly what your prospect sees — and flags every reason they'd skip it — before you hit send. A live phone frame appears beside your Gmail or Outlook draft and updates as you type. Three pre-flight tips (subject length, CTA above fold, tap-friendly links) turn green when your email is mobile-ready. Built for SDRs and AEs who send dozens of cold emails a day.
 
 **Features:**
 
-- **Live mobile preview** — A real phone frame renders your email as you type. No refresh, no delay. Toggle dark mode to see how it looks for the 80%+ of users who have it on.
-- **Pre-flight tips** — Three weighted checks run before every send: subject length, CTA above the fold, and tap-friendly link spacing. Each turns green when your email passes.
-- **Subject line counter** — A color-coded character counter appears inside the Gmail subject field: green (30–50 chars), amber (51–60), red (above 60). Never send a subject that gets cut off again.
-- **Works where you write** — Gmail (mail.google.com) and Outlook Web (outlook.live.com, outlook.office.com, outlook.office365.com).
-- **Zero setup** — Install once. VeloMail activates the moment you open a compose window.
-- **Private by design** — All data is stored locally (or in Chrome sync for premium status). No email content, no personal data, and nothing is ever transmitted to a server except a one-time purchase verification.
+- **Live mobile preview** — Real phone frame, updates as you type. Toggle dark mode (80%+ of users have it on).
+- **Pre-flight tips** — Subject length, CTA above fold, link tap spacing. Green = ready to send.
+- **Subject counter** — Color-coded in Gmail: green (30–50 chars), amber (51–60), red (60+). Never get cut off.
+- **Zero setup** — Activates in Gmail and Outlook Web. No new tabs, no learning curve.
+- **Private** — All data local. No email content transmitted.
 
-**Free plan:** 5 sends per day. Resets at midnight (your local time). No credit card required.
-**Lifetime plan:** $49 one-time. Unlimited sends, Android preview, and priority support.
+**Pricing:** Free: 5 sends/day (resets at midnight). Lifetime: $29 one-time, unlimited sends.
 
 ---
 
@@ -47,9 +40,9 @@ Open Gmail or Outlook and start composing. VeloMail activates automatically. A l
 
 ---
 
-## Tags / keywords
+## SEO keywords (no separate field)
 
-sales email, email preview, mobile email, Gmail extension, Outlook extension, cold email, email optimization, sales productivity
+The Chrome Web Store dashboard has no Tags/Keywords field. These terms are already woven into the short and detailed descriptions above. For reference, the main search terms we target: sales email, cold email, mobile email preview, Gmail extension, Outlook extension, email optimization, sales productivity, outbound sales, SDR tools.
 
 ---
 

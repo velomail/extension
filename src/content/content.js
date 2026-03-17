@@ -780,15 +780,15 @@ function getResetsOnDate() {
 }
 
 /**
- * Build upgrade message for modal/sheet (daily limit + $49 Lifetime).
+ * Build upgrade message for modal/sheet (daily limit + $29 Lifetime).
  * @param {Object} limitCheck - Result from checkLimit()
  * @returns {Promise<{title: string, message: string, cta: string, urgency: string, dismissible: boolean}>}
  */
 async function getUpgradeMessage(limitCheck) {
   return {
     title: "You've hit your daily limit",
-    message: 'You get 5 free sends per day. Get Lifetime Access ($49 one-time) for unlimited sends and never wait for a reset again.',
-    cta: 'Get Lifetime Access — $49',
+    message: 'You get 5 free sends per day. Get Lifetime Access ($29 one-time) for unlimited sends and never wait for a reset again.',
+    cta: 'Get Lifetime Access — $29',
     urgency: 'high',
     dismissible: true
   };
@@ -816,7 +816,7 @@ async function applyAtLimitUI(limitCheck) {
   if (usageEl) usageEl.textContent = '5 / 5 sends used today';
   if (headlineEl) headlineEl.textContent = "You've hit your daily limit";
   if (copyEl) copyEl.textContent = 'Upgrade to Lifetime for unlimited sends and never wait for a reset again.';
-  if (upgradeBtn) upgradeBtn.textContent = 'Get Lifetime Access — $49';
+  if (upgradeBtn) upgradeBtn.textContent = 'Get Lifetime Access — $29';
   if (sheet) {
     sheet.classList.add('visible');
     sheet.setAttribute('aria-hidden', 'false');
@@ -965,7 +965,7 @@ async function showUpgradeModal(limitCheck) {
         <!-- Pricing -->
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
           <div style="font-size: 32px; font-weight: 700; color: #1a1a1a; line-height: 1;">
-            $49 <span style="font-size: 16px; font-weight: 400; color: #6b7280;">one-time</span>
+            $29 <span style="font-size: 16px; font-weight: 400; color: #6b7280;">one-time</span>
           </div>
           <div style="font-size: 14px; color: #6b7280; margin-top: 4px;">
             Never wait for a daily reset again
@@ -1386,7 +1386,7 @@ function getOverlayHTML() {
           <p class="paywall-sheet-usage" id="paywallUsageCount"></p>
           <p class="paywall-sheet-reset" id="paywallResetsDate">Resets at midnight.</p>
           <div class="paywall-sheet-actions">
-            <button type="button" class="paywall-btn-primary" id="paywallUpgradeBtn">Get Lifetime Access — $49</button>
+            <button type="button" class="paywall-btn-primary" id="paywallUpgradeBtn">Get Lifetime Access — $29</button>
             <button type="button" class="paywall-btn-secondary" id="paywallWaitBtn">Wait for Reset</button>
           </div>
         </div>
@@ -2749,7 +2749,7 @@ function showNearLimitBanner(remaining, limit) {
     const container = shadowRoot.getElementById('previewContainer');
     if (container) container.insertBefore(banner, container.firstChild);
   }
-  banner.textContent = `${remaining} send${remaining === 1 ? '' : 's'} left today — Get Lifetime ($49) for unlimited`;
+  banner.textContent = `${remaining} send${remaining === 1 ? '' : 's'} left today — Get Lifetime ($29) for unlimited`;
 }
 
 /**

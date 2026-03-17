@@ -51,7 +51,7 @@ async function main() {
   }
 
   // Prefer the one matching our known URL slug
-  const knownSlug = '7sY3cvbLWgU3fMA0DKbZe02';
+  const knownSlug = '5kQ00j17i7jt9oc5Y4bZe04';
   let target = links.data.find((l) => l.url && l.url.includes(knownSlug));
   if (!target) target = links.data[0];
 

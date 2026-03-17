@@ -28,7 +28,7 @@
     <main class="onboarding-main">
       <!-- Slide 1 -->
       <div class="slide active" data-slide="1">
-        <div class="slide-inner">
+        <div class="slide-content">
           <div class="slide-visual">
             <div class="phone-frame">
               <div class="phone-dark-pill">Dark</div>
@@ -51,8 +51,7 @@
                   <div class="phone-row phone-from-row"><span class="phone-label">From</span><div class="phone-from-details"><span class="phone-from-name">You</span><span class="phone-from-email">your@email.com</span></div></div>
                   <div class="phone-row phone-subject-row"><span class="phone-label">Subject</span><span class="phone-subject-text">See your email on mobile</span><span class="phone-char-count">24 chars</span></div>
                   <div class="phone-body">
-                    <p>You're writing on the desktop. They're reading on a phone.</p>
-                    <p>VeloMail shows you exactly what they see — live, as you type. One click: <a href="https://chromewebstore.google.com/detail/velomail/gifcnmheckieogmpnohkhajjhnelmico" target="_blank" rel="noopener">Add to Chrome</a>. No setup.</p>
+                    <p>Your email preview appears here — live, as you type in Gmail or Outlook.</p>
                   </div>
                 </div>
                 <div class="phone-home-bar"></div>
@@ -69,26 +68,32 @@
 
       <!-- Slide 2 -->
       <div class="slide" data-slide="2">
-        <div class="slide-inner slide-inner-tight">
+        <div class="slide-content">
           <div class="slide-visual">
             <div class="checks">
               <div class="check check-pass">
-                <span class="check-icon">✓</span>
-                <div>
+                <span class="check-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </span>
+                <div class="check-text">
                   <strong>Subject Hook</strong>
                   <span>First 30 chars visible</span>
                 </div>
               </div>
               <div class="check check-pass">
-                <span class="check-icon">✓</span>
-                <div>
+                <span class="check-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </span>
+                <div class="check-text">
                   <strong>CTA Above Fold</strong>
                   <span>No scrolling needed</span>
                 </div>
               </div>
               <div class="check check-fail">
-                <span class="check-icon">✕</span>
-                <div>
+                <span class="check-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </span>
+                <div class="check-text">
                   <strong>Tap-Friendly Links</strong>
                   <span>Links too close together</span>
                 </div>
@@ -105,7 +110,7 @@
 
       <!-- Slide 3 -->
       <div class="slide" data-slide="3">
-        <div class="slide-inner slide-inner-tight">
+        <div class="slide-content">
           <div class="slide-visual">
             <div class="realtime-preview">
               <div class="typing-hint">
@@ -127,8 +132,7 @@
                     <div class="phone-row phone-from-row"><span class="phone-label">From</span><div class="phone-from-details"><span class="phone-from-name">You</span><span class="phone-from-email">your@email.com</span></div></div>
                     <div class="phone-row phone-subject-row-sm"><span class="phone-label">Subject</span><span>See your email on mobile</span><span class="phone-char-count-sm">24 chars</span></div>
                     <div class="phone-body phone-body-sm">
-                      <p>You're writing on the desktop. They're reading on a phone.</p>
-                      <p>VeloMail shows you what they see — live. One click: <a href="https://chromewebstore.google.com/detail/velomail/gifcnmheckieogmpnohkhajjhnelmico" target="_blank" rel="noopener">Add to Chrome</a>. No setup.</p>
+                      <p>Your email preview updates live as you type.</p>
                     </div>
                   </div>
                   <div class="phone-home-bar phone-home-bar-sm"></div>
@@ -144,34 +148,68 @@
         </div>
       </div>
 
-      <!-- Slide 4 -->
+      <!-- Slide 4 — same layout: visual left, copy right -->
       <div class="slide" data-slide="4">
-        <div class="slide-inner slide-inner-center">
-          <div class="ready-state">
+        <div class="slide-content">
+          <div class="slide-visual slide-visual-ready">
             <div class="ready-badge">
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 6L9 17l-5-5"/>
               </svg>
             </div>
+          </div>
+          <div class="slide-copy slide-copy-ready">
+            <span class="slide-label">You're all set</span>
             <h2>You're ready to ship</h2>
-            <p>Open Gmail and start composing. VeloMail appears the moment you write — no setup needed.</p>
-            <button class="btn-primary btn-large" id="openGmailBtn">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 6L10 11L18 6M2 6V14C2 14.53 2.21 15.04 2.59 15.41 2.96 15.79 3.47 16 4 16h12c.53 0 1.04-.21 1.41-.59.38-.37.59-.88.59-1.41V6"/>
-              </svg>
-              Open Gmail
-            </button>
-            <div class="features-row">
-              <div class="feature-pill">Phone preview</div>
-              <div class="feature-pill">Real-time sync</div>
-              <div class="feature-pill">Mobile checks</div>
-              <div class="feature-pill">Collapsible</div>
+            <p>Open Gmail or Outlook and start composing. VeloMail appears the moment you write — no setup needed.</p>
+            <div class="cta-group">
+              <button class="btn-primary btn-large" id="openGmailBtn">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 6L10 11L18 6M2 6V14C2 14.53 2.21 15.04 2.59 15.41 2.96 15.79 3.47 16 4 16h12c.53 0 1.04-.21 1.41-.59.38-.37.59-.88.59-1.41V6"/>
+                </svg>
+                Open Gmail
+              </button>
+              <button class="btn-secondary btn-large" id="openOutlookBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                Open Outlook
+              </button>
+            </div>
+            <div class="features-grid">
+              <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18v-4"/></svg>
+                </span>
+                <span>Phone preview</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </span>
+                <span>Real-time sync</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                </span>
+                <span>Mobile checks</span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+                </span>
+                <span>Collapsible</span>
+              </div>
             </div>
             <p class="help-link">Need help? <a href="https://velomail.vercel.app/landing/" target="_blank" rel="noopener" id="helpLink">Quick start guide</a></p>
           </div>
         </div>
       </div>
     </main>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
 
     <!-- Footer -->
     <footer class="onboarding-footer">

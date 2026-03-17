@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "VeloMail",
-  "version": "1.0.1",
-  "description": "Optimize your sales emails for mobile viewing with VeloMail.",
+  "version": "1.0.2",
+  "description": "67% of cold emails open on mobile. See yours on a live phone preview before you send — Gmail & Outlook.",
   "icons": {
     "16": "assets/images/icon16.png",
     "48": "assets/images/icon48.png",

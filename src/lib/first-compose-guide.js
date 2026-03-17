@@ -4,7 +4,7 @@
  */
 
 const DEBUG = false;
-const log = (...args) => { if (DEBUG) log(...args); };
+const log = (...args) => { if (DEBUG) console.log(...args); };
 
 // Prevent duplicate loading
 if (window.VeloMailFirstComposeGuide) {
@@ -47,6 +47,16 @@ function showFirstComposeGuide() {
   guideOverlay.innerHTML = `
     <style>
       #velomail-first-compose-guide {
+        --sky-surge: #5db7de;
+        --sky-dark: #3a9bc4;
+        --text: #0f0f12;
+        --text-muted: #6b6b76;
+        --radius-card: 20px;
+        --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+      }
+
+      #velomail-first-compose-guide {
         position: fixed;
         top: 0;
         left: 0;
@@ -60,36 +70,32 @@ function showFirstComposeGuide() {
         align-items: center;
         justify-content: center;
         animation: fadeIn 0.3s ease-out;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
       }
 
       @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
       .guide-card {
-        background: rgba(255, 255, 255, 0.72);
+        background: rgba(255, 255, 255, 0.92);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         border: 0.5px solid rgba(0, 0, 0, 0.06);
-        border-radius: 20px;
-        padding: 48px;
+        border-radius: var(--radius-card);
+        padding: 40px 48px;
         max-width: 480px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        box-shadow: var(--shadow-card);
         text-align: center;
-        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: slideUp 0.5s var(--ease-spring) both;
         position: relative;
       }
 
       @keyframes slideUp {
         from {
           opacity: 0;
-          transform: translateY(30px);
+          transform: translateY(24px);
         }
         to {
           opacity: 1;
@@ -98,66 +104,81 @@ function showFirstComposeGuide() {
       }
 
       .guide-icon {
-        width: 80px;
-        height: 80px;
+        width: 72px;
+        height: 72px;
         margin: 0 auto 24px;
-        background: #5db7de;
+        background: var(--sky-surge);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 40px;
+        font-size: 36px;
         animation: float 3s ease-in-out infinite;
       }
 
       @keyframes float {
-        0%, 100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-10px);
-        }
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
       }
 
       .guide-card h2 {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: 700;
-        color: #1a1a1a;
-        margin-bottom: 16px;
+        color: var(--text);
+        margin-bottom: 12px;
         letter-spacing: -0.5px;
+        line-height: 1.25;
       }
 
-      .guide-card p {
-        font-size: 17px;
-        color: #6b7280;
+      .guide-card > p {
+        font-size: 16px;
+        color: var(--text-muted);
         line-height: 1.6;
-        margin-bottom: 32px;
-        letter-spacing: -0.3px;
+        margin-bottom: 28px;
+        letter-spacing: -0.2px;
       }
 
       .guide-steps {
         text-align: left;
-        background: #f9f9f9;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 32px;
+        background: rgba(93, 183, 222, 0.06);
+        border: 1px solid rgba(93, 183, 222, 0.15);
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 28px;
       }
 
       .guide-step-item {
         display: flex;
         align-items: flex-start;
         gap: 16px;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
+        animation: stepReveal 0.5s var(--ease-spring) both;
       }
 
       .guide-step-item:last-child {
         margin-bottom: 0;
       }
 
+      .guide-step-item:nth-child(1) { animation-delay: 0.15s; }
+      .guide-step-item:nth-child(2) { animation-delay: 0.22s; }
+      .guide-step-item:nth-child(3) { animation-delay: 0.29s; }
+      .guide-step-item:nth-child(4) { animation-delay: 0.36s; }
+
+      @keyframes stepReveal {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       .step-number {
         width: 32px;
         height: 32px;
-        background: #007aff;
+        background: var(--sky-surge);
         color: white;
         border-radius: 50%;
         display: flex;
@@ -174,15 +195,15 @@ function showFirstComposeGuide() {
 
       .step-title {
         font-weight: 600;
-        color: #1a1a1a;
+        color: var(--text);
         margin-bottom: 4px;
         font-size: 15px;
       }
 
       .step-description {
         font-size: 14px;
-        color: #6b7280;
-        line-height: 1.4;
+        color: var(--text-muted);
+        line-height: 1.45;
       }
 
       .guide-actions {
@@ -192,35 +213,36 @@ function showFirstComposeGuide() {
       }
 
       .guide-btn {
-        padding: 16px 32px;
+        padding: 14px 28px;
         border-radius: 12px;
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 600;
         cursor: pointer;
         border: none;
-        transition: all 0.3s ease;
-        letter-spacing: -0.4px;
+        transition: all 0.25s var(--ease-spring);
+        letter-spacing: -0.3px;
       }
 
       .guide-btn-primary {
-        background: #007aff;
+        background: var(--sky-surge);
         color: white;
-        box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(93, 183, 222, 0.35);
       }
 
       .guide-btn-primary:hover {
-        background: #0051d5;
+        background: var(--sky-dark);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 122, 255, 0.4);
+        box-shadow: 0 6px 16px rgba(93, 183, 222, 0.4);
       }
 
       .guide-btn-secondary {
         background: transparent;
-        color: #6b7280;
+        color: var(--text-muted);
       }
 
       .guide-btn-secondary:hover {
         background: rgba(0, 0, 0, 0.05);
+        color: var(--text);
       }
 
       .compose-arrow {
@@ -232,16 +254,31 @@ function showFirstComposeGuide() {
       }
 
       @keyframes bounce {
-        0%, 100% {
-          transform: translateY(-50%) translateX(0);
-        }
-        50% {
-          transform: translateY(-50%) translateX(-10px);
-        }
+        0%, 100% { transform: translateY(-50%) translateX(0); }
+        50% { transform: translateY(-50%) translateX(-10px); }
       }
 
       .compose-arrow svg {
-        filter: drop-shadow(0 4px 12px rgba(0, 122, 255, 0.4));
+        filter: drop-shadow(0 4px 12px rgba(93, 183, 222, 0.4));
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #velomail-first-compose-guide {
+          --text: #f5f5f7;
+          --text-muted: #a1a1a8;
+        }
+        .guide-card {
+          background: rgba(20, 20, 22, 0.95);
+          border-color: rgba(255, 255, 255, 0.08);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .guide-steps {
+          background: rgba(93, 183, 222, 0.08);
+          border-color: rgba(93, 183, 222, 0.2);
+        }
+        .guide-btn-secondary:hover {
+          background: rgba(255, 255, 255, 0.08);
+        }
       }
     </style>
 
@@ -255,7 +292,7 @@ function showFirstComposeGuide() {
           <div class="step-number">1</div>
           <div class="step-content">
             <div class="step-title">Click "Compose"</div>
-            <div class="step-description">Start a new email in Gmail</div>
+            <div class="step-description">Start a new email in Gmail or Outlook</div>
           </div>
         </div>
         <div class="guide-step-item">

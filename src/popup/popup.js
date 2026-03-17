@@ -410,7 +410,7 @@ async function updateUsageStats() {
     if (upgradeCta) {
       upgradeCta.classList.remove('hidden');
       upgradeCta.href = UPGRADE_URL;
-      upgradeCta.textContent = 'Tired of daily limits? Get Lifetime Access ($49) →';
+      upgradeCta.textContent = 'Tired of daily limits? Get Lifetime Access ($29) →';
     }
   } catch (error) {
     if (isContextInvalidatedError(error)) extensionContextInvalidated = true;
@@ -480,25 +480,29 @@ function setupEventListeners() {
     autoShow.addEventListener('change', saveSettings);
   }
   
-  // Start now: open compose in current Gmail/Outlook tab (or new Gmail tab)
-  const startNowBtn = document.getElementById('startNowBtn');
-  if (startNowBtn) {
-    startNowBtn.addEventListener('click', async (e) => {
+  // Open Gmail
+  const openGmailBtn = document.getElementById('openGmailBtn');
+  if (openGmailBtn) {
+    openGmailBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       try {
-        let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab || !tab.id) {
-          [tab] = await chrome.tabs.query({ active: true });
-        }
-        const composeUrl = getComposeUrlForTab(tab);
-        const isMailTab = tab && tab.url && (tab.url.includes('mail.google.com') || tab.url.includes('outlook'));
-        if (tab && tab.id && isMailTab) {
-          await chrome.tabs.update(tab.id, { url: composeUrl });
-        } else {
-          await chrome.tabs.create({ url: composeUrl });
-        }
+        chrome.tabs.create({ url: 'https://mail.google.com/mail/#compose' });
       } catch (_) {
-        await chrome.tabs.create({ url: 'https://mail.google.com/mail/#compose' });
+        chrome.tabs.create({ url: 'https://mail.google.com/mail/#compose' });
+      }
+      window.close();
+    });
+  }
+
+  // Open Outlook
+  const openOutlookBtn = document.getElementById('openOutlookBtn');
+  if (openOutlookBtn) {
+    openOutlookBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        chrome.tabs.create({ url: 'https://outlook.live.com/mail/0/' });
+      } catch (_) {
+        chrome.tabs.create({ url: 'https://outlook.live.com/mail/0/' });
       }
       window.close();
     });

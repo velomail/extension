@@ -35,7 +35,7 @@ This document describes manual tests for the premium/lifetime functionality. The
    - Usage card: "Free Plan" | "0 / 5"
    - Usage bar visible
    - "Resets at midnight" text
-   - "Tired of daily limits? Get Lifetime Access ($49) →" link visible
+   - "Tired of daily limits? Get Lifetime Access ($29) →" link visible
 
 ---
 

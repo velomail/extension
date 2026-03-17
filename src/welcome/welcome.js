@@ -18,6 +18,7 @@ const nextBtn = document.getElementById('nextBtn');
 const doneBtn = document.getElementById('doneBtn');
 const skipBtn = document.getElementById('skipBtn');
 const stepCurrent = document.getElementById('stepCurrent');
+const progressBar = document.getElementById('progressBar');
 const slides = document.querySelectorAll('.slide');
 const dots = document.querySelectorAll('.dot');
 
@@ -56,7 +57,13 @@ function setupEventListeners() {
   // Open Gmail button
   const openGmailBtn = document.getElementById('openGmailBtn');
   if (openGmailBtn) {
-    openGmailBtn.addEventListener('click', openGmail);
+    openGmailBtn.addEventListener('click', () => openMail('https://mail.google.com'));
+  }
+
+  // Open Outlook button
+  const openOutlookBtn = document.getElementById('openOutlookBtn');
+  if (openOutlookBtn) {
+    openOutlookBtn.addEventListener('click', () => openMail('https://outlook.live.com/mail/0/'));
   }
 
   // Help link — opens landing page in a new tab
@@ -104,6 +111,13 @@ function showSlide(slideNumber) {
   // Update step indicator
   if (stepCurrent) {
     stepCurrent.textContent = slideNumber;
+  }
+
+  // Update progress bar
+  if (progressBar) {
+    const percent = (slideNumber / totalSlides) * 100;
+    progressBar.style.width = `${percent}%`;
+    progressBar.setAttribute('aria-valuenow', Math.round(percent));
   }
 
   log(`Showing slide ${slideNumber}`);
@@ -157,9 +171,9 @@ async function finishOnboarding() {
   }
 }
 
-// Open Gmail in new tab
-async function openGmail() {
-  log('📧 Opening Gmail...');
+// Open Gmail or Outlook in new tab
+async function openMail(url) {
+  log('📧 Opening mail...');
   
   // Complete onboarding first
   await chrome.storage.local.set({ 
@@ -176,10 +190,7 @@ async function openGmail() {
     }
   });
 
-  // Open Gmail
-  chrome.tabs.create({ url: 'https://mail.google.com' });
-  
-  // Close welcome page
+  chrome.tabs.create({ url });
   window.close();
 }
 
