@@ -86,7 +86,7 @@ VeloMail shows you exactly what they see — live, as you type in Gmail or Outlo
 
 One click to add it:
 
-https://chrome.google.com/webstore
+https://chromewebstore.google.com/detail/velomail/gifcnmheckieogmpnohkhajjhnelmico
 
 No setup. It activates the next time you compose.
 ```
@@ -95,10 +95,10 @@ No setup. It activates the next time you compose.
 
 ## Privacy policy URL
 
-After enabling GitHub Pages (see [DEPLOY.md](DEPLOY.md)), your privacy page is at:
+**Canonical domain:** Vercel. Your privacy page is at:
 
 ```
-https://velomail.github.io/extension/landing/privacy.html
+https://velomail.vercel.app/landing/privacy.html
 ```
 
 Paste this URL into **Privacy practices → Privacy policy** in the Developer Dashboard.
@@ -115,12 +115,13 @@ The store will ask you to explain each permission. Use these:
 | `activeTab` | Detects when the user is in a Gmail or Outlook compose window so the preview and tips can be shown in context. |
 | `alarms` | Used for the daily usage counter reset at local midnight and a lightweight keepalive so the limit is applied reliably. All alarm data stays on the device. |
 | Host access (Gmail, Outlook) | Required to inject the mobile preview panel and subject counter into the Gmail and Outlook compose UI. No email content is read, stored, or transmitted. |
+| `sidePanel` | Opens the VeloMail tips panel in Chrome's side panel when the user composes email. No data is collected. |
 
 ---
 
 ## Upgrade / paywall links
 
-In-app upgrade CTAs (paywall sheet in the preview, upgrade modal, and popup "Upgrade" link) all open the extension website/landing page: **https://velomail.github.io/extension**. Set the store listing **Website** field to this URL so users who click "Upgrade" land on your pricing/signup page.
+In-app upgrade CTAs (paywall sheet in the preview, upgrade modal, and popup "Upgrade" link) all open the extension website/landing page: **https://velomail.vercel.app**. Set the store listing **Website** field to this URL so users who click "Upgrade" land on your pricing/signup page.
 
 ---
 

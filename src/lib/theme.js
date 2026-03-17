@@ -10,6 +10,9 @@
  * - Persistent settings
  */
 
+const DEBUG = false;
+const log = (...args) => { if (DEBUG) console.log(...args); };
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -97,7 +100,7 @@ export function applyTheme(isDark, smooth = true) {
     }, 300);
   }
 
-  console.log(`🎨 Theme applied: ${isDark ? 'dark' : 'light'}`);
+  log(`🎨 Theme applied: ${isDark ? 'dark' : 'light'}`);
 }
 
 /**
@@ -126,7 +129,7 @@ export async function saveThemePreference(isDark) {
         darkMode: isDark
       }
     });
-    console.log('✅ Theme preference saved:', isDark ? 'dark' : 'light');
+    log('✅ Theme preference saved:', isDark ? 'dark' : 'light');
   } catch (error) {
     console.error('❌ Error saving theme preference:', error);
   }
@@ -143,7 +146,7 @@ export async function loadThemePreference() {
     // Check both storage keys for backwards compatibility
     const isDark = preference !== undefined ? preference : settings?.darkMode;
     
-    console.log('✅ Theme preference loaded:', isDark !== undefined ? (isDark ? 'dark' : 'light') : 'not set');
+    log('✅ Theme preference loaded:', isDark !== undefined ? (isDark ? 'dark' : 'light') : 'not set');
     return isDark !== undefined ? isDark : null;
   } catch (error) {
     console.error('❌ Error loading theme preference:', error);
@@ -167,7 +170,7 @@ export async function loadThemePreference() {
  * @returns {Promise<Function>} Cleanup function
  */
 export async function initializeTheme({ watchSystem = true, smooth = true } = {}) {
-  console.log('🎨 Initializing theme system...');
+  log('🎨 Initializing theme system...');
 
   // Load saved preference
   let isDark = await loadThemePreference();
@@ -175,7 +178,7 @@ export async function initializeTheme({ watchSystem = true, smooth = true } = {}
   // If no preference saved, use system preference
   if (isDark === null) {
     isDark = getSystemTheme();
-    console.log('💡 No saved preference, using system theme:', isDark ? 'dark' : 'light');
+    log('💡 No saved preference, using system theme:', isDark ? 'dark' : 'light');
     
     // Save the detected system preference
     await saveThemePreference(isDark);
@@ -188,7 +191,7 @@ export async function initializeTheme({ watchSystem = true, smooth = true } = {}
   let cleanup = () => {};
   if (watchSystem) {
     cleanup = watchSystemTheme(async (systemPrefersDark) => {
-      console.log('🔄 System theme changed:', systemPrefersDark ? 'dark' : 'light');
+      log('🔄 System theme changed:', systemPrefersDark ? 'dark' : 'light');
       
       // Load current user preference
       const savedPreference = await loadThemePreference();
@@ -202,7 +205,7 @@ export async function initializeTheme({ watchSystem = true, smooth = true } = {}
     });
   }
 
-  console.log('✅ Theme system initialized');
+  log('✅ Theme system initialized');
   return cleanup;
 }
 

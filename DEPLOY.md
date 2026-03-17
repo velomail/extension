@@ -6,9 +6,9 @@
 - **Icons:** Extension icons must be in `assets/images/` (icon16.png, icon48.png, icon128.png). Run `node scripts/create-store-icons.js` if they are missing.
 - **Eligibility:** Before submitting, complete [docs/PRE-SUBMIT-CHECKLIST.md](docs/PRE-SUBMIT-CHECKLIST.md). Copy the permissions justification from [docs/PERMISSIONS-JUSTIFICATION.txt](docs/PERMISSIONS-JUSTIFICATION.txt) into the Developer Dashboard "Justification for Permissions" field.
 
-## Landing page (GitHub Pages)
+## Landing page
 
-The extension points to **https://velomail.github.io/extension** for upgrade and privacy (GitHub username: `velomail`, repo: `extension`).
+**Canonical domain:** Vercel. The extension points to **https://velomail.vercel.app** for upgrade, privacy, and support. The landing is deployed at `velomail.vercel.app/landing/`.
 
 ### 1. Push the repo to GitHub
 
@@ -37,6 +37,6 @@ With repo root as the site root, the landing is at `/<repo>/landing/` and the ro
 
 ### 4. Before submit — verify URLs work
 
-- Open **Privacy policy:** `https://velomail.github.io/extension/landing/privacy.html` in a browser and confirm it loads.
-- Open **Website (landing):** `https://velomail.github.io/extension` and confirm the landing page loads.
+- Open **Privacy policy:** `https://velomail.vercel.app/landing/privacy.html` in a browser and confirm it loads.
+- Open **Website (landing):** `https://velomail.vercel.app` in a browser and confirm the landing page loads.
 - Enter both URLs in the Chrome Web Store Developer Dashboard (Privacy practices → Privacy policy; Store listing → Website).

@@ -4,7 +4,8 @@
  * Just handles messaging between content script and popup
  */
 
-console.log('🚀 VeloMail Service Worker Started (Simplified)');
+const DEBUG = false;
+const log = (...args) => { if (DEBUG) log(...args); };
 
 // ============================================================================
 // STATE MANAGEMENT
@@ -36,14 +37,14 @@ if (chrome.sidePanel) {
 // ============================================================================
 
 chrome.runtime.onInstalled.addListener(async (details) => {
-  console.log('✅ Extension installed:', details.reason);
+  log('✅ Extension installed:', details.reason);
 
   if (chrome.sidePanel) {
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
   }
 
   if (details.reason === 'install') {
-    console.log('🎉 First time installation!');
+    log('🎉 First time installation!');
     
     await chrome.storage.local.set({
       installDate: new Date().toISOString(),
@@ -56,7 +57,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       }
     });
     
-    console.log('💾 Storage initialized');
+    log('💾 Storage initialized');
     
     // Open welcome page
     chrome.tabs.create({ 
@@ -70,12 +71,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 // ============================================================================
 
 chrome.runtime.onConnect.addListener((port) => {
-  console.log('🔌 Port connected:', port.name);
+  log('🔌 Port connected:', port.name);
   
   if (port.name === 'popup-realtime') {
     // Add to tracking set
     popupPorts.add(port);
-    console.log(`✅ Popup connected. Total: ${popupPorts.size}`);
+    log(`✅ Popup connected. Total: ${popupPorts.size}`);
     
     // Send current state immediately
     try {
@@ -83,7 +84,7 @@ chrome.runtime.onConnect.addListener((port) => {
         type: 'INITIAL_STATE',
         state: currentEmailState
       });
-      console.log('📤 Sent initial state to popup');
+      log('📤 Sent initial state to popup');
     } catch (error) {
       console.error('❌ Failed to send initial state:', error);
     }
@@ -91,13 +92,13 @@ chrome.runtime.onConnect.addListener((port) => {
     // Handle disconnect
     port.onDisconnect.addListener(() => {
       popupPorts.delete(port);
-      console.log(`🔌 Popup disconnected. Remaining: ${popupPorts.size}`);
+      log(`🔌 Popup disconnected. Remaining: ${popupPorts.size}`);
     });
     
     // Handle health pings from popup
     port.onMessage.addListener((message) => {
       if (message.type === 'HEALTH_PONG') {
-        console.log('💚 Health pong received');
+        log('💚 Health pong received');
       }
     });
   }
@@ -230,7 +231,7 @@ function logError(error) {
 // ============================================================================
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('📨 Message:', message.type, 'from:', sender.tab ? `Tab ${sender.tab.id}` : 'Popup');
+  log('📨 Message:', message.type, 'from:', sender.tab ? `Tab ${sender.tab.id}` : 'Popup');
 
   try {
   switch (message.type) {
@@ -278,7 +279,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           const data = res.ok ? await res.json().catch(() => ({})) : {};
           if (res.ok && data.ok === true) {
             await chrome.storage.sync.set({ isPaid: true });
-            console.log('✅ VeloMail: Lifetime unlock applied (isPaid=true)');
+            log('✅ VeloMail: Lifetime unlock applied (isPaid=true)');
             sendResponse({ success: true });
           } else {
             sendResponse({ success: false, error: data.error || 'Verification failed. Please try again or contact support.' });
@@ -293,7 +294,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // ========== FROM CONTENT SCRIPT ==========
     
     case 'EMAIL_CONTENT_UPDATED':
-      console.log('📧 Email updated:', {
+      log('📧 Email updated:', {
         chars: message.state?.characterCount,
         words: message.state?.wordCount,
         score: message.state?.mobileScore?.score
@@ -332,7 +333,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
       
     case 'COMPOSE_OPENED':
-      console.log('✉️ Compose opened');
+      log('✉️ Compose opened');
       
       currentEmailState.isActive = true;
       currentEmailState.environment = message.environment;
@@ -347,7 +348,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
       
     case 'COMPOSE_CLOSED':
-      console.log('❌ Compose closed');
+      log('❌ Compose closed');
       
       // Full reset so popup shows inactive state (no stale tips)
       currentEmailState = {
@@ -375,7 +376,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
       
     case 'EMAIL_SENT': {
-      console.log('✉️ Email sent! Tracking usage...');
+      log('✉️ Email sent! Tracking usage...');
       chrome.storage.sync.get(['isPaid']).then((sync) => {
         if (sync.isPaid === true) {
           return { usage: { previews: -1, limit: -1 } };
@@ -392,7 +393,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           }));
         });
       }).then(({ usage }) => {
-        console.log(`✅ Email send tracked: ${usage.previews} / ${usage.limit} today`);
+        log(`✅ Email send tracked: ${usage.previews} / ${usage.limit} today`);
         currentEmailState = {
           isActive: false,
           html: '',
@@ -419,7 +420,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
     case 'GET_CURRENT_EMAIL_STATE':
       (async () => {
-        console.log('📤 Popup requesting state');
+        log('📤 Popup requesting state');
         try {
           let [activeTab] = await chrome.tabs.query({
             active: true,
@@ -443,7 +444,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               tabIdsSeen.add(tab.id);
             }
           }
-          console.log('📤 GET_CURRENT_EMAIL_STATE: tabsToTry=', tabsToTry.length);
+          log('📤 GET_CURRENT_EMAIL_STATE: tabsToTry=', tabsToTry.length);
           for (const tab of tabsToTry) {
             if (!tab || !tab.id) continue;
             let frames = await safeGetAllFrames(tab.id);
@@ -452,13 +453,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               frames = await safeGetAllFrames(tab.id);
             }
             const frameList = frames.length > 0 ? frames : [{ frameId: 0 }];
-            console.log('📤 GET_CURRENT_EMAIL_STATE: tabId=', tab.id, 'frames=', frameList.length);
+            log('📤 GET_CURRENT_EMAIL_STATE: tabId=', tab.id, 'frames=', frameList.length);
             for (const frame of frameList) {
               const opts = frame.frameId !== undefined ? { frameId: frame.frameId } : {};
               const fresh = await chrome.tabs.sendMessage(tab.id, { type: 'REQUEST_EMAIL_STATE' }, opts).then(r => r || null).catch(() => null);
               const hasActive = fresh && (fresh.preflightChecks != null || fresh.mobileScore != null || fresh.isActive);
               if (hasActive) {
-                console.log('📤 GET_CURRENT_EMAIL_STATE: got active state from tabId=', tab.id, 'frameId=', frame.frameId);
+                log('📤 GET_CURRENT_EMAIL_STATE: got active state from tabId=', tab.id, 'frameId=', frame.frameId);
                 const state = {
                   isActive: fresh.isActive !== false,
                   html: fresh.html || '',
@@ -479,7 +480,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               }
             }
           }
-          console.log('📤 GET_CURRENT_EMAIL_STATE: no frame returned active state');
+          log('📤 GET_CURRENT_EMAIL_STATE: no frame returned active state');
         } catch (_) {}
         const fallbackState = { ...currentEmailState, isActive: false };
         sendResponse({ success: true, state: fallbackState });
@@ -487,18 +488,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
       
     case 'SETTINGS_UPDATED':
-      console.log('⚙️ Settings updated:', message.settings);
+      log('⚙️ Settings updated:', message.settings);
       
       // Broadcast settings to all content scripts
       chrome.tabs.query({ url: ['*://mail.google.com/*', '*://outlook.live.com/*', '*://outlook.office.com/*'] }, (tabs) => {
-        console.log(`📡 Broadcasting settings to ${tabs.length} Gmail/Outlook tab(s)`);
+        log(`📡 Broadcasting settings to ${tabs.length} Gmail/Outlook tab(s)`);
         tabs.forEach(tab => {
           chrome.tabs.sendMessage(tab.id, {
             type: 'SETTINGS_UPDATED',
             settings: message.settings
           }).catch(error => {
             // Tab may not have content script loaded yet
-            console.log(`⚠️ Could not send to tab ${tab.id}:`, error.message);
+            log(`⚠️ Could not send to tab ${tab.id}:`, error.message);
           });
         });
       });
@@ -507,7 +508,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
       
     case 'MILESTONE_ACHIEVED':
-      console.log('🎉 Milestone achieved:', message.milestoneId);
+      log('🎉 Milestone achieved:', message.milestoneId);
       // Just acknowledge - milestones are tracked in storage by content script
       sendResponse({ success: true });
       break;
@@ -521,7 +522,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
       
     default:
-      console.log('❓ Unknown message:', message.type);
+      log('❓ Unknown message:', message.type);
       sendResponse({ success: false });
   }
   } catch (err) {
@@ -541,11 +542,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  */
 function broadcastToPopups(message) {
   if (popupPorts.size === 0) {
-    console.log('ℹ️ No popups to broadcast to');
+    log('ℹ️ No popups to broadcast to');
     return;
   }
   
-  console.log(`📡 Broadcasting to ${popupPorts.size} popup(s):`, message.type);
+  log(`📡 Broadcasting to ${popupPorts.size} popup(s):`, message.type);
   
   let successCount = 0;
   let failCount = 0;
@@ -561,7 +562,7 @@ function broadcastToPopups(message) {
     }
   });
   
-  console.log(`✅ Broadcast complete: ${successCount} success, ${failCount} failed`);
+  log(`✅ Broadcast complete: ${successCount} success, ${failCount} failed`);
 }
 
 /**
@@ -582,7 +583,7 @@ function updateBadgeWithTrafficLight(light) {
   }
   chrome.action.setBadgeText({ text });
   chrome.action.setBadgeBackgroundColor({ color });
-  console.log('🎯 Badge (traffic light):', light, text, color);
+  log('🎯 Badge (traffic light):', light, text, color);
 }
 
 /**
@@ -609,7 +610,7 @@ function updateBadgeWithScore(scoreData) {
   
   chrome.action.setBadgeBackgroundColor({ color: color });
   
-  console.log('🎯 Badge updated:', score, grade, color);
+  log('🎯 Badge updated:', score, grade, color);
 }
 
 function getGradeFromScore(score) {
@@ -626,7 +627,7 @@ function getGradeFromScore(score) {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   if (currentEmailState.isActive) {
-    console.log('🗑️ Active tab closed');
+    log('🗑️ Active tab closed');
     currentEmailState.isActive = false;
     
     // Clear badge
@@ -643,7 +644,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 // ============================================================================
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log('🌅 Browser started');
+  log('🌅 Browser started');
   
   // Clear badge if no active email
   if (!currentEmailState.isActive) {
@@ -660,5 +661,5 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
-console.log('✅ VeloMail Service Worker Ready (Simplified)');
-console.log('📡 Message Relay: Content Script ↔ Service Worker ↔ Popup');
+log('✅ VeloMail Service Worker Ready (Simplified)');
+log('📡 Message Relay: Content Script ↔ Service Worker ↔ Popup');

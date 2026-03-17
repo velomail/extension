@@ -3,7 +3,8 @@
  * Syncs with service worker for real-time tips
  */
 
-console.log('⚙️ VeloMail Popup Loading...');
+const DEBUG = false;
+const log = (...args) => { if (DEBUG) log(...args); };
 
 // ============================================================================
 // STATE
@@ -22,9 +23,22 @@ function isContextInvalidatedError(err) {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('✅ DOM Ready - VeloMail v1.0.1 - Code Updated Feb 13, 2026');
-  
+  const manifest = chrome.runtime.getManifest();
+  const versionEl = document.getElementById('headerVersion');
+  if (versionEl && manifest?.version) {
+    versionEl.textContent = `v${manifest.version}`;
+  }
+
   try {
+    // Initialize theme (unified with welcome page for cross-device consistency)
+    const { initializeTheme, applyTheme } = await import('../lib/theme.js');
+    await initializeTheme();
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.type === 'THEME_CHANGED' && message.isDark !== undefined) {
+        applyTheme(message.isDark, true);
+      }
+    });
+    
     // Setup event listeners
     setupEventListeners();
     
@@ -40,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load settings
     await loadSettings();
     
-    console.log('✅ Popup Initialized');
+    log('✅ Popup Initialized');
   } catch (error) {
     if (isContextInvalidatedError(error)) extensionContextInvalidated = true;
     else console.error('❌ Init error:', error);
@@ -57,15 +71,15 @@ function connectToServiceWorker() {
     // Create long-lived connection to service worker
     port = chrome.runtime.connect({ name: 'popup-realtime' });
     
-    console.log('🔌 Connected to service worker');
+    log('🔌 Connected to service worker');
     
     // Listen for messages from service worker
     port.onMessage.addListener((message) => {
-      console.log('📨 Message from service worker:', message.type);
+      log('📨 Message from service worker:', message.type);
       
       switch (message.type) {
         case 'INITIAL_STATE':
-          console.log('   ✅ Initial state received');
+          log('   ✅ Initial state received');
           if (message.state) {
             currentState = message.state;
             updateUI(currentState);
@@ -73,7 +87,7 @@ function connectToServiceWorker() {
           break;
           
         case 'EMAIL_CONTENT_UPDATED':
-          console.log('   ✅ Email content updated - score:', message.state?.mobileScore?.score);
+          log('   ✅ Email content updated - score:', message.state?.mobileScore?.score);
           if (message.state) {
             currentState = message.state;
             updateUI(currentState);
@@ -82,25 +96,25 @@ function connectToServiceWorker() {
           break;
           
         case 'COMPOSE_OPENED':
-          console.log('   ✅ Compose opened');
+          log('   ✅ Compose opened');
           updateStatus('Composing', true);
           requestInitialState();
           break;
           
         case 'COMPOSE_CLOSED':
-          console.log('   ✅ Compose closed');
+          log('   ✅ Compose closed');
           requestInitialState();
           break;
           
         case 'EMAIL_SENT':
-          console.log('   ✅ Email sent - refreshing stats');
+          log('   ✅ Email sent - refreshing stats');
           showEmptyState();
           updateStatus('Ready', false);
           updateUsageStats().catch(() => {});
           break;
           
         case 'ACTIVE_TAB_CLOSED':
-          console.log('   ✅ Tab closed');
+          log('   ✅ Tab closed');
           requestInitialState();
           break;
           
@@ -113,19 +127,19 @@ function connectToServiceWorker() {
           break;
           
         default:
-          console.log('   ⚠️ Unknown message type:', message.type);
+          log('   ⚠️ Unknown message type:', message.type);
       }
     });
     
     // Handle disconnect
     port.onDisconnect.addListener(() => {
-      console.log('🔌 Disconnected from service worker');
+      log('🔌 Disconnected from service worker');
       port = null;
       
       // Try to reconnect after a delay (skip if extension was reloaded)
       setTimeout(() => {
         if (extensionContextInvalidated) return;
-        console.log('🔄 Attempting to reconnect...');
+        log('🔄 Attempting to reconnect...');
         connectToServiceWorker();
       }, 1000);
     });
@@ -157,7 +171,7 @@ async function requestInitialState(retryCount = 0) {
       if (isActive) {
         currentState = state;
         updateUI(currentState);
-        console.log('✅ Initial state loaded (composing)');
+        log('✅ Initial state loaded (composing)');
         return;
       }
       currentState = null;
@@ -209,7 +223,7 @@ function updateUI(state) {
 
 function performUIUpdate(state) {
   const isActive = state && state.isActive === true;
-  console.log('🔄 Updating UI:', { isActive, hasState: !!state });
+  log('🔄 Updating UI:', { isActive, hasState: !!state });
 
   if (!state || !isActive) {
     showEmptyState();
@@ -431,7 +445,7 @@ async function saveSettings() {
     };
     
     await chrome.storage.local.set({ settings });
-    console.log('✅ Settings saved:', settings);
+    log('✅ Settings saved:', settings);
     
     // Notify service worker
     chrome.runtime.sendMessage({
@@ -511,4 +525,4 @@ window.addEventListener('pagehide', () => {
   }
 });
 
-console.log('✅ Popup script loaded');
+log('✅ Popup script loaded');

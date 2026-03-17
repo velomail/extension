@@ -3,12 +3,15 @@
  * Interactive overlay to guide users through their first email composition
  */
 
+const DEBUG = false;
+const log = (...args) => { if (DEBUG) log(...args); };
+
 // Prevent duplicate loading
 if (window.VeloMailFirstComposeGuide) {
-  console.log('🎯 First Compose Guide already loaded, skipping...');
+  log('🎯 First Compose Guide already loaded, skipping...');
   // Script already loaded, don't re-execute
 } else {
-  console.log('🎯 First Compose Guide module loading...');
+  log('🎯 First Compose Guide module loading...');
 
 (function() {
   'use strict';
@@ -31,11 +34,11 @@ let isGuideActive = false;
  */
 function showFirstComposeGuide() {
   if (isGuideActive || guideOverlay) {
-    console.log('ℹ️ Guide already active');
+    log('ℹ️ Guide already active');
     return;
   }
 
-  console.log('🎯 Showing first compose guide');
+  log('🎯 Showing first compose guide');
   isGuideActive = true;
 
   // Create overlay container
@@ -297,7 +300,7 @@ function showFirstComposeGuide() {
   // Mark guide as shown
   markGuideShown();
 
-  console.log('✅ First compose guide displayed');
+  log('✅ First compose guide displayed');
 }
 
 /**
@@ -314,7 +317,7 @@ function closeFirstComposeGuide() {
     }
     guideOverlay = null;
     isGuideActive = false;
-    console.log('✅ First compose guide closed');
+    log('✅ First compose guide closed');
   }, 200);
 }
 
@@ -323,7 +326,7 @@ function closeFirstComposeGuide() {
  * @param {Object} scoreData - Email state with suggestions (tips)
  */
 function showFirstPreviewCelebration(scoreData) {
-  console.log('🎉 Showing first preview celebration');
+  log('🎉 Showing first preview celebration');
 
   const celebrationOverlay = document.createElement('div');
   celebrationOverlay.id = 'velomail-first-preview-celebration';
@@ -493,7 +496,7 @@ function showFirstPreviewCelebration(scoreData) {
  * Show celebration for applying tips well
  */
 function showGoodScoreCelebration() {
-  console.log('⭐ Showing good tips celebration');
+  log('⭐ Showing good tips celebration');
 
   const celebrationOverlay = document.createElement('div');
   celebrationOverlay.id = 'velomail-good-score-celebration';
@@ -623,7 +626,7 @@ async function markGuideSkipped() {
     const state = result.onboardingState || {};
     state.guideSkipped = true;
     await chrome.storage.local.set({ onboardingState: state });
-    console.log('⏭️ Guide skipped');
+    log('⏭️ Guide skipped');
   } catch (error) {
     console.error('❌ Failed to mark guide skipped:', error);
   }
@@ -643,4 +646,4 @@ if (typeof window !== 'undefined') {
 
 } // End of duplicate load check
 
-console.log('✅ First Compose Guide ready');
+log('✅ First Compose Guide ready');

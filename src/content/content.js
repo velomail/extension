@@ -104,9 +104,10 @@ const MAX_ERROR_LOG_SIZE = 50;
 /**
  * Production-safe logging - only logs in debug mode
  */
+const _rawLog = console.log.bind(console);
 function log(...args) {
   if (DEBUG) {
-    console.log('📱 VeloMail:', ...args);
+    _rawLog('📱 VeloMail:', ...args);
   }
 }
 
@@ -267,7 +268,7 @@ function safeCreateElement(tag, attributes = {}) {
   }
 }
 
-console.log('📱 VeloMail v1.0.1 - Minimalist Preview module loaded - CODE UPDATED FEB 13');
+const VELOMAIL_VERSION = typeof chrome !== 'undefined' && chrome?.runtime?.getManifest?.()?.version || '1.0.1';
 
 // ==================== STATE MANAGEMENT ====================
 let overlayContainer = null;
@@ -510,10 +511,10 @@ function logPerformance(operation, duration) {
     const cacheHitRate = performanceMetrics.cacheHits + performanceMetrics.cacheMisses > 0 ?
       ((performanceMetrics.cacheHits / (performanceMetrics.cacheHits + performanceMetrics.cacheMisses)) * 100).toFixed(1) : 0;
     
-    console.log('📊 VeloMail Performance Summary:');
-    console.log(`   Updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
-    console.log(`   Heavy ops: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
-    console.log(`   Cache hit rate: ${cacheHitRate}%`);
+    log('📊 VeloMail Performance Summary:');
+    log(`   Updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
+    log(`   Heavy ops: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
+    log(`   Cache hit rate: ${cacheHitRate}%`);
   }
 }
 
@@ -551,16 +552,16 @@ const GMAIL_SELECTORS = {
  */
 async function initialize() {
   if (extensionContextInvalidated) return;
-  console.log('🚀 Initializing VeloMail');
+  log('🚀 Initializing VeloMail');
   
   // Wait for Gmail to fully load
   if (!document.querySelector('[role="main"]')) {
-    console.log('⏳ Waiting for Gmail to load...');
+    log('⏳ Waiting for Gmail to load...');
     setTimeout(initialize, 1000);
     return;
   }
   
-  console.log('✅ Gmail loaded, starting compose detection');
+  log('✅ Gmail loaded, starting compose detection');
   
   // Load settings from storage
   await loadSettings();
@@ -598,7 +599,7 @@ async function checkAndShowOnboarding() {
     const guideSkipped = onboardingState.guideSkipped || false;
     
     if (welcomeCompleted && !guideShown && !hasComposedBefore && !guideSkipped) {
-      console.log('🎯 Showing first compose guide');
+      log('🎯 Showing first compose guide');
       
       // Load and show the guide after a short delay
       setTimeout(() => {
@@ -648,7 +649,7 @@ function loadFirstComposeGuide() {
  * Selectors: .AD or div[role="dialog"]
  */
 function watchForComposeWindow() {
-  console.log('👀 Starting MutationObserver for compose detection');
+  log('👀 Starting MutationObserver for compose detection');
   
   const observer = new MutationObserver((mutations) => {
     // Check if compose window exists
@@ -656,10 +657,10 @@ function watchForComposeWindow() {
     
     // Task 2: Attachment and UI Logic (separated)
     if (composeWindow && !isAttachedToCompose) {
-      console.log('✅ Compose box detected - attaching for sync');
+      log('✅ Compose box detected - attaching for sync');
       handleComposeDetected(composeWindow);
     } else if (!composeWindow && isAttachedToCompose) {
-      console.log('❌ Compose box closed - cleaning up');
+      log('❌ Compose box closed - cleaning up');
       removePreview();
     }
   });
@@ -670,15 +671,15 @@ function watchForComposeWindow() {
     subtree: true
   });
   
-  console.log('✅ MutationObserver active');
+  log('✅ MutationObserver active');
   
   // Check if compose is already open on page load
   const existingCompose = findComposeWindow();
   if (existingCompose) {
-    console.log('✅ Found existing compose window on load');
+    log('✅ Found existing compose window on load');
     handleComposeDetected(existingCompose);
   } else {
-    console.log('ℹ️ No compose window open - UI will appear when you click Compose');
+    log('ℹ️ No compose window open - UI will appear when you click Compose');
   }
 }
 
@@ -687,12 +688,12 @@ function watchForComposeWindow() {
  * This ensures sync happens even when autoShow is disabled
  */
 async function handleComposeDetected(composeWindow) {
-  console.log('📧 Handling compose window detection');
-  console.log('   autoShow setting:', settings.autoShow);
+  log('📧 Handling compose window detection');
+  log('   autoShow setting:', settings.autoShow);
   
   // CRITICAL: Set flag immediately to prevent duplicate calls while processing
   if (isAttachedToCompose) {
-    console.log('ℹ️ Already attached to compose - skipping duplicate detection');
+    log('ℹ️ Already attached to compose - skipping duplicate detection');
     return;
   }
   isAttachedToCompose = true; // Set BEFORE async operations to block duplicate calls
@@ -711,16 +712,16 @@ async function handleComposeDetected(composeWindow) {
   
   // Create UI first if autoShow is enabled (so error display works)
   if (settings.autoShow) {
-    console.log('✅ autoShow enabled - creating preview UI');
+    log('✅ autoShow enabled - creating preview UI');
     await createPreviewUI(composeWindow);
   }
   
   // Now attach to compose for syncing
-  console.log('🔗 Attaching to compose window for sync...');
+  log('🔗 Attaching to compose window for sync...');
   const attached = await attachToCompose(composeWindow);
   
   if (attached) {
-    console.log('✅ Successfully attached to compose');
+    log('✅ Successfully attached to compose');
   } else {
     console.error('❌ Failed to attach to compose');
     isAttachedToCompose = false; // Only reset to false if attachment actually failed
@@ -746,7 +747,7 @@ function findComposeWindow() {
     const hasTextbox = dialog.querySelector('[role="textbox"]');
     
     if (hasSubject || hasTextbox) {
-      console.log('✅ Found compose dialog with subject/textbox');
+      log('✅ Found compose dialog with subject/textbox');
       return dialog;
     }
   }
@@ -754,14 +755,14 @@ function findComposeWindow() {
   // Try .AD class (Gmail compose container)
   let composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAD);
   if (composeWindow) {
-    console.log('✅ Found compose with .AD class');
+    log('✅ Found compose with .AD class');
     return composeWindow;
   }
   
   // Try .nH.aHU (alternate Gmail compose selector)
   composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAlt);
   if (composeWindow) {
-    console.log('✅ Found compose with .nH.aHU class');
+    log('✅ Found compose with .nH.aHU class');
     return composeWindow;
   }
   
@@ -1021,14 +1022,14 @@ async function showUpgradeModal(limitCheck) {
   const dismissBtn = document.getElementById('velocmail-dismiss-btn');
   
   upgradeBtn?.addEventListener('click', () => {
-    console.log('💎 Upgrade clicked');
+    log('💎 Upgrade clicked');
     chrome.runtime.sendMessage({ type: 'OPEN_UPGRADE_URL' });
     modal.remove();
   });
   
   if (dismissBtn) {
     dismissBtn.addEventListener('click', () => {
-      console.log('👋 Upgrade dismissed');
+      log('👋 Upgrade dismissed');
       modal.remove();
     });
   }
@@ -1056,7 +1057,7 @@ async function createPreviewUI(composeWindow) {
   // Check both JS variable AND actual DOM element
   const existingOverlay = document.getElementById('velomail-overlay');
   
-  console.log('🔍 DEBUG: createPreviewUI called', {
+  log('🔍 DEBUG: createPreviewUI called', {
     overlayContainer: !!overlayContainer,
     existingOverlay: !!existingOverlay
   });
@@ -1064,16 +1065,16 @@ async function createPreviewUI(composeWindow) {
   if (overlayContainer || existingOverlay) {
     if (existingOverlay && !overlayContainer) {
       // Clean up orphaned overlay from previous session
-      console.log('✅ FIX APPLIED: 🧹 Cleaning orphaned overlay element (preventing duplication)');
+      log('✅ FIX APPLIED: 🧹 Cleaning orphaned overlay element (preventing duplication)');
       existingOverlay.remove();
       // Continue to create new one
     } else {
-      console.log('ℹ️ Preview UI already exists (skipping creation)');
+      log('ℹ️ Preview UI already exists (skipping creation)');
       return;
     }
   }
   
-  console.log('🎨 Creating new preview UI...');
+  log('🎨 Creating new preview UI...');
   
   // ==================== USAGE LIMIT CHECK ====================
   // Check if user has reached their free tier limit
@@ -1088,7 +1089,7 @@ async function createPreviewUI(composeWindow) {
   } else if (limitCheck.isApproachingLimit) {
     console.warn(`⚠️ VeloMail: Approaching limit - ${limitCheck.remaining} previews remaining`);
   } else {
-    console.log('✅ VeloMail: Usage check passed, creating preview...', limitCheck);
+    log('✅ VeloMail: Usage check passed, creating preview...', limitCheck);
   }
   
   log('Creating Phone Preview UI');
@@ -1144,7 +1145,7 @@ async function createPreviewUI(composeWindow) {
       return;
     }
     
-    console.log('✅ VeloMail: Shadow DOM elements verified');
+    log('✅ VeloMail: Shadow DOM elements verified');
     log('Shadow DOM elements verified');
   } catch (error) {
     console.error('❌ VeloMail: Failed to verify shadow DOM:', error);
@@ -1152,7 +1153,7 @@ async function createPreviewUI(composeWindow) {
     return;
   }
   
-  console.log('✅ Preview UI created successfully');
+  log('✅ Preview UI created successfully');
   
   if (!limitCheck.allowed) {
     applyAtLimitUI(limitCheck);
@@ -1197,7 +1198,7 @@ async function checkFirstPreviewMilestone() {
     const hasFirstPreview = milestones.find(m => m.id === 'first_preview');
     
     if (!hasFirstPreview) {
-      console.log('🎉 First preview milestone!');
+      log('🎉 First preview milestone!');
       
       // Send message to service worker to track milestone
       chrome.runtime.sendMessage({
@@ -2205,14 +2206,14 @@ function getOverlayStyles() {
     }
 
     /* ============================================================================
-       DARK THEME - Match real mobile email client (system dark mode)
+       DARK THEME - Lighter blacks for visibility across devices (matches popup)
        ============================================================================ */
     @media (prefers-color-scheme: dark) {
       .phone-screen {
-        background: #000000;
+        background: #2A2A2E;
       }
       .mail-header {
-        background: #1c1c1e;
+        background: #36363A;
         border-bottom-color: rgba(255, 255, 255, 0.12);
       }
       .header-cancel {
@@ -2223,7 +2224,7 @@ function getOverlayStyles() {
         color: #fff;
       }
       .email-container {
-        background: #000000;
+        background: #2A2A2E;
       }
       .status-bar .time,
       .status-icons {
@@ -2239,7 +2240,7 @@ function getOverlayStyles() {
       .email-row,
       .email-subject-row,
       .email-body-wrapper {
-        background: #1c1c1e;
+        background: #36363A;
         border-bottom-color: rgba(255, 255, 255, 0.12);
       }
       .email-subject,
@@ -2259,7 +2260,7 @@ function getOverlayStyles() {
         color: rgba(255, 255, 255, 0.6);
       }
       .email-body {
-        background: #1c1c1e;
+        background: #36363A;
         color: rgba(255, 255, 255, 0.9);
       }
       .email-body a {
@@ -2352,12 +2353,12 @@ function toggleCollapse() {
     // Collapse to logo
     phoneMockup.style.display = 'none';
     collapsedLogo.style.display = 'flex';
-    console.log('📱 Preview collapsed to logo');
+    log('📱 Preview collapsed to logo');
   } else {
     // Expand to full preview
     phoneMockup.style.display = 'block';
     collapsedLogo.style.display = 'none';
-    console.log('📱 Preview expanded');
+    log('📱 Preview expanded');
   }
 }
 
@@ -2389,7 +2390,7 @@ function watchForToolbarInteractions() {
           );
           
           if (isFormattingToolbar || isGmailPopup) {
-            console.log('🔧 Gmail tool opened - auto-collapsing preview');
+            log('🔧 Gmail tool opened - auto-collapsing preview');
             if (!isCollapsed) {
               toggleCollapse();
             }
@@ -2406,7 +2407,7 @@ function watchForToolbarInteractions() {
           );
           
           if (wasGmailPopup && isCollapsed) {
-            console.log('🔧 Gmail tool closed - auto-expanding preview');
+            log('🔧 Gmail tool closed - auto-expanding preview');
             toggleCollapse();
           }
         }
@@ -2419,7 +2420,7 @@ function watchForToolbarInteractions() {
     subtree: true
   });
   
-  console.log('👀 Watching for Gmail toolbar interactions');
+  log('👀 Watching for Gmail toolbar interactions');
 }
 
 /**
@@ -2506,8 +2507,8 @@ function stopDragging() {
  */
 function attachToCompose(composeWindow, retryCount = 0) {
   return new Promise((resolve) => {
-    console.log(`🔍 Attaching to compose window (attempt ${retryCount + 1})`);
-    console.log('   Compose window:', {
+    log(`🔍 Attaching to compose window (attempt ${retryCount + 1})`);
+    log('   Compose window:', {
       tag: composeWindow.tagName,
       role: composeWindow.getAttribute('role'),
       class: composeWindow.className
@@ -2540,19 +2541,19 @@ function attachToCompose(composeWindow, retryCount = 0) {
       }
       
       console.error('❌ Could not find compose body after 10 attempts');
-      console.log('📋 This could mean:');
-      console.log('   1. Gmail is using a different structure than expected');
-      console.log('   2. Your Gmail version is not supported yet');
-      console.log('   3. Compose window is not fully loaded');
-      console.log('');
-      console.log('🔍 Please share the console logs above to help fix this!');
+      log('📋 This could mean:');
+      log('   1. Gmail is using a different structure than expected');
+      log('   2. Your Gmail version is not supported yet');
+      log('   3. Compose window is not fully loaded');
+      log('');
+      log('🔍 Please share the console logs above to help fix this!');
       
       // Don't call showError here - let caller handle it
       resolve(false);
       return;
     }
   
-  console.log('✅ Found compose body:', {
+  log('✅ Found compose body:', {
     tag: composeBody.tagName,
     role: composeBody.getAttribute('role'),
     ariaLabel: composeBody.getAttribute('aria-label')
@@ -2562,7 +2563,7 @@ function attachToCompose(composeWindow, retryCount = 0) {
   // Find subject line inside THIS specific compose window
   const subjectField = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
   if (subjectField) {
-    console.log('✅ Found subject line input');
+    log('✅ Found subject line input');
     currentSubjectField = subjectField;
     setupSubjectSync(subjectField);
   } else {
@@ -2571,7 +2572,7 @@ function attachToCompose(composeWindow, retryCount = 0) {
     setTimeout(() => {
       const delayedSubject = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
       if (delayedSubject && !currentSubjectField) {
-        console.log('✅ Found subject field on delayed check');
+        log('✅ Found subject field on delayed check');
         currentSubjectField = delayedSubject;
         setupSubjectSync(delayedSubject);
       }
@@ -2582,11 +2583,11 @@ function attachToCompose(composeWindow, retryCount = 0) {
   setupLiveSync(composeBody);
   
   // Initial update to show current content
-  console.log('🔄 Performing initial preview update...');
+  log('🔄 Performing initial preview update...');
   updatePreview();
   
   // Run initial pre-flight checks (updatePreview calls this, but let's be explicit)
-  console.log('✈️ Running initial pre-flight checks...');
+  log('✈️ Running initial pre-flight checks...');
   const initialHtml = composeBody.innerHTML || '';
   const initialText = composeBody.innerText || '';
   runPreflightChecks(initialHtml, initialText);
@@ -2594,7 +2595,7 @@ function attachToCompose(composeWindow, retryCount = 0) {
     // Setup send button detection
     setupSendButtonListener(composeWindow);
     
-    console.log('✅ Successfully attached to compose window and set up sync');
+    log('✅ Successfully attached to compose window and set up sync');
     resolve(true);
   });
 }
@@ -2604,7 +2605,7 @@ function attachToCompose(composeWindow, retryCount = 0) {
  * @param {HTMLElement} composeWindow - The compose window to monitor
  */
 function setupSendButtonListener(composeWindow) {
-  console.log('📤 Setting up send button listener...');
+  log('📤 Setting up send button listener...');
   
   // Gmail send button selectors (multiple fallbacks)
   const sendSelectors = [
@@ -2620,7 +2621,7 @@ function setupSendButtonListener(composeWindow) {
     try {
       sendButton = composeWindow.querySelector(selector);
       if (sendButton) {
-        console.log('✅ Found send button with selector:', selector);
+        log('✅ Found send button with selector:', selector);
         break;
       }
     } catch (e) {
@@ -2630,13 +2631,13 @@ function setupSendButtonListener(composeWindow) {
   
   // If not found, use MutationObserver to watch for it
   if (!sendButton) {
-    console.log('⏳ Send button not found yet, watching for it...');
+    log('⏳ Send button not found yet, watching for it...');
     const observer = new MutationObserver(() => {
       for (const selector of sendSelectors) {
         try {
           const btn = composeWindow.querySelector(selector);
           if (btn && !btn.hasAttribute('data-velomail-listener')) {
-            console.log('✅ Send button appeared:', selector);
+            log('✅ Send button appeared:', selector);
             attachSendListener(btn);
             observer.disconnect();
             return;
@@ -2662,25 +2663,25 @@ function setupSendButtonListener(composeWindow) {
  */
 function attachSendListener(sendButton) {
   if (sendButton.hasAttribute('data-velomail-listener')) {
-    console.log('ℹ️ Send button already has listener');
+    log('ℹ️ Send button already has listener');
     return;
   }
   
   sendButton.setAttribute('data-velomail-listener', 'true');
   
   sendButton.addEventListener('click', () => {
-    console.log('📧 Send button clicked! Tracking email send...');
+    log('📧 Send button clicked! Tracking email send...');
     handleEmailSent();
   }, { capture: true }); // Use capture to ensure we catch it first
   
-  console.log('✅ Send button listener attached');
+  log('✅ Send button listener attached');
 }
 
 /**
  * Handle email sent event
  */
 function handleEmailSent() {
-  console.log('✉️ Email sent! Notifying service worker...');
+  log('✉️ Email sent! Notifying service worker...');
   
   chrome.runtime.sendMessage({
     type: 'EMAIL_SENT',
@@ -2688,7 +2689,7 @@ function handleEmailSent() {
   }).then((response) => {
     if (response && response.usage) {
       const { previews, limit } = response.usage;
-      console.log(`✅ Email tracked: ${previews} today (limit: ${limit})`);
+      log(`✅ Email tracked: ${previews} today (limit: ${limit})`);
       
       if (limit < 0) {
         showSentToast('Sent!');
@@ -2758,23 +2759,23 @@ function showNearLimitBanner(remaining, limit) {
  * @returns {HTMLElement|null} The compose body element
  */
 function findComposeBody(composeWindow) {
-  console.log('🔍 Searching for compose body inside compose window...');
+  log('🔍 Searching for compose body inside compose window...');
   
   // DIAGNOSTIC: Log the entire compose window structure
-  console.log('📦 Compose window structure:');
-  console.log('   Tag:', composeWindow.tagName);
-  console.log('   Role:', composeWindow.getAttribute('role'));
-  console.log('   Class:', composeWindow.className);
-  console.log('   ID:', composeWindow.id);
-  console.log('   Children count:', composeWindow.children.length);
+  log('📦 Compose window structure:');
+  log('   Tag:', composeWindow.tagName);
+  log('   Role:', composeWindow.getAttribute('role'));
+  log('   Class:', composeWindow.className);
+  log('   ID:', composeWindow.id);
+  log('   Children count:', composeWindow.children.length);
   
   // Check all textboxes
   const allTextboxes = composeWindow.querySelectorAll('[role="textbox"]');
-  console.log(`📊 Found ${allTextboxes.length} elements with role="textbox"`);
+  log(`📊 Found ${allTextboxes.length} elements with role="textbox"`);
   
   if (allTextboxes.length > 0) {
     allTextboxes.forEach((el, i) => {
-      console.log(`   Textbox ${i + 1}:`, {
+      log(`   Textbox ${i + 1}:`, {
         tag: el.tagName,
         ariaLabel: el.getAttribute('aria-label'),
         contentEditable: el.contentEditable,
@@ -2800,20 +2801,20 @@ function findComposeBody(composeWindow) {
     }
     
     if (largestTextbox) {
-      console.log('✅ Found largest visible textbox (likely compose body)');
+      log('✅ Found largest visible textbox (likely compose body)');
       return largestTextbox;
     }
   }
   
   // Check all contenteditable elements
   const allContentEditable = composeWindow.querySelectorAll('[contenteditable="true"]');
-  console.log(`📊 Found ${allContentEditable.length} contenteditable elements`);
+  log(`📊 Found ${allContentEditable.length} contenteditable elements`);
   
   if (allContentEditable.length > 0) {
     // Log details of each
     allContentEditable.forEach((el, i) => {
       if (i < 10) { // Only log first 10 to avoid spam
-        console.log(`   Editable ${i + 1}:`, {
+        log(`   Editable ${i + 1}:`, {
           tag: el.tagName,
           role: el.getAttribute('role'),
           ariaLabel: el.getAttribute('aria-label')?.substring(0, 30),
@@ -2844,7 +2845,7 @@ function findComposeBody(composeWindow) {
     }
     
     if (largestEditable) {
-      console.log('✅ Found via largest contenteditable:', {
+      log('✅ Found via largest contenteditable:', {
         tag: largestEditable.tagName,
         height: largestEditable.offsetHeight,
         width: largestEditable.offsetWidth
@@ -2854,7 +2855,7 @@ function findComposeBody(composeWindow) {
   }
   
   // Last resort: look for specific Gmail compose classes
-  console.log('⚠️ Trying Gmail-specific class selectors...');
+  log('⚠️ Trying Gmail-specific class selectors...');
   const gmailSpecificSelectors = [
     '.Am.Al.editable',
     '.editable[contenteditable="true"]',
@@ -2876,27 +2877,27 @@ function findComposeBody(composeWindow) {
     try {
       const element = composeWindow.querySelector(selector);
       if (element && element.offsetHeight > 50) {
-        console.log(`✅ Found with Gmail selector: ${selector}`);
+        log(`✅ Found with Gmail selector: ${selector}`);
         return element;
       }
     } catch (e) {
       // Invalid selector, skip
-      console.log(`⚠️ Selector failed: ${selector}`, e.message);
+      log(`⚠️ Selector failed: ${selector}`, e.message);
     }
   }
   
   // Very last resort: find ANY contenteditable div that's reasonably sized
-  console.log('⚠️ Last resort: searching for any contenteditable div...');
+  log('⚠️ Last resort: searching for any contenteditable div...');
   const allDivs = composeWindow.querySelectorAll('div[contenteditable]');
   for (let div of allDivs) {
     if (div.offsetHeight > 50 && div.offsetWidth > 100) {
-      console.log('✅ Found via last resort contenteditable search');
+      log('✅ Found via last resort contenteditable search');
       return div;
     }
   }
   
   console.error('❌ Could not find compose body with any selector');
-  console.log('💡 Tip: Open DevTools Elements tab and inspect the compose window');
+  log('💡 Tip: Open DevTools Elements tab and inspect the compose window');
   
   return null;
 }
@@ -2909,8 +2910,8 @@ function findComposeBody(composeWindow) {
  * OPTIMIZED: Uses RAF for DOM updates, debouncing for heavy operations
  */
 function setupLiveSync(composeBody) {
-  console.log('🔄 Setting up live sync with input event listener (OPTIMIZED)');
-  console.log('   Compose body element:', {
+  log('🔄 Setting up live sync with input event listener (OPTIMIZED)');
+  log('   Compose body element:', {
     tag: composeBody.tagName,
     role: composeBody.getAttribute('role'),
     contentEditable: composeBody.contentEditable,
@@ -2986,11 +2987,11 @@ function setupLiveSync(composeBody) {
     }
   }, PREFLIGHT_REFRESH_MS);
   
-  console.log('✅ Live sync activated (OPTIMIZED):');
-  console.log('   - Light updates: RAF batching');
-  console.log('   - Heavy operations: 200ms debounce');
-  console.log('   - Pre-flight refresh: every ' + (PREFLIGHT_REFRESH_MS / 1000) + 's + paste/cut/focus');
-  console.log('   - Service worker: Throttled messaging');
+  log('✅ Live sync activated (OPTIMIZED):');
+  log('   - Light updates: RAF batching');
+  log('   - Heavy operations: 200ms debounce');
+  log('   - Pre-flight refresh: every ' + (PREFLIGHT_REFRESH_MS / 1000) + 's + paste/cut/focus');
+  log('   - Service worker: Throttled messaging');
 }
 
 /**
@@ -3007,7 +3008,7 @@ function handleTextSelection() {
     const selectedText = selection.toString();
     
     if (selectedText.length > 0) {
-      console.log('📝 Text selected:', {
+      log('📝 Text selected:', {
         text: selectedText.substring(0, 50) + (selectedText.length > 50 ? '...' : ''),
         length: selectedText.length,
         rangeCount: selection.rangeCount
@@ -3084,7 +3085,7 @@ function tryReattachComposeBody() {
   if (!composeWindow) return;
   const newBody = findComposeBody(composeWindow);
   if (!newBody) return;
-  console.log('🔄 Compose body was replaced, re-attaching (safe-fail reconnect)');
+  log('🔄 Compose body was replaced, re-attaching (safe-fail reconnect)');
   currentComposeBody = newBody;
   const subjectField = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
   if (subjectField) {
@@ -3180,9 +3181,9 @@ function updatePreview(lightMode = false) {
       const heavyTime = performance.now() - heavyStart;
       logPerformance('heavy', heavyTime);
       
-      console.log(`⚡ Full update: ${lightTime.toFixed(2)}ms (light) + ${heavyTime.toFixed(2)}ms (heavy) = ${(lightTime + heavyTime).toFixed(2)}ms total`);
+      log(`⚡ Full update: ${lightTime.toFixed(2)}ms (light) + ${heavyTime.toFixed(2)}ms (heavy) = ${(lightTime + heavyTime).toFixed(2)}ms total`);
     } else {
-      console.log(`⚡ Light update: ${lightTime.toFixed(2)}ms`);
+      log(`⚡ Light update: ${lightTime.toFixed(2)}ms`);
     }
     
     logPerformance('update', lightTime);
@@ -3483,15 +3484,15 @@ function sendEmailStateToServiceWorker(htmlContent, textContent, subject, mobile
   }).then(() => {
     const latency = performance.now() - startTime;
     if (latency > 5) {
-      console.log(`⚠️ Content → Worker latency: ${latency.toFixed(2)}ms (target: <5ms)`);
+      log(`⚠️ Content → Worker latency: ${latency.toFixed(2)}ms (target: <5ms)`);
     } else {
-      console.log(`✅ Synced to worker (${latency.toFixed(2)}ms)`);
+      log(`✅ Synced to worker (${latency.toFixed(2)}ms)`);
     }
   }).catch(error => {
     const latency = performance.now() - startTime;
     console.error(`❌ Send failed after ${latency.toFixed(2)}ms:`, error);
     setTimeout(() => {
-      console.log('🔄 Retrying send...');
+      log('🔄 Retrying send...');
       chrome.runtime.sendMessage({
         type: 'EMAIL_CONTENT_UPDATED',
         state: emailState
@@ -3511,7 +3512,7 @@ const throttledServiceWorkerUpdate = throttle(sendEmailStateToServiceWorker, 500
  * Listen for settings updates from popup (via service worker)
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('📨 Message received from extension:', message.type);
+  log('📨 Message received from extension:', message.type);
   
   if (message.type === 'REQUEST_EMAIL_STATE') {
     if (overlayContainer) {
@@ -3557,13 +3558,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === 'SETTINGS_UPDATED') {
-    console.log('⚙️ Settings updated:', message.settings);
+    log('⚙️ Settings updated:', message.settings);
     
     // Update cached settings
     if (message.settings.autoShow !== undefined) {
       settings.autoShow = message.settings.autoShow;
     }
-    console.log('✅ Settings cache updated:', settings);
+    log('✅ Settings cache updated:', settings);
     
     // Apply dark mode to overlay if needed
     if (shadowRoot && message.settings.darkMode !== undefined) {
@@ -3571,10 +3572,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (phoneScreen) {
         if (message.settings.darkMode) {
           phoneScreen.style.filter = 'invert(1) hue-rotate(180deg)';
-          console.log('🌙 Dark mode applied to overlay');
+          log('🌙 Dark mode applied to overlay');
         } else {
           phoneScreen.style.filter = 'none';
-          console.log('☀️ Dark mode removed from overlay');
+          log('☀️ Dark mode removed from overlay');
         }
       }
     }
@@ -3582,7 +3583,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Handle auto-show setting - show/hide overlay based on setting
     if (message.settings.autoShow === false && overlayContainer) {
       // Hide overlay if auto-show disabled (but keep syncing)
-      console.log('👁️ Auto-show disabled, hiding overlay (still syncing)');
+      log('👁️ Auto-show disabled, hiding overlay (still syncing)');
       if (overlayContainer && overlayContainer.parentNode) {
         overlayContainer.parentNode.removeChild(overlayContainer);
         overlayContainer = null;
@@ -3591,7 +3592,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     } else if (message.settings.autoShow === true && !overlayContainer && isAttachedToCompose) {
       // Show overlay if auto-show enabled and we're attached to compose
-      console.log('👁️ Auto-show enabled, creating overlay');
+      log('👁️ Auto-show enabled, creating overlay');
       const composeWindow = findComposeWindow();
       if (composeWindow) {
         createPreviewUI(composeWindow);
@@ -3619,7 +3620,7 @@ function checkCTAInViewport(htmlContent, textContent) {
   const cached = operationCache.ctaCheck.get(contentHash);
   if (cached !== undefined) {
     performanceMetrics.cacheHits++;
-    console.log(`⚡ CTA check cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
+    log(`⚡ CTA check cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
     return cached;
   }
   
@@ -3692,18 +3693,18 @@ function checkCTAInViewport(htmlContent, textContent) {
     }
   }
   
-  // Fallback: check for a raw URL in the visible portion of text
+  // Fallback: check for a raw URL in the visible portion of text (stricter: 600 chars)
   // This handles plain-text CTAs like "Click here: https://..." without relying
   // on generic keyword matching that fires on normal prose words (reply, see, get).
   if (!foundCTA.found) {
     const urlPattern = /https?:\/\/[^\s"'<>]{4,}/gi;
-    const firstChunk = textContent.substring(0, 800); // ~first screen of text
+    const firstChunk = textContent.substring(0, 600); // stricter above-fold
     const urlMatch = firstChunk.match(urlPattern);
     if (urlMatch) {
       foundCTA = {
         found: true,
         type: 'raw-url',
-        position: 'within first 800 chars',
+        position: 'within first 600 chars',
         details: `URL: "${urlMatch[0].substring(0, 50)}"`
       };
     }
@@ -3716,7 +3717,7 @@ function checkCTAInViewport(htmlContent, textContent) {
   operationCache.ctaCheck.set(contentHash, foundCTA);
   
   const perfTime = performance.now() - perfStart;
-  console.log(`⚡ CTA check completed (${perfTime.toFixed(2)}ms)`);
+  log(`⚡ CTA check completed (${perfTime.toFixed(2)}ms)`);
   
   return foundCTA;
 }
@@ -3751,26 +3752,25 @@ function runPreflightChecks(htmlContent, textContent) {
     updatePreflightUI();
     
     performanceMetrics.cacheHits++;
-    console.log(`⚡ Pre-flight checks cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
+    log(`⚡ Pre-flight checks cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
     return;
   }
   
   performanceMetrics.cacheMisses++;
-  console.log('🔍 Running pre-flight checks...');
+  log('🔍 Running pre-flight checks...');
   
   // Check 1: Subject Front-Loading (Hook in first 30 chars)
   // Mobile users only see 25-30 characters of subject line
+  // Stricter: require 15+ chars and no filler — green only for strong value props
   const subjectFirst30 = subject.substring(0, 30);
-  
-  // Check if there's meaningful content in first 30 chars (not just filler words)
-  const fillerWords = /^(hi|hello|hey|greetings|good morning|good afternoon|re:|fw:)/i;
-  const hasHook = subject.length > 0 && 
-                  subjectFirst30.length >= 10 && 
+  const fillerWords = /^(hi|hello|hey|greetings|good morning|good afternoon|re:|fw:|thanks|thank you|quick|question|fyi|update)/i;
+  const hasHook = subject.length > 0 &&
+                  subjectFirst30.length >= 15 &&
                   !fillerWords.test(subjectFirst30);
   
   preflightChecks.subjectFrontLoaded = hasHook;
   
-  console.log(`   📧 Subject Front-Loading: ${hasHook ? '✅ PASS' : '❌ FAIL'}`, {
+  log(`   📧 Subject Front-Loading: ${hasHook ? '✅ PASS' : '❌ FAIL'}`, {
     subject: subject.substring(0, 50) + (subject.length > 50 ? '...' : ''),
     first30: subjectFirst30,
     length: subject.length,
@@ -3789,7 +3789,7 @@ function runPreflightChecks(htmlContent, textContent) {
   const ctaAboveFold = checkCTAInViewport(htmlContent, textContent);
   preflightChecks.ctaAboveFold = ctaAboveFold.found;
   
-  console.log(`   🎯 CTA Above Fold: ${ctaAboveFold.found ? '✅ PASS' : '❌ FAIL'}`, {
+  log(`   🎯 CTA Above Fold: ${ctaAboveFold.found ? '✅ PASS' : '❌ FAIL'}`, {
     found: ctaAboveFold.found,
     type: ctaAboveFold.type,
     position: ctaAboveFold.position,
@@ -3817,13 +3817,10 @@ function runPreflightChecks(htmlContent, textContent) {
   let tapFriendly = true;
   let linksInFirstSection = 0;
   let hasShortLinks = false;
+  let hasStrongLink = false; // at least one link with text >= 5 chars
   
   if (links.length > 0) {
-    // Check for common issues:
-    // 1. Multiple links in same line (stacked links)
-    // 2. Links with very short text (< 3 chars)
-    // 3. Too many links close together (> 2 links in first 200 chars)
-    
+    // Stricter: single clear CTA, no short links, at least one strong link (>= 5 chars)
     links.forEach((link) => {
       const linkText = link.textContent.trim();
       const linkPos = textContent.indexOf(linkText);
@@ -3832,12 +3829,16 @@ function runPreflightChecks(htmlContent, textContent) {
         linksInFirstSection++;
       }
       
+      if (linkText.length >= 5) {
+        hasStrongLink = true;
+      }
+      
       if (linkText.length < 3 && linkText.length > 0 && !/[📱🔗👉]/.test(linkText)) {
         hasShortLinks = true;
       }
     });
     
-    tapFriendly = linksInFirstSection <= 2 && !hasShortLinks;
+    tapFriendly = linksInFirstSection <= 1 && !hasShortLinks && hasStrongLink;
     
   } else {
     // No body links = fail. Every sales email needs a clickable next step.
@@ -3846,16 +3847,17 @@ function runPreflightChecks(htmlContent, textContent) {
   
   preflightChecks.linkTapability = tapFriendly;
   
-  console.log(`   👆 Link Tap-Ability: ${tapFriendly ? '✅ PASS' : '❌ FAIL'}`, {
+  log(`   👆 Link Tap-Ability: ${tapFriendly ? '✅ PASS' : '❌ FAIL'}`, {
     totalLinks: links.length,
     linksInFirstSection: linksInFirstSection,
-    hasShortLinks: hasShortLinks
+    hasShortLinks: hasShortLinks,
+    hasStrongLink: hasStrongLink
   });
   
   // Update UI indicators
   updatePreflightUI();
   
-  console.log('✈️ Mobile Pre-flight Summary:', {
+  log('✈️ Mobile Pre-flight Summary:', {
     subjectFrontLoaded: preflightChecks.subjectFrontLoaded ? '✅ PASS' : '❌ FAIL',
     ctaAboveFold: preflightChecks.ctaAboveFold ? '✅ PASS' : '❌ FAIL',
     linkTapability: preflightChecks.linkTapability ? '✅ PASS' : '❌ FAIL'
@@ -3869,7 +3871,7 @@ function runPreflightChecks(htmlContent, textContent) {
   });
   
   const perfTime = performance.now() - perfStart;
-  console.log(`⚡ Pre-flight checks completed (${perfTime.toFixed(2)}ms)`);
+  log(`⚡ Pre-flight checks completed (${perfTime.toFixed(2)}ms)`);
 }
 
 /**
@@ -3880,7 +3882,7 @@ function updatePreflightUI() {
   
   // Preflight data still used for popup tips; only log summary (no status dots in overlay)
   if (!isAttachedToCompose) {
-    console.log('ℹ️ Skipping preflight warnings (not yet attached to compose body)');
+    log('ℹ️ Skipping preflight warnings (not yet attached to compose body)');
     return;
   }
   
@@ -3895,7 +3897,7 @@ function updatePreflightUI() {
   if (currentState !== lastWarningState) {
     lastWarningState = currentState;
     if (allPassed) {
-      console.log('🎉 All mobile pre-flight checks passed!');
+      log('🎉 All mobile pre-flight checks passed!');
     } else {
       const failedChecks = [];
       if (!preflightChecks.subjectFrontLoaded) failedChecks.push('Subject Front-Loading');
@@ -3969,7 +3971,7 @@ function showError(message) {
     const retryButton = previewContent.querySelector('#retryButton');
     if (retryButton) {
       retryButton.addEventListener('click', () => {
-        console.log('🔄 Manual retry triggered');
+        log('🔄 Manual retry triggered');
         const composeWindow = findComposeWindow();
         if (composeWindow) {
           attachToCompose(composeWindow, 0);
@@ -4009,7 +4011,7 @@ function showError(message) {
 function removePreview() {
   if (!overlayContainer) return;
   
-  console.log('🗑️ Removing Phone Preview UI');
+  log('🗑️ Removing Phone Preview UI');
   
   // Cancel pending operations
   if (updatePreviewRAF) {
@@ -4050,10 +4052,10 @@ function removePreview() {
     const avgHeavy = performanceMetrics.heavyOpsCount > 0 ? 
       (performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount).toFixed(2) : 0;
     
-    console.log('📊 Final Performance Stats:');
-    console.log(`   Total updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
-    console.log(`   Heavy operations: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
-    console.log(`   Cache hits: ${performanceMetrics.cacheHits}, Cache misses: ${performanceMetrics.cacheMisses}`);
+    log('📊 Final Performance Stats:');
+    log(`   Total updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
+    log(`   Heavy operations: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
+    log(`   Cache hits: ${performanceMetrics.cacheHits}, Cache misses: ${performanceMetrics.cacheMisses}`);
     
     // Reset metrics
     performanceMetrics.updateCount = 0;
@@ -4099,7 +4101,7 @@ function removePreview() {
     linkTapability: false
   };
   
-  console.log('✅ Phone Preview removed - all resources cleaned up');
+  log('✅ Phone Preview removed - all resources cleaned up');
 }
 
 /**
@@ -4118,60 +4120,60 @@ if (document.readyState === 'loading') {
   initialize();
 }
 
-console.log('✅ VeloMail Content Script ready');
-console.log('📱 Minimalist phone preview will appear when you compose in Gmail');
-console.log('⚙️ Listening for settings updates from popup');
-console.log('');
-console.log('🔧 Debugging help:');
-console.log('   If preview doesn\'t work, run: inspectGmailCompose()');
+log('✅ VeloMail Content Script ready');
+log('📱 Minimalist phone preview will appear when you compose in Gmail');
+log('⚙️ Listening for settings updates from popup');
+log('');
+log('🔧 Debugging help:');
+log('   If preview doesn\'t work, run: inspectGmailCompose()');
 
 // Debug helper function exposed to console
 window.inspectGmailCompose = function() {
-  console.log('🔍 GMAIL COMPOSE INSPECTOR');
-  console.log('='.repeat(50));
+  log('🔍 GMAIL COMPOSE INSPECTOR');
+  log('='.repeat(50));
   
   const dialogs = document.querySelectorAll('[role="dialog"]');
-  console.log(`📊 Found ${dialogs.length} dialog(s) on page`);
+  log(`📊 Found ${dialogs.length} dialog(s) on page`);
   
   dialogs.forEach((dialog, i) => {
-    console.log(`\n📦 Dialog ${i + 1}:`);
-    console.log('   Tag:', dialog.tagName);
-    console.log('   Class:', dialog.className.substring(0, 100));
-    console.log('   Children:', dialog.children.length);
+    log(`\n📦 Dialog ${i + 1}:`);
+    log('   Tag:', dialog.tagName);
+    log('   Class:', dialog.className.substring(0, 100));
+    log('   Children:', dialog.children.length);
     
     // Check for subject
     const subject = dialog.querySelector('input[name="subjectbox"]');
-    console.log('   Has subject field:', !!subject);
+    log('   Has subject field:', !!subject);
     
     // Check for textboxes
     const textboxes = dialog.querySelectorAll('[role="textbox"]');
-    console.log(`   Textboxes: ${textboxes.length}`);
+    log(`   Textboxes: ${textboxes.length}`);
     textboxes.forEach((tb, j) => {
-      console.log(`     ${j + 1}. ${tb.tagName} - ${tb.getAttribute('aria-label') || 'no label'} (${tb.offsetWidth}x${tb.offsetHeight})`);
+      log(`     ${j + 1}. ${tb.tagName} - ${tb.getAttribute('aria-label') || 'no label'} (${tb.offsetWidth}x${tb.offsetHeight})`);
     });
     
     // Check for contenteditable
     const editables = dialog.querySelectorAll('[contenteditable="true"]');
-    console.log(`   Contenteditable elements: ${editables.length}`);
+    log(`   Contenteditable elements: ${editables.length}`);
     editables.forEach((ed, j) => {
       if (j < 5) { // Only show first 5
-        console.log(`     ${j + 1}. ${ed.tagName} - ${ed.getAttribute('aria-label')?.substring(0, 30) || 'no label'} (${ed.offsetWidth}x${ed.offsetHeight})`);
+        log(`     ${j + 1}. ${ed.tagName} - ${ed.getAttribute('aria-label')?.substring(0, 30) || 'no label'} (${ed.offsetWidth}x${ed.offsetHeight})`);
       }
     });
   });
   
-  console.log('\n' + '='.repeat(50));
-  console.log('💡 Look for the dialog that is the compose window');
-  console.log('💡 Note the textbox or contenteditable element that should be the body');
+  log('\n' + '='.repeat(50));
+  log('💡 Look for the dialog that is the compose window');
+  log('💡 Note the textbox or contenteditable element that should be the body');
 };
 
 // Performance dashboard helper
 window.veloMailPerformance = function() {
-  console.log('⚡ VELOMAIL PERFORMANCE DASHBOARD');
-  console.log('='.repeat(60));
+  log('⚡ VELOMAIL PERFORMANCE DASHBOARD');
+  log('='.repeat(60));
   
   if (performanceMetrics.updateCount === 0) {
-    console.log('ℹ️ No updates recorded yet. Start composing an email to see metrics.');
+    log('ℹ️ No updates recorded yet. Start composing an email to see metrics.');
     return;
   }
   
@@ -4182,54 +4184,54 @@ window.veloMailPerformance = function() {
   const cacheHitRate = cacheTotal > 0 ?
     ((performanceMetrics.cacheHits / cacheTotal) * 100).toFixed(1) : 0;
   
-  console.log('\n📊 Update Performance:');
-  console.log(`   Total updates: ${performanceMetrics.updateCount}`);
-  console.log(`   Average update time: ${avgUpdate}ms`);
-  console.log(`   Target: <10ms (Light updates only)`);
-  console.log(`   Status: ${avgUpdate < 10 ? '✅ PASS' : avgUpdate < 20 ? '⚠️ OK' : '❌ NEEDS OPTIMIZATION'}`);
+  log('\n📊 Update Performance:');
+  log(`   Total updates: ${performanceMetrics.updateCount}`);
+  log(`   Average update time: ${avgUpdate}ms`);
+  log(`   Target: <10ms (Light updates only)`);
+  log(`   Status: ${avgUpdate < 10 ? '✅ PASS' : avgUpdate < 20 ? '⚠️ OK' : '❌ NEEDS OPTIMIZATION'}`);
   
-  console.log('\n⚙️ Heavy Operations:');
-  console.log(`   Total heavy ops: ${performanceMetrics.heavyOpsCount}`);
-  console.log(`   Average time: ${avgHeavy}ms`);
-  console.log(`   Debounce: 300ms (reduces frequency)`);
-  console.log(`   Status: ${performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? '✅ OPTIMIZED' : '⚠️ CHECK DEBOUNCING'}`);
+  log('\n⚙️ Heavy Operations:');
+  log(`   Total heavy ops: ${performanceMetrics.heavyOpsCount}`);
+  log(`   Average time: ${avgHeavy}ms`);
+  log(`   Debounce: 300ms (reduces frequency)`);
+  log(`   Status: ${performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? '✅ OPTIMIZED' : '⚠️ CHECK DEBOUNCING'}`);
   
-  console.log('\n💾 Cache Performance:');
-  console.log(`   Cache hits: ${performanceMetrics.cacheHits}`);
-  console.log(`   Cache misses: ${performanceMetrics.cacheMisses}`);
-  console.log(`   Hit rate: ${cacheHitRate}%`);
-  console.log(`   Target: >50%`);
-  console.log(`   Status: ${cacheHitRate > 50 ? '✅ EXCELLENT' : cacheHitRate > 30 ? '⚠️ OK' : '❌ NEEDS IMPROVEMENT'}`);
+  log('\n💾 Cache Performance:');
+  log(`   Cache hits: ${performanceMetrics.cacheHits}`);
+  log(`   Cache misses: ${performanceMetrics.cacheMisses}`);
+  log(`   Hit rate: ${cacheHitRate}%`);
+  log(`   Target: >50%`);
+  log(`   Status: ${cacheHitRate > 50 ? '✅ EXCELLENT' : cacheHitRate > 30 ? '⚠️ OK' : '❌ NEEDS IMPROVEMENT'}`);
   
-  console.log('\n🗂️ Cache Size:');
-  console.log(`   CTA checks cached: ${operationCache.ctaCheck.size} / 50`);
-  console.log(`   Preflight results cached: ${operationCache.preflightResults.size}`);
+  log('\n🗂️ Cache Size:');
+  log(`   CTA checks cached: ${operationCache.ctaCheck.size} / 50`);
+  log(`   Preflight results cached: ${operationCache.preflightResults.size}`);
   
-  console.log('\n🎯 Optimization Summary:');
+  log('\n🎯 Optimization Summary:');
   const optimizationScore = (
     (avgUpdate < 10 ? 40 : avgUpdate < 20 ? 20 : 0) +
     (performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? 30 : 0) +
     (cacheHitRate > 50 ? 30 : cacheHitRate > 30 ? 15 : 0)
   );
-  console.log(`   Overall score: ${optimizationScore}/100`);
+  log(`   Overall score: ${optimizationScore}/100`);
   if (optimizationScore >= 90) {
-    console.log('   🏆 Excellent performance!');
+    log('   🏆 Excellent performance!');
   } else if (optimizationScore >= 70) {
-    console.log('   ✅ Good performance');
+    log('   ✅ Good performance');
   } else if (optimizationScore >= 50) {
-    console.log('   ⚠️ Acceptable performance');
+    log('   ⚠️ Acceptable performance');
   } else {
-    console.log('   ❌ Performance needs optimization');
+    log('   ❌ Performance needs optimization');
   }
   
-  console.log('\n' + '='.repeat(60));
-  console.log('💡 Tips:');
-  console.log('   - Light updates use RAF batching (instant DOM updates)');
-  console.log('   - Heavy operations debounced by 300ms (reduces load)');
-  console.log('   - Service worker messages throttled to 500ms max');
-  console.log('   - CTA checks cached (avoid repeated DOM measurements)');
-  console.log('   - Content hashing prevents duplicate work');
+  log('\n' + '='.repeat(60));
+  log('💡 Tips:');
+  log('   - Light updates use RAF batching (instant DOM updates)');
+  log('   - Heavy operations debounced by 300ms (reduces load)');
+  log('   - Service worker messages throttled to 500ms max');
+  log('   - CTA checks cached (avoid repeated DOM measurements)');
+  log('   - Content hashing prevents duplicate work');
 };
 
-console.log('   Example: Type inspectGmailCompose() in console');
-console.log('   Performance: Type veloMailPerformance() in console');
+log('   Example: Type inspectGmailCompose() in console');
+log('   Performance: Type veloMailPerformance() in console');

@@ -22,16 +22,18 @@
   --radius-card:  14px;
 }
 
+/* Dark mode — lighter blacks for better visibility across devices */
 @media (prefers-color-scheme: dark) {
   :root {
     --label:      #FFFFFF;
-    --label-2:    #8E8E93;
-    --label-3:    #636366;
-    --separator:  #38383A;
-    --bg-page:    #1C1C1E;
-    --bg-card:    #2C2C2E;
+    --label-2:    #9E9EA3;
+    --label-3:    #6E6E72;
+    --separator:  #454548;
+    --bg-page:    #2A2A2E;
+    --bg-card:    #36363A;
   }
 
+  html { background: var(--bg-page); }
   body { background: var(--bg-card); }
 
   .tip-card--pending {
@@ -49,13 +51,76 @@
   .tip-card--pending .tip-card-label   { color: #FFFFFF; }
   .tip-card--pending .tip-card-description { color: var(--label-2); }
 
-  .setting-row input[type="checkbox"] { background: #636366; }
-  .usage-bar { background: #48484A; }
+  .setting-row input[type="checkbox"] { background: #6E6E72; }
+  .usage-bar { background: #4E4E52; }
+}
+
+/* Dark mode via theme.js class (unified with welcome page) */
+html.dark-mode,
+html[data-theme="dark"] {
+  --label:      #FFFFFF;
+  --label-2:    #9E9EA3;
+  --label-3:    #6E6E72;
+  --separator:  #454548;
+  --bg-page:    #2A2A2E;
+  --bg-card:    #36363A;
+}
+
+html.dark-mode,
+html[data-theme="dark"] {
+  background: var(--bg-page);
+}
+
+html.dark-mode body,
+html[data-theme="dark"] body {
+  background: var(--bg-card);
+}
+
+html.dark-mode .tip-card--pending,
+html[data-theme="dark"] .tip-card--pending {
+  background: transparent;
+  border-color: var(--separator);
+}
+
+html.dark-mode .tip-card--pass,
+html[data-theme="dark"] .tip-card--pass {
+  background: rgba(52, 199, 89, 0.1);
+  border-color: rgba(52, 199, 89, 0.25);
+}
+
+html.dark-mode .tip-card--fail,
+html[data-theme="dark"] .tip-card--fail {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.2);
+}
+
+html.dark-mode .tip-card--pending .tip-card-label,
+html[data-theme="dark"] .tip-card--pending .tip-card-label {
+  color: #FFFFFF;
+}
+
+html.dark-mode .tip-card--pending .tip-card-description,
+html[data-theme="dark"] .tip-card--pending .tip-card-description {
+  color: var(--label-2);
+}
+
+html.dark-mode .setting-row input[type="checkbox"],
+html[data-theme="dark"] .setting-row input[type="checkbox"] {
+  background: #6E6E72;
+}
+
+html.dark-mode .usage-bar,
+html[data-theme="dark"] .usage-bar {
+  background: #4E4E52;
 }
 
 /* ============================================================================
    BASE
    ============================================================================ */
+
+html {
+  background: var(--bg-page);
+}
 
 body {
   width: 100%;
