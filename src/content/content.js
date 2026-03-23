@@ -5,15 +5,17 @@
  */
 
 // ==================== CONFIGURATION ====================
-const DEBUG = false; // Set to true for development logging
-const PERFORMANCE_MONITORING = true; // Track performance metrics
-const LANDING_BASE_URL = 'https://velomail.vercel.app/landing/#pricing';
+const DEBUG = false // Set to true for development logging
+const PERFORMANCE_MONITORING = true // Track performance metrics
+const LANDING_BASE_URL = "https://velomail.vercel.app/landing/#pricing"
 
 /** Set when extension is reloaded/disabled; prevents further chrome API calls */
-let extensionContextInvalidated = false;
+let extensionContextInvalidated = false
 
 function isContextInvalidatedError(err) {
-  return err && String(err.message || '').includes('Extension context invalidated');
+  return (
+    err && String(err.message || "").includes("Extension context invalidated")
+  )
 }
 
 // ==================== SETTINGS MANAGEMENT ====================
@@ -23,22 +25,22 @@ function isContextInvalidatedError(err) {
  */
 async function loadSettings() {
   try {
-    const result = await chrome.storage.local.get(['settings']);
-    const loadedSettings = result.settings || { autoShow: true };
-    
+    const result = await chrome.storage.local.get(["settings"])
+    const loadedSettings = result.settings || { autoShow: true }
+
     // Update cached settings
-    settings.autoShow = loadedSettings.autoShow !== false;
-    
-    log('Settings loaded:', settings);
-    return settings;
+    settings.autoShow = loadedSettings.autoShow !== false
+
+    log("Settings loaded:", settings)
+    return settings
   } catch (error) {
     if (isContextInvalidatedError(error)) {
-      extensionContextInvalidated = true;
-      if (typeof removePreview === 'function') removePreview();
-      return { autoShow: true };
+      extensionContextInvalidated = true
+      if (typeof removePreview === "function") removePreview()
+      return { autoShow: true }
     }
-    logError('SETTINGS_LOAD_FAILED', error.message);
-    return { autoShow: true };
+    logError("SETTINGS_LOAD_FAILED", error.message)
+    return { autoShow: true }
   }
 }
 
@@ -50,23 +52,36 @@ async function loadSettings() {
 async function checkLimit() {
   try {
     const response = await chrome.runtime.sendMessage({
-      type: 'CHECK_USAGE_LIMIT'
-    });
-    
+      type: "CHECK_USAGE_LIMIT"
+    })
+
     if (!response) {
-      logError('CHECK_LIMIT_NO_RESPONSE', 'Service worker did not respond to usage check');
-      return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
+      logError(
+        "CHECK_LIMIT_NO_RESPONSE",
+        "Service worker did not respond to usage check"
+      )
+      return {
+        allowed: true,
+        remaining: 5,
+        limit: 5,
+        isApproachingLimit: false
+      }
     }
-    
-    return response;
+
+    return response
   } catch (error) {
     if (isContextInvalidatedError(error)) {
-      extensionContextInvalidated = true;
-      if (typeof removePreview === 'function') removePreview();
-      return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
+      extensionContextInvalidated = true
+      if (typeof removePreview === "function") removePreview()
+      return {
+        allowed: true,
+        remaining: 5,
+        limit: 5,
+        isApproachingLimit: false
+      }
     }
-    logError('CHECK_LIMIT_FAILED', error.message);
-    return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false };
+    logError("CHECK_LIMIT_FAILED", error.message)
+    return { allowed: true, remaining: 5, limit: 5, isApproachingLimit: false }
   }
 }
 
@@ -77,37 +92,40 @@ async function checkLimit() {
 async function trackPreview() {
   try {
     const response = await chrome.runtime.sendMessage({
-      type: 'TRACK_PREVIEW_USAGE'
-    });
-    
+      type: "TRACK_PREVIEW_USAGE"
+    })
+
     if (!response) {
-      logError('TRACK_PREVIEW_NO_RESPONSE', 'Service worker did not respond to tracking');
-      return { previews: 1, limit: 5 };
+      logError(
+        "TRACK_PREVIEW_NO_RESPONSE",
+        "Service worker did not respond to tracking"
+      )
+      return { previews: 1, limit: 5 }
     }
-    
-    return response;
+
+    return response
   } catch (error) {
     if (isContextInvalidatedError(error)) {
-      extensionContextInvalidated = true;
-      if (typeof removePreview === 'function') removePreview();
-      return { previews: 1, limit: 5 };
+      extensionContextInvalidated = true
+      if (typeof removePreview === "function") removePreview()
+      return { previews: 1, limit: 5 }
     }
-    logError('TRACK_PREVIEW_FAILED', error.message);
-    return { previews: 1, limit: 5 };
+    logError("TRACK_PREVIEW_FAILED", error.message)
+    return { previews: 1, limit: 5 }
   }
 }
 
 // ==================== LOGGING & ERROR TRACKING ====================
-const errorLog = [];
-const MAX_ERROR_LOG_SIZE = 50;
+const errorLog = []
+const MAX_ERROR_LOG_SIZE = 50
 
 /**
  * Production-safe logging - only logs in debug mode
  */
-const _rawLog = console.log.bind(console);
+const _rawLog = console.log.bind(console)
 function log(...args) {
   if (DEBUG) {
-    _rawLog('📱 VeloMail:', ...args);
+    _rawLog("📱 VeloMail:", ...args)
   }
 }
 
@@ -121,26 +139,28 @@ function logError(code, message, context = {}) {
     context,
     timestamp: Date.now(),
     url: window.location.href
-  };
-  
-  // Always log errors to console
-  console.error(`❌ VeloMail Error [${code}]:`, message, context);
-  
-  // Track in memory for reporting
-  errorLog.push(error);
-  if (errorLog.length > MAX_ERROR_LOG_SIZE) {
-    errorLog.shift();
   }
-  
+
+  // Always log errors to console
+  console.error(`❌ VeloMail Error [${code}]:`, message, context)
+
+  // Track in memory for reporting
+  errorLog.push(error)
+  if (errorLog.length > MAX_ERROR_LOG_SIZE) {
+    errorLog.shift()
+  }
+
   // Send to service worker for potential analytics
-  if (extensionContextInvalidated) return;
+  if (extensionContextInvalidated) return
   try {
-    chrome.runtime.sendMessage({
-      type: 'ERROR_LOGGED',
-      error
-    }).catch(() => {});
+    chrome.runtime
+      .sendMessage({
+        type: "ERROR_LOGGED",
+        error
+      })
+      .catch(() => {})
   } catch (e) {
-    if (isContextInvalidatedError(e)) extensionContextInvalidated = true;
+    if (isContextInvalidatedError(e)) extensionContextInvalidated = true
   }
 }
 
@@ -148,7 +168,7 @@ function logError(code, message, context = {}) {
  * Warning logging - always shows but not tracked as error
  */
 function logWarn(message, ...args) {
-  console.warn('⚠️ VeloMail:', message, ...args);
+  console.warn("⚠️ VeloMail:", message, ...args)
 }
 
 // ==================== PERFORMANCE MONITORING ====================
@@ -158,7 +178,7 @@ const performanceMetrics = {
   scoreCalculation: [],
   syncLatency: [],
   domQuery: [],
-  
+
   // Counter-based tracking for existing metrics
   updateCount: 0,
   totalUpdateTime: 0,
@@ -166,57 +186,59 @@ const performanceMetrics = {
   heavyOpsTime: 0,
   cacheHits: 0,
   cacheMisses: 0
-};
+}
 
 function trackPerformance(metric, duration) {
-  if (!PERFORMANCE_MONITORING) return;
-  
+  if (!PERFORMANCE_MONITORING) return
+
   if (!performanceMetrics[metric]) {
-    performanceMetrics[metric] = [];
+    performanceMetrics[metric] = []
   }
-  
-  performanceMetrics[metric].push(duration);
-  
+
+  performanceMetrics[metric].push(duration)
+
   // Keep last 100 measurements
   if (performanceMetrics[metric].length > 100) {
-    performanceMetrics[metric].shift();
+    performanceMetrics[metric].shift()
   }
-  
+
   // Warn if performance degrades
   if (performanceMetrics[metric].length >= 10) {
-    const recent = performanceMetrics[metric].slice(-10);
-    const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
-    
+    const recent = performanceMetrics[metric].slice(-10)
+    const avg = recent.reduce((a, b) => a + b, 0) / recent.length
+
     const thresholds = {
       previewRender: 100,
       scoreCalculation: 50,
       syncLatency: 200,
       domQuery: 10
-    };
-    
+    }
+
     if (avg > thresholds[metric]) {
-      logWarn(`Performance degraded: ${metric} averaging ${avg.toFixed(2)}ms (threshold: ${thresholds[metric]}ms)`);
+      logWarn(
+        `Performance degraded: ${metric} averaging ${avg.toFixed(2)}ms (threshold: ${thresholds[metric]}ms)`
+      )
     }
   }
 }
 
 function measurePerformance(fn, metricName) {
-  return async function(...args) {
-    const start = performance.now();
+  return async function (...args) {
+    const start = performance.now()
     try {
-      const result = await fn.apply(this, args);
-      const duration = performance.now() - start;
-      trackPerformance(metricName, duration);
+      const result = await fn.apply(this, args)
+      const duration = performance.now() - start
+      trackPerformance(metricName, duration)
       if (DEBUG && duration > 50) {
-        log(`${metricName} took ${duration.toFixed(2)}ms`);
+        log(`${metricName} took ${duration.toFixed(2)}ms`)
       }
-      return result;
+      return result
     } catch (error) {
-      const duration = performance.now() - start;
-      logError(`${metricName.toUpperCase()}_ERROR`, error.message, { duration });
-      throw error;
+      const duration = performance.now() - start
+      logError(`${metricName.toUpperCase()}_ERROR`, error.message, { duration })
+      throw error
     }
-  };
+  }
 }
 
 // ==================== SAFE DOM OPERATIONS ====================
@@ -225,10 +247,12 @@ function measurePerformance(fn, metricName) {
  */
 function safeQuerySelector(selector, context = document) {
   try {
-    return context.querySelector(selector);
+    return context.querySelector(selector)
   } catch (error) {
-    logError('DOM_QUERY_ERROR', `Failed to query: ${selector}`, { error: error.message });
-    return null;
+    logError("DOM_QUERY_ERROR", `Failed to query: ${selector}`, {
+      error: error.message
+    })
+    return null
   }
 }
 
@@ -237,10 +261,12 @@ function safeQuerySelector(selector, context = document) {
  */
 function safeQuerySelectorAll(selector, context = document) {
   try {
-    return Array.from(context.querySelectorAll(selector));
+    return Array.from(context.querySelectorAll(selector))
   } catch (error) {
-    logError('DOM_QUERY_ALL_ERROR', `Failed to query all: ${selector}`, { error: error.message });
-    return [];
+    logError("DOM_QUERY_ALL_ERROR", `Failed to query all: ${selector}`, {
+      error: error.message
+    })
+    return []
   }
 }
 
@@ -249,91 +275,107 @@ function safeQuerySelectorAll(selector, context = document) {
  */
 function safeCreateElement(tag, attributes = {}) {
   try {
-    const element = document.createElement(tag);
+    const element = document.createElement(tag)
     Object.entries(attributes).forEach(([key, value]) => {
       try {
-        if (key === 'style' && typeof value === 'object') {
-          Object.assign(element.style, value);
+        if (key === "style" && typeof value === "object") {
+          Object.assign(element.style, value)
         } else {
-          element[key] = value;
+          element[key] = value
         }
       } catch (e) {
-        logError('ELEMENT_ATTRIBUTE_ERROR', `Failed to set ${key}`, { tag, error: e.message });
+        logError("ELEMENT_ATTRIBUTE_ERROR", `Failed to set ${key}`, {
+          tag,
+          error: e.message
+        })
       }
-    });
-    return element;
+    })
+    return element
   } catch (error) {
-    logError('CREATE_ELEMENT_ERROR', `Failed to create ${tag}`, { error: error.message });
-    return null;
+    logError("CREATE_ELEMENT_ERROR", `Failed to create ${tag}`, {
+      error: error.message
+    })
+    return null
   }
 }
 
-const VELOMAIL_VERSION = typeof chrome !== 'undefined' && chrome?.runtime?.getManifest?.()?.version || '1.0.1';
+const VELOMAIL_VERSION =
+  (typeof chrome !== "undefined" &&
+    chrome?.runtime?.getManifest?.()?.version) ||
+  "1.0.1"
 
 // ==================== STATE MANAGEMENT ====================
-let overlayContainer = null;
-let shadowRoot = null;
-let isDragging = false;
-let hasMoved = false;
-let dragOffset = { x: 0, y: 0 };
-let currentComposeBody = null;
-let currentSubjectField = null;
-let isCollapsed = false;
-let isAttachedToCompose = false; // Track if we're syncing with compose (separate from UI visibility)
+let overlayContainer = null
+let shadowRoot = null
+let isDragging = false
+let hasMoved = false
+let dragOffset = { x: 0, y: 0 }
+let currentComposeBody = null
+let currentSubjectField = null
+let isCollapsed = false
+let isAttachedToCompose = false // Track if we're syncing with compose (separate from UI visibility)
 
 // Settings cache
 let settings = {
   autoShow: true
-};
+}
 
 // Pre-flight checklist state
 let preflightChecks = {
-  subjectFrontLoaded: false,   // Subject hook in first 30 chars
-  ctaAboveFold: false,          // CTA visible in first screen (250 chars)
-  linkTapability: false         // Links properly spaced and sized
-};
+  subjectFrontLoaded: false, // Subject hook in first 30 chars
+  ctaAboveFold: false, // CTA visible in first screen (250 chars)
+  linkTapability: false // Links properly spaced and sized
+}
 
 // Track last logged warning state to prevent duplicates
-let lastWarningState = null;
+let lastWarningState = null
 
 // Last state sent to worker (for popup REQUEST_EMAIL_STATE)
-let lastSentEmailState = null;
+let lastSentEmailState = null
 
 // ==================== STATE VALIDATION ====================
 /**
  * Validate email state object
  */
 function validateEmailState(state) {
-  if (!state || typeof state !== 'object') {
-    return false;
+  if (!state || typeof state !== "object") {
+    return false
   }
-  
+
   // Required fields
-  const required = ['isActive', 'html', 'text', 'subject'];
+  const required = ["isActive", "html", "text", "subject"]
   for (const field of required) {
     if (!(field in state)) {
-      logError('STATE_VALIDATION_ERROR', `Missing required field: ${field}`, { state });
-      return false;
+      logError("STATE_VALIDATION_ERROR", `Missing required field: ${field}`, {
+        state
+      })
+      return false
     }
   }
-  
+
   // Type validation
-  if (typeof state.isActive !== 'boolean') {
-    logError('STATE_VALIDATION_ERROR', 'isActive must be boolean', { type: typeof state.isActive });
-    return false;
+  if (typeof state.isActive !== "boolean") {
+    logError("STATE_VALIDATION_ERROR", "isActive must be boolean", {
+      type: typeof state.isActive
+    })
+    return false
   }
-  
-  if (typeof state.html !== 'string' || typeof state.text !== 'string' || typeof state.subject !== 'string') {
-    logError('STATE_VALIDATION_ERROR', 'html, text, subject must be strings');
-    return false;
+
+  if (
+    typeof state.html !== "string" ||
+    typeof state.text !== "string" ||
+    typeof state.subject !== "string"
+  ) {
+    logError("STATE_VALIDATION_ERROR", "html, text, subject must be strings")
+    return false
   }
-  
+
   // Bounds validation
   if (state.text.length > 1000000) {
-    logWarn('Email text is very large', { length: state.text.length });
+    logWarn("Email text is very large", { length: state.text.length })
   }
-  
-  return true;
+
+  return true
 }
 
 /**
@@ -342,25 +384,25 @@ function validateEmailState(state) {
 function getDefaultState() {
   return {
     isActive: false,
-    html: '',
-    text: '',
-    subject: '',
+    html: "",
+    text: "",
+    subject: "",
     characterCount: 0,
     wordCount: 0,
     environment: null,
     mobileScore: null,
     timestamp: Date.now()
-  };
+  }
 }
 
 // ==================== PERFORMANCE OPTIMIZATION ====================
 // Debounce timers and RAF handles
-let updatePreviewRAF = null;
-let heavyOperationsTimer = null;
-let serviceWorkerThrottle = null;
-let preflightRefreshInterval = null;  // Periodic full update so tips stay current when not typing
-let lastContentHash = null;
-let lastSubjectHash = null;
+let updatePreviewRAF = null
+let heavyOperationsTimer = null
+let serviceWorkerThrottle = null
+let preflightRefreshInterval = null // Periodic full update so tips stay current when not typing
+let lastContentHash = null
+let lastSubjectHash = null
 
 // Performance metrics (merged with new tracking system above at line 112)
 // Note: performanceMetrics is declared earlier in the file with array-based tracking
@@ -368,58 +410,58 @@ let lastSubjectHash = null;
 // Enhanced caching with LRU (Least Recently Used) eviction
 class LRUCache {
   constructor(maxSize = 50) {
-    this.maxSize = maxSize;
-    this.cache = new Map();
+    this.maxSize = maxSize
+    this.cache = new Map()
   }
-  
+
   get(key) {
-    if (!this.cache.has(key)) return undefined;
-    
+    if (!this.cache.has(key)) return undefined
+
     // Move to end (most recently used)
-    const value = this.cache.get(key);
-    this.cache.delete(key);
-    this.cache.set(key, value);
-    return value;
+    const value = this.cache.get(key)
+    this.cache.delete(key)
+    this.cache.set(key, value)
+    return value
   }
-  
+
   set(key, value) {
     // Delete if exists (to reorder)
     if (this.cache.has(key)) {
-      this.cache.delete(key);
+      this.cache.delete(key)
     }
-    
+
     // Add to end
-    this.cache.set(key, value);
-    
+    this.cache.set(key, value)
+
     // Evict oldest if over capacity
     if (this.cache.size > this.maxSize) {
-      const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      const firstKey = this.cache.keys().next().value
+      this.cache.delete(firstKey)
     }
   }
-  
+
   clear() {
-    this.cache.clear();
+    this.cache.clear()
   }
-  
+
   size() {
-    return this.cache.size;
+    return this.cache.size
   }
 }
 
 // Cache for expensive operations with LRU eviction
 const operationCache = {
-  ctaCheck: new LRUCache(30),        // CTA detection results
+  ctaCheck: new LRUCache(30), // CTA detection results
   preflightResults: new LRUCache(30), // Pre-flight check results
-  scoreCalc: new LRUCache(30)         // Score calculation results
-};
+  scoreCalc: new LRUCache(30) // Score calculation results
+}
 
 // Reusable DOM container for measurements (avoid creating/destroying)
-let measurementContainer = null;
+let measurementContainer = null
 
 function getMeasurementContainer() {
   if (!measurementContainer) {
-    measurementContainer = document.createElement('div');
+    measurementContainer = document.createElement("div")
     measurementContainer.style.cssText = `
       position: absolute;
       left: -9999px;
@@ -432,10 +474,10 @@ function getMeasurementContainer() {
       padding: 18px 16px;
       visibility: hidden;
       pointer-events: none;
-    `;
-    document.body.appendChild(measurementContainer);
+    `
+    document.body.appendChild(measurementContainer)
   }
-  return measurementContainer;
+  return measurementContainer
 }
 
 // ==================== PERFORMANCE UTILITIES ====================
@@ -446,14 +488,14 @@ function getMeasurementContainer() {
  * @returns {number} Hash code
  */
 function fastHash(str) {
-  let hash = 0;
-  if (str.length === 0) return hash;
+  let hash = 0
+  if (str.length === 0) return hash
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
+    const char = str.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32bit integer
   }
-  return hash;
+  return hash
 }
 
 /**
@@ -463,15 +505,15 @@ function fastHash(str) {
  * @returns {Function} Debounced function
  */
 function debounce(func, wait) {
-  let timeout;
+  let timeout
   return function executedFunction(...args) {
     const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
 }
 
 /**
@@ -481,40 +523,57 @@ function debounce(func, wait) {
  * @returns {Function} Throttled function
  */
 function throttle(func, wait) {
-  let inThrottle;
-  return function(...args) {
+  let inThrottle
+  return function (...args) {
     if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, wait);
+      func.apply(this, args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), wait)
     }
-  };
+  }
 }
 
 /**
  * Log performance metric
  */
 function logPerformance(operation, duration) {
-  if (operation === 'update') {
-    performanceMetrics.updateCount++;
-    performanceMetrics.totalUpdateTime += duration;
-  } else if (operation === 'heavy') {
-    performanceMetrics.heavyOpsCount++;
-    performanceMetrics.heavyOpsTime += duration;
+  if (operation === "update") {
+    performanceMetrics.updateCount++
+    performanceMetrics.totalUpdateTime += duration
+  } else if (operation === "heavy") {
+    performanceMetrics.heavyOpsCount++
+    performanceMetrics.heavyOpsTime += duration
   }
-  
+
   // Log summary every 50 updates
-  if (performanceMetrics.updateCount % 50 === 0 && performanceMetrics.updateCount > 0) {
-    const avgUpdate = (performanceMetrics.totalUpdateTime / performanceMetrics.updateCount).toFixed(2);
-    const avgHeavy = performanceMetrics.heavyOpsCount > 0 ? 
-      (performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount).toFixed(2) : 0;
-    const cacheHitRate = performanceMetrics.cacheHits + performanceMetrics.cacheMisses > 0 ?
-      ((performanceMetrics.cacheHits / (performanceMetrics.cacheHits + performanceMetrics.cacheMisses)) * 100).toFixed(1) : 0;
-    
-    log('📊 VeloMail Performance Summary:');
-    log(`   Updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
-    log(`   Heavy ops: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
-    log(`   Cache hit rate: ${cacheHitRate}%`);
+  if (
+    performanceMetrics.updateCount % 50 === 0 &&
+    performanceMetrics.updateCount > 0
+  ) {
+    const avgUpdate = (
+      performanceMetrics.totalUpdateTime / performanceMetrics.updateCount
+    ).toFixed(2)
+    const avgHeavy =
+      performanceMetrics.heavyOpsCount > 0
+        ? (
+            performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount
+          ).toFixed(2)
+        : 0
+    const cacheHitRate =
+      performanceMetrics.cacheHits + performanceMetrics.cacheMisses > 0
+        ? (
+            (performanceMetrics.cacheHits /
+              (performanceMetrics.cacheHits + performanceMetrics.cacheMisses)) *
+            100
+          ).toFixed(1)
+        : 0
+
+    log("📊 VeloMail Performance Summary:")
+    log(`   Updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`)
+    log(
+      `   Heavy ops: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`
+    )
+    log(`   Cache hit rate: ${cacheHitRate}%`)
   }
 }
 
@@ -522,13 +581,13 @@ function logPerformance(operation, duration) {
 // Task 1: Detection selectors for compose container
 const GMAIL_SELECTORS = {
   // Compose window containers (Task 1 requirement: .AD or div[role="dialog"])
-  composeWindow: '[role="dialog"]',      // Primary: Modern Gmail compose
-  composeWindowAD: '.AD',                 // Gmail compose class
-  composeWindowAlt: '.nH.aHU',           // Alternate compose selector
-  
+  composeWindow: '[role="dialog"]', // Primary: Modern Gmail compose
+  composeWindowAD: ".AD", // Gmail compose class
+  composeWindowAlt: ".nH.aHU", // Alternate compose selector
+
   // Compose body (Task 3 requirement: div[role="textbox"])
   composeBody: '[role="textbox"][aria-label*="Message"]',
-  
+
   // Fallback selectors for different Gmail versions
   composeBodyFallbacks: [
     '[role="textbox"][aria-label*="message"]',
@@ -537,13 +596,13 @@ const GMAIL_SELECTORS = {
     '.editable[role="textbox"]',
     '[aria-label*="Message body"]',
     'div[contenteditable="true"][aria-label]',
-    '.Am.Al.editable',
+    ".Am.Al.editable",
     'div[g_editable="true"]'
   ],
-  
+
   // Subject line
   subjectField: 'input[name="subjectbox"]'
-};
+}
 
 // ==================== INITIALIZATION ====================
 
@@ -551,36 +610,36 @@ const GMAIL_SELECTORS = {
  * Initialize the content script
  */
 async function initialize() {
-  if (extensionContextInvalidated) return;
-  log('🚀 Initializing VeloMail');
-  
+  if (extensionContextInvalidated) return
+  log("🚀 Initializing VeloMail")
+
   // Wait for Gmail to fully load
   if (!document.querySelector('[role="main"]')) {
-    log('⏳ Waiting for Gmail to load...');
-    setTimeout(initialize, 1000);
-    return;
+    log("⏳ Waiting for Gmail to load...")
+    setTimeout(initialize, 1000)
+    return
   }
-  
-  log('✅ Gmail loaded, starting compose detection');
-  
+
+  log("✅ Gmail loaded, starting compose detection")
+
   // Load settings from storage
-  await loadSettings();
-  
+  await loadSettings()
+
   // Listen for isPaid changes (e.g. after purchase on success page)
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (extensionContextInvalidated) return;
-    if (area === 'sync' && changes.isPaid) {
+    if (extensionContextInvalidated) return
+    if (area === "sync" && changes.isPaid) {
       updatePreviewPremiumBadge().catch((e) => {
-        if (isContextInvalidatedError(e)) extensionContextInvalidated = true;
-      });
+        if (isContextInvalidatedError(e)) extensionContextInvalidated = true
+      })
     }
-  });
-  
+  })
+
   // Check if we should show first compose guide
-  checkAndShowOnboarding();
-  
+  checkAndShowOnboarding()
+
   // Task 1: Use MutationObserver to watch for compose window
-  watchForComposeWindow();
+  watchForComposeWindow()
 }
 
 /**
@@ -588,26 +647,34 @@ async function initialize() {
  */
 async function checkAndShowOnboarding() {
   try {
-    const result = await chrome.storage.local.get(['onboardingState', 'milestones']);
-    const onboardingState = result.onboardingState || {};
-    const milestones = result.milestones || [];
-    
+    const result = await chrome.storage.local.get([
+      "onboardingState",
+      "milestones"
+    ])
+    const onboardingState = result.onboardingState || {}
+    const milestones = result.milestones || []
+
     // Check if welcome was completed but guide not shown yet
-    const welcomeCompleted = onboardingState.welcomeCompleted || false;
-    const guideShown = onboardingState.firstComposeGuideShown || false;
-    const hasComposedBefore = milestones.find(m => m.id === 'first_compose');
-    const guideSkipped = onboardingState.guideSkipped || false;
-    
-    if (welcomeCompleted && !guideShown && !hasComposedBefore && !guideSkipped) {
-      log('🎯 Showing first compose guide');
-      
+    const welcomeCompleted = onboardingState.welcomeCompleted || false
+    const guideShown = onboardingState.firstComposeGuideShown || false
+    const hasComposedBefore = milestones.find((m) => m.id === "first_compose")
+    const guideSkipped = onboardingState.guideSkipped || false
+
+    if (
+      welcomeCompleted &&
+      !guideShown &&
+      !hasComposedBefore &&
+      !guideSkipped
+    ) {
+      log("🎯 Showing first compose guide")
+
       // Load and show the guide after a short delay
       setTimeout(() => {
-        loadFirstComposeGuide();
-      }, 2000);
+        loadFirstComposeGuide()
+      }, 2000)
     }
   } catch (error) {
-    console.error('❌ Failed to check onboarding status:', error);
+    console.error("❌ Failed to check onboarding status:", error)
   }
 }
 
@@ -619,28 +686,28 @@ function loadFirstComposeGuide() {
   if (window.VeloMailFirstComposeGuide || window.VeloMailGuideLoading) {
     // Script already loaded, show the guide directly
     if (window.VeloMailFirstComposeGuide) {
-      window.VeloMailFirstComposeGuide.showFirstComposeGuide();
+      window.VeloMailFirstComposeGuide.showFirstComposeGuide()
     }
-    return;
+    return
   }
-  
+
   // Mark as loading to prevent duplicate loads
-  window.VeloMailGuideLoading = true;
-  
+  window.VeloMailGuideLoading = true
+
   // Inject the guide script
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('src/lib/first-compose-guide.js');
+  const script = document.createElement("script")
+  script.src = chrome.runtime.getURL("src/lib/first-compose-guide.js")
   script.onload = () => {
-    window.VeloMailGuideLoading = false;
+    window.VeloMailGuideLoading = false
     // Show the guide
     if (window.VeloMailFirstComposeGuide) {
-      window.VeloMailFirstComposeGuide.showFirstComposeGuide();
+      window.VeloMailFirstComposeGuide.showFirstComposeGuide()
     }
-  };
+  }
   script.onerror = () => {
-    window.VeloMailGuideLoading = false;
-  };
-  document.head.appendChild(script);
+    window.VeloMailGuideLoading = false
+  }
+  document.head.appendChild(script)
 }
 
 /**
@@ -649,37 +716,37 @@ function loadFirstComposeGuide() {
  * Selectors: .AD or div[role="dialog"]
  */
 function watchForComposeWindow() {
-  log('👀 Starting MutationObserver for compose detection');
-  
+  log("👀 Starting MutationObserver for compose detection")
+
   const observer = new MutationObserver((mutations) => {
     // Check if compose window exists
-    const composeWindow = findComposeWindow();
-    
+    const composeWindow = findComposeWindow()
+
     // Task 2: Attachment and UI Logic (separated)
     if (composeWindow && !isAttachedToCompose) {
-      log('✅ Compose box detected - attaching for sync');
-      handleComposeDetected(composeWindow);
+      log("✅ Compose box detected - attaching for sync")
+      handleComposeDetected(composeWindow)
     } else if (!composeWindow && isAttachedToCompose) {
-      log('❌ Compose box closed - cleaning up');
-      removePreview();
+      log("❌ Compose box closed - cleaning up")
+      removePreview()
     }
-  });
-  
+  })
+
   // Observe entire body for compose window appearing/disappearing
   observer.observe(document.body, {
     childList: true,
     subtree: true
-  });
-  
-  log('✅ MutationObserver active');
-  
+  })
+
+  log("✅ MutationObserver active")
+
   // Check if compose is already open on page load
-  const existingCompose = findComposeWindow();
+  const existingCompose = findComposeWindow()
   if (existingCompose) {
-    log('✅ Found existing compose window on load');
-    handleComposeDetected(existingCompose);
+    log("✅ Found existing compose window on load")
+    handleComposeDetected(existingCompose)
   } else {
-    log('ℹ️ No compose window open - UI will appear when you click Compose');
+    log("ℹ️ No compose window open - UI will appear when you click Compose")
   }
 }
 
@@ -688,47 +755,53 @@ function watchForComposeWindow() {
  * This ensures sync happens even when autoShow is disabled
  */
 async function handleComposeDetected(composeWindow) {
-  log('📧 Handling compose window detection');
-  log('   autoShow setting:', settings.autoShow);
-  
+  log("📧 Handling compose window detection")
+  log("   autoShow setting:", settings.autoShow)
+
   // CRITICAL: Set flag immediately to prevent duplicate calls while processing
   if (isAttachedToCompose) {
-    log('ℹ️ Already attached to compose - skipping duplicate detection');
-    return;
+    log("ℹ️ Already attached to compose - skipping duplicate detection")
+    return
   }
-  isAttachedToCompose = true; // Set BEFORE async operations to block duplicate calls
-  
+  isAttachedToCompose = true // Set BEFORE async operations to block duplicate calls
+
   // Notify service worker that compose opened
-  const environment = window.location.hostname.includes('mail.google.com') ? 'gmail' : 
-                       window.location.hostname.includes('outlook') ? 'outlook' : 
-                       'unknown';
-  
-  chrome.runtime.sendMessage({
-    type: 'COMPOSE_OPENED',
-    environment: environment
-  }).catch(error => {
-    console.error('❌ Error notifying service worker:', error);
-  });
-  
+  const environment = window.location.hostname.includes("mail.google.com")
+    ? "gmail"
+    : window.location.hostname.includes("outlook")
+      ? "outlook"
+      : "unknown"
+
+  chrome.runtime
+    .sendMessage({
+      type: "COMPOSE_OPENED",
+      environment: environment
+    })
+    .catch((error) => {
+      console.error("❌ Error notifying service worker:", error)
+    })
+
   // Create UI first if autoShow is enabled (so error display works)
   if (settings.autoShow) {
-    log('✅ autoShow enabled - creating preview UI');
-    await createPreviewUI(composeWindow);
+    log("✅ autoShow enabled - creating preview UI")
+    await createPreviewUI(composeWindow)
   }
-  
+
   // Now attach to compose for syncing
-  log('🔗 Attaching to compose window for sync...');
-  const attached = await attachToCompose(composeWindow);
-  
+  log("🔗 Attaching to compose window for sync...")
+  const attached = await attachToCompose(composeWindow)
+
   if (attached) {
-    log('✅ Successfully attached to compose');
+    log("✅ Successfully attached to compose")
   } else {
-    console.error('❌ Failed to attach to compose');
-    isAttachedToCompose = false; // Only reset to false if attachment actually failed
-    
+    console.error("❌ Failed to attach to compose")
+    isAttachedToCompose = false // Only reset to false if attachment actually failed
+
     // Show error if UI exists
     if (settings.autoShow && shadowRoot) {
-      showError('Unable to detect Gmail compose area. Please check console for details.');
+      showError(
+        "Unable to detect Gmail compose area. Please check console for details."
+      )
     }
   }
 }
@@ -739,34 +812,34 @@ async function handleComposeDetected(composeWindow) {
  */
 function findComposeWindow() {
   // Get all dialog elements
-  const dialogs = document.querySelectorAll('[role="dialog"]');
-  
+  const dialogs = document.querySelectorAll('[role="dialog"]')
+
   // Find the one that contains a subject field (compose specific)
   for (let dialog of dialogs) {
-    const hasSubject = dialog.querySelector('input[name="subjectbox"]');
-    const hasTextbox = dialog.querySelector('[role="textbox"]');
-    
+    const hasSubject = dialog.querySelector('input[name="subjectbox"]')
+    const hasTextbox = dialog.querySelector('[role="textbox"]')
+
     if (hasSubject || hasTextbox) {
-      log('✅ Found compose dialog with subject/textbox');
-      return dialog;
+      log("✅ Found compose dialog with subject/textbox")
+      return dialog
     }
   }
-  
+
   // Try .AD class (Gmail compose container)
-  let composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAD);
+  let composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAD)
   if (composeWindow) {
-    log('✅ Found compose with .AD class');
-    return composeWindow;
+    log("✅ Found compose with .AD class")
+    return composeWindow
   }
-  
+
   // Try .nH.aHU (alternate Gmail compose selector)
-  composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAlt);
+  composeWindow = document.querySelector(GMAIL_SELECTORS.composeWindowAlt)
   if (composeWindow) {
-    log('✅ Found compose with .nH.aHU class');
-    return composeWindow;
+    log("✅ Found compose with .nH.aHU class")
+    return composeWindow
   }
-  
-  return null;
+
+  return null
 }
 
 // ==================== UPGRADE MODAL ====================
@@ -776,7 +849,7 @@ function findComposeWindow() {
  * @returns {string} e.g. "Resets at midnight" or "Resets tomorrow"
  */
 function getResetsOnDate() {
-  return 'Resets at midnight';
+  return "Resets at midnight"
 }
 
 /**
@@ -787,11 +860,12 @@ function getResetsOnDate() {
 async function getUpgradeMessage(limitCheck) {
   return {
     title: "You've hit your daily limit",
-    message: 'You get 5 free sends per day. Get Lifetime Access ($29 one-time) for unlimited sends and never wait for a reset again.',
-    cta: 'Get Lifetime Access — $29',
-    urgency: 'high',
+    message:
+      "You get 5 free sends per day. Get Lifetime Access ($29 one-time) for unlimited sends and never wait for a reset again.",
+    cta: "Get Lifetime Access — $29",
+    urgency: "high",
     dismissible: true
-  };
+  }
 }
 
 /**
@@ -800,45 +874,52 @@ async function getUpgradeMessage(limitCheck) {
  * @param {Object} [limitCheck] - Result from checkLimit(); if omitted, will fetch
  */
 async function applyAtLimitUI(limitCheck) {
-  if (!shadowRoot) return;
-  const check = limitCheck || await checkLimit();
-  if (check.allowed) return;
-  
-  const container = shadowRoot.getElementById('previewContainer');
-  const sheet = shadowRoot.getElementById('paywallSheet');
-  const resetsEl = shadowRoot.getElementById('paywallResetsDate');
-  const usageEl = shadowRoot.getElementById('paywallUsageCount');
-  const headlineEl = sheet ? sheet.querySelector('.paywall-sheet-headline') : null;
-  const copyEl = sheet ? sheet.querySelector('.paywall-sheet-copy') : null;
-  const upgradeBtn = shadowRoot.getElementById('paywallUpgradeBtn');
-  if (container) container.classList.add('at-limit');
-  if (resetsEl) resetsEl.textContent = getResetsOnDate() + '.';
-  if (usageEl) usageEl.textContent = '5 / 5 sends used today';
-  if (headlineEl) headlineEl.textContent = "You've hit your daily limit";
-  if (copyEl) copyEl.textContent = 'Upgrade to Lifetime for unlimited sends and never wait for a reset again.';
-  if (upgradeBtn) upgradeBtn.textContent = 'Get Lifetime Access — $29';
+  if (!shadowRoot) return
+  const check = limitCheck || (await checkLimit())
+  if (check.allowed) return
+
+  const container = shadowRoot.getElementById("previewContainer")
+  const sheet = shadowRoot.getElementById("paywallSheet")
+  const resetsEl = shadowRoot.getElementById("paywallResetsDate")
+  const usageEl = shadowRoot.getElementById("paywallUsageCount")
+  const headlineEl = sheet
+    ? sheet.querySelector(".paywall-sheet-headline")
+    : null
+  const copyEl = sheet ? sheet.querySelector(".paywall-sheet-copy") : null
+  const upgradeBtn = shadowRoot.getElementById("paywallUpgradeBtn")
+  if (container) container.classList.add("at-limit")
+  if (resetsEl) resetsEl.textContent = getResetsOnDate() + "."
+  if (usageEl) usageEl.textContent = "5 / 5 sends used today"
+  if (headlineEl) headlineEl.textContent = "You've hit your daily limit"
+  if (copyEl)
+    copyEl.textContent =
+      "Upgrade to Lifetime for unlimited sends and never wait for a reset again."
+  if (upgradeBtn) upgradeBtn.textContent = "Get Lifetime Access — $29"
   if (sheet) {
-    sheet.classList.add('visible');
-    sheet.setAttribute('aria-hidden', 'false');
+    sheet.classList.add("visible")
+    sheet.setAttribute("aria-hidden", "false")
   }
-  
-  const waitBtn = shadowRoot.getElementById('paywallWaitBtn');
-  const paywallUpgradeBtn = shadowRoot.getElementById('paywallUpgradeBtn');
-  if (paywallUpgradeBtn && !paywallUpgradeBtn.hasAttribute('data-paywall-bound')) {
-    paywallUpgradeBtn.setAttribute('data-paywall-bound', '1');
-    paywallUpgradeBtn.addEventListener('click', () => {
-      chrome.runtime.sendMessage({ type: 'OPEN_UPGRADE_URL' });
-    });
+
+  const waitBtn = shadowRoot.getElementById("paywallWaitBtn")
+  const paywallUpgradeBtn = shadowRoot.getElementById("paywallUpgradeBtn")
+  if (
+    paywallUpgradeBtn &&
+    !paywallUpgradeBtn.hasAttribute("data-paywall-bound")
+  ) {
+    paywallUpgradeBtn.setAttribute("data-paywall-bound", "1")
+    paywallUpgradeBtn.addEventListener("click", () => {
+      chrome.runtime.sendMessage({ type: "OPEN_UPGRADE_URL" })
+    })
   }
-  if (waitBtn && !waitBtn.hasAttribute('data-paywall-bound')) {
-    waitBtn.setAttribute('data-paywall-bound', '1');
-    waitBtn.addEventListener('click', () => {
+  if (waitBtn && !waitBtn.hasAttribute("data-paywall-bound")) {
+    waitBtn.setAttribute("data-paywall-bound", "1")
+    waitBtn.addEventListener("click", () => {
       if (sheet) {
-        sheet.classList.remove('visible');
-        sheet.setAttribute('aria-hidden', 'true');
+        sheet.classList.remove("visible")
+        sheet.setAttribute("aria-hidden", "true")
       }
       // Keep blur + lock; user chose to wait
-    });
+    })
   }
 }
 
@@ -848,18 +929,18 @@ async function applyAtLimitUI(limitCheck) {
  */
 async function showUpgradeModal(limitCheck) {
   // Remove any existing modal
-  const existingModal = document.getElementById('velocmail-upgrade-modal');
+  const existingModal = document.getElementById("velocmail-upgrade-modal")
   if (existingModal) {
-    existingModal.remove();
+    existingModal.remove()
   }
-  
+
   // Get upgrade message
-  const upgradeMsg = await getUpgradeMessage(limitCheck);
-  if (!upgradeMsg) return;
-  
+  const upgradeMsg = await getUpgradeMessage(limitCheck)
+  if (!upgradeMsg) return
+
   // Create modal container
-  const modal = document.createElement('div');
-  modal.id = 'velocmail-upgrade-modal';
+  const modal = document.createElement("div")
+  modal.id = "velocmail-upgrade-modal"
   modal.style.cssText = `
     position: fixed;
     top: 0;
@@ -875,10 +956,10 @@ async function showUpgradeModal(limitCheck) {
     z-index: 999999999;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     animation: fadeIn 0.2s ease-out;
-  `;
-  
+  `
+
   // Create modal content
-  const content = document.createElement('div');
+  const content = document.createElement("div")
   content.style.cssText = `
     background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(20px) saturate(180%);
@@ -890,11 +971,15 @@ async function showUpgradeModal(limitCheck) {
     width: 90%;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     animation: slideUp 0.3s ease-out;
-  `;
-  
-  const urgencyColor = upgradeMsg.urgency === 'high' ? '#ef4444' : 
-                       upgradeMsg.urgency === 'medium' ? '#f59e0b' : '#3b82f6';
-  
+  `
+
+  const urgencyColor =
+    upgradeMsg.urgency === "high"
+      ? "#ef4444"
+      : upgradeMsg.urgency === "medium"
+        ? "#f59e0b"
+        : "#3b82f6"
+
   content.innerHTML = `
     <style>
       @keyframes fadeIn {
@@ -990,7 +1075,9 @@ async function showUpgradeModal(limitCheck) {
         " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
           ${upgradeMsg.cta}
         </button>
-        ${upgradeMsg.dismissible ? `
+        ${
+          upgradeMsg.dismissible
+            ? `
         <button id="velocmail-dismiss-btn" style="
           flex: 0;
           background: transparent;
@@ -1005,42 +1092,44 @@ async function showUpgradeModal(limitCheck) {
         " onmouseover="this.style.borderColor='#d1d5db'; this.style.color='#374151'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#6b7280'">
           Maybe Later
         </button>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
       
       <p style="font-size: 12px; color: #9ca3af; margin: 16px 0 0 0;">
         Your data stays private. No credit card required to continue using free tier next month.
       </p>
     </div>
-  `;
-  
-  modal.appendChild(content);
-  document.body.appendChild(modal);
-  
+  `
+
+  modal.appendChild(content)
+  document.body.appendChild(modal)
+
   // Event listeners
-  const upgradeBtn = document.getElementById('velocmail-upgrade-btn');
-  const dismissBtn = document.getElementById('velocmail-dismiss-btn');
-  
-  upgradeBtn?.addEventListener('click', () => {
-    log('💎 Upgrade clicked');
-    chrome.runtime.sendMessage({ type: 'OPEN_UPGRADE_URL' });
-    modal.remove();
-  });
-  
+  const upgradeBtn = document.getElementById("velocmail-upgrade-btn")
+  const dismissBtn = document.getElementById("velocmail-dismiss-btn")
+
+  upgradeBtn?.addEventListener("click", () => {
+    log("💎 Upgrade clicked")
+    chrome.runtime.sendMessage({ type: "OPEN_UPGRADE_URL" })
+    modal.remove()
+  })
+
   if (dismissBtn) {
-    dismissBtn.addEventListener('click', () => {
-      log('👋 Upgrade dismissed');
-      modal.remove();
-    });
+    dismissBtn.addEventListener("click", () => {
+      log("👋 Upgrade dismissed")
+      modal.remove()
+    })
   }
-  
+
   // Close on backdrop click (only if dismissible)
   if (upgradeMsg.dismissible) {
-    modal.addEventListener('click', (e) => {
+    modal.addEventListener("click", (e) => {
       if (e.target === modal) {
-        modal.remove();
+        modal.remove()
       }
-    });
+    })
   }
 }
 
@@ -1053,51 +1142,58 @@ async function showUpgradeModal(limitCheck) {
  * @param {HTMLElement} composeWindow - The detected compose window element
  */
 async function createPreviewUI(composeWindow) {
-  if (extensionContextInvalidated) return;
+  if (extensionContextInvalidated) return
   // Check both JS variable AND actual DOM element
-  const existingOverlay = document.getElementById('velomail-overlay');
-  
-  log('🔍 DEBUG: createPreviewUI called', {
+  const existingOverlay = document.getElementById("velomail-overlay")
+
+  log("🔍 DEBUG: createPreviewUI called", {
     overlayContainer: !!overlayContainer,
     existingOverlay: !!existingOverlay
-  });
-  
+  })
+
   if (overlayContainer || existingOverlay) {
     if (existingOverlay && !overlayContainer) {
       // Clean up orphaned overlay from previous session
-      log('✅ FIX APPLIED: 🧹 Cleaning orphaned overlay element (preventing duplication)');
-      existingOverlay.remove();
+      log(
+        "✅ FIX APPLIED: 🧹 Cleaning orphaned overlay element (preventing duplication)"
+      )
+      existingOverlay.remove()
       // Continue to create new one
     } else {
-      log('ℹ️ Preview UI already exists (skipping creation)');
-      return;
+      log("ℹ️ Preview UI already exists (skipping creation)")
+      return
     }
   }
-  
-  log('🎨 Creating new preview UI...');
-  
+
+  log("🎨 Creating new preview UI...")
+
   // ==================== USAGE LIMIT CHECK ====================
   // Check if user has reached their free tier limit
-  log('Checking usage limits...');
-  const startUsageCheck = performance.now();
-  const limitCheck = await checkLimit();
-  trackPerformance('usageCheck', performance.now() - startUsageCheck);
-  
+  log("Checking usage limits...")
+  const startUsageCheck = performance.now()
+  const limitCheck = await checkLimit()
+  trackPerformance("usageCheck", performance.now() - startUsageCheck)
+
   if (!limitCheck.allowed) {
-    console.warn('⛔ VeloMail: Usage limit reached - will create preview with blur + paywall', limitCheck);
+    console.warn(
+      "⛔ VeloMail: Usage limit reached - will create preview with blur + paywall",
+      limitCheck
+    )
     // Still create preview; applyAtLimitUI will blur + show paywall + lock toggles
   } else if (limitCheck.isApproachingLimit) {
-    console.warn(`⚠️ VeloMail: Approaching limit - ${limitCheck.remaining} previews remaining`);
+    console.warn(
+      `⚠️ VeloMail: Approaching limit - ${limitCheck.remaining} previews remaining`
+    )
   } else {
-    log('✅ VeloMail: Usage check passed, creating preview...', limitCheck);
+    log("✅ VeloMail: Usage check passed, creating preview...", limitCheck)
   }
-  
-  log('Creating Phone Preview UI');
-  
+
+  log("Creating Phone Preview UI")
+
   // Create container with fixed positioning
   try {
-    overlayContainer = document.createElement('div');
-    overlayContainer.id = 'velomail-overlay';
+    overlayContainer = document.createElement("div")
+    overlayContainer.id = "velomail-overlay"
     overlayContainer.style.cssText = `
       position: fixed;
       top: 80px;
@@ -1105,84 +1201,88 @@ async function createPreviewUI(composeWindow) {
       z-index: 999999;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       pointer-events: auto;
-    `;
-    
+    `
+
     // Attach Shadow DOM for style isolation
     // CRUCIAL: mode: 'open' allows styling isolation from Gmail's global styles
-    shadowRoot = overlayContainer.attachShadow({ mode: 'open' });
-    shadowRoot.innerHTML = getOverlayHTML();
-    
+    shadowRoot = overlayContainer.attachShadow({ mode: "open" })
+    shadowRoot.innerHTML = getOverlayHTML()
+
     // Append to body
-    document.body.appendChild(overlayContainer);
-    
+    document.body.appendChild(overlayContainer)
+
     // Setup dragging and interactions
-    setupEventListeners();
-    
-    log('Phone Preview UI injected');
+    setupEventListeners()
+
+    log("Phone Preview UI injected")
   } catch (error) {
-    console.error('❌ VeloMail: Failed to create preview overlay:', error);
-    logError('PREVIEW_CREATION_FAILED', 'Failed to create preview overlay', { error: error.message });
-    return;
+    console.error("❌ VeloMail: Failed to create preview overlay:", error)
+    logError("PREVIEW_CREATION_FAILED", "Failed to create preview overlay", {
+      error: error.message
+    })
+    return
   }
-  
+
   // Verify shadow DOM elements exist
   try {
-    const previewContent = shadowRoot.getElementById('previewContent');
-    const subjectDisplay = shadowRoot.getElementById('subjectDisplay');
-    const dragHandle = shadowRoot.getElementById('dragHandle');
-    
+    const previewContent = shadowRoot.getElementById("previewContent")
+    const subjectDisplay = shadowRoot.getElementById("subjectDisplay")
+    const dragHandle = shadowRoot.getElementById("dragHandle")
+
     if (!previewContent || !subjectDisplay || !dragHandle) {
-      console.error('❌ VeloMail: Critical shadow DOM elements missing', {
+      console.error("❌ VeloMail: Critical shadow DOM elements missing", {
         previewContent: !!previewContent,
         subjectDisplay: !!subjectDisplay,
         dragHandle: !!dragHandle
-      });
-      logError('SHADOW_DOM_ERROR', 'Critical shadow DOM elements missing', {
+      })
+      logError("SHADOW_DOM_ERROR", "Critical shadow DOM elements missing", {
         previewContent: !!previewContent,
         subjectDisplay: !!subjectDisplay,
         dragHandle: !!dragHandle
-      });
-      return;
+      })
+      return
     }
-    
-    log('✅ VeloMail: Shadow DOM elements verified');
-    log('Shadow DOM elements verified');
+
+    log("✅ VeloMail: Shadow DOM elements verified")
+    log("Shadow DOM elements verified")
   } catch (error) {
-    console.error('❌ VeloMail: Failed to verify shadow DOM:', error);
-    logError('SHADOW_DOM_VERIFY_ERROR', 'Failed to verify shadow DOM', { error: error.message });
-    return;
+    console.error("❌ VeloMail: Failed to verify shadow DOM:", error)
+    logError("SHADOW_DOM_VERIFY_ERROR", "Failed to verify shadow DOM", {
+      error: error.message
+    })
+    return
   }
-  
-  log('✅ Preview UI created successfully');
-  
+
+  log("✅ Preview UI created successfully")
+
   if (!limitCheck.allowed) {
-    applyAtLimitUI(limitCheck);
+    applyAtLimitUI(limitCheck)
   }
-  
+
   // ==================== PREMIUM BADGE ====================
-  updatePreviewPremiumBadge();
-  
+  updatePreviewPremiumBadge()
+
   // ==================== ONBOARDING: FIRST PREVIEW MILESTONE ====================
-  checkFirstPreviewMilestone();
+  checkFirstPreviewMilestone()
 }
 
 /**
  * Show or hide the Premium badge in the preview based on isPaid status
  */
 async function updatePreviewPremiumBadge() {
-  if (!shadowRoot) return;
+  if (!shadowRoot) return
   try {
-    const { isPaid } = await chrome.storage.sync.get(['isPaid']);
-    const badge = shadowRoot.getElementById('previewPremiumBadge');
+    const { isPaid } = await chrome.storage.sync.get(["isPaid"])
+    const badge = shadowRoot.getElementById("previewPremiumBadge")
     if (badge) {
       if (isPaid === true) {
-        badge.classList.remove('hidden');
+        badge.classList.remove("hidden")
       } else {
-        badge.classList.add('hidden');
+        badge.classList.add("hidden")
       }
     }
   } catch (e) {
-    console.warn('VeloMail: Could not update premium badge', e);
+    console.warn("VeloMail: Could not update premium badge", e)
   }
 }
 
@@ -1191,28 +1291,31 @@ async function updatePreviewPremiumBadge() {
  */
 async function checkFirstPreviewMilestone() {
   try {
-    const result = await chrome.storage.local.get(['milestones', 'onboardingState']);
-    const milestones = result.milestones || [];
-    const onboardingState = result.onboardingState || {};
-    
-    const hasFirstPreview = milestones.find(m => m.id === 'first_preview');
-    
+    const result = await chrome.storage.local.get([
+      "milestones",
+      "onboardingState"
+    ])
+    const milestones = result.milestones || []
+    const onboardingState = result.onboardingState || {}
+
+    const hasFirstPreview = milestones.find((m) => m.id === "first_preview")
+
     if (!hasFirstPreview) {
-      log('🎉 First preview milestone!');
-      
+      log("🎉 First preview milestone!")
+
       // Send message to service worker to track milestone
       chrome.runtime.sendMessage({
-        type: 'MILESTONE_ACHIEVED',
-        milestoneId: 'first_preview'
-      });
-      
+        type: "MILESTONE_ACHIEVED",
+        milestoneId: "first_preview"
+      })
+
       // Wait for first score update, then show celebration
       setTimeout(() => {
-        showFirstPreviewCelebrationIfNeeded();
-      }, 3000);
+        showFirstPreviewCelebrationIfNeeded()
+      }, 3000)
     }
   } catch (error) {
-    console.error('❌ Failed to check first preview milestone:', error);
+    console.error("❌ Failed to check first preview milestone:", error)
   }
 }
 
@@ -1228,51 +1331,68 @@ async function showFirstPreviewCelebrationIfNeeded() {
         // Wait for the existing load to complete
         await new Promise((resolve) => {
           const checkInterval = setInterval(() => {
-            if (window.VeloMailFirstComposeGuide || !window.VeloMailGuideLoading) {
-              clearInterval(checkInterval);
-              resolve();
+            if (
+              window.VeloMailFirstComposeGuide ||
+              !window.VeloMailGuideLoading
+            ) {
+              clearInterval(checkInterval)
+              resolve()
             }
-          }, 100);
-        });
+          }, 100)
+        })
       } else {
         // Load the script
-        window.VeloMailGuideLoading = true;
+        window.VeloMailGuideLoading = true
         await new Promise((resolve) => {
-          const script = document.createElement('script');
-          script.src = chrome.runtime.getURL('src/lib/first-compose-guide.js');
+          const script = document.createElement("script")
+          script.src = chrome.runtime.getURL("src/lib/first-compose-guide.js")
           script.onload = () => {
-            window.VeloMailGuideLoading = false;
-            resolve();
-          };
+            window.VeloMailGuideLoading = false
+            resolve()
+          }
           script.onerror = () => {
-            window.VeloMailGuideLoading = false;
-            resolve();
-          };
-          document.head.appendChild(script);
-        });
+            window.VeloMailGuideLoading = false
+            resolve()
+          }
+          document.head.appendChild(script)
+        })
       }
     }
-    
-    const result = await chrome.storage.local.get(['milestones', 'onboardingState']);
-    const milestones = result.milestones || [];
-    const onboardingState = result.onboardingState || {};
-    const hasFirstPreview = milestones.find(m => m.id === 'first_preview');
-    const celebrationShown = onboardingState.firstPreviewCelebrationShown || false;
-    
+
+    const result = await chrome.storage.local.get([
+      "milestones",
+      "onboardingState"
+    ])
+    const milestones = result.milestones || []
+    const onboardingState = result.onboardingState || {}
+    const hasFirstPreview = milestones.find((m) => m.id === "first_preview")
+    const celebrationShown =
+      onboardingState.firstPreviewCelebrationShown || false
+
     // Get current email state to show score
-    chrome.runtime.sendMessage({ type: 'GET_CURRENT_EMAIL_STATE' }, (response) => {
-      if (response && response.state && response.state.mobileScore && !celebrationShown) {
-        if (window.VeloMailFirstComposeGuide) {
-          window.VeloMailFirstComposeGuide.showFirstPreviewCelebration(response.state.mobileScore);
-          
-          // Mark celebration as shown
-          onboardingState.firstPreviewCelebrationShown = true;
-          chrome.storage.local.set({ onboardingState });
+    chrome.runtime.sendMessage(
+      { type: "GET_CURRENT_EMAIL_STATE" },
+      (response) => {
+        if (
+          response &&
+          response.state &&
+          response.state.mobileScore &&
+          !celebrationShown
+        ) {
+          if (window.VeloMailFirstComposeGuide) {
+            window.VeloMailFirstComposeGuide.showFirstPreviewCelebration(
+              response.state.mobileScore
+            )
+
+            // Mark celebration as shown
+            onboardingState.firstPreviewCelebrationShown = true
+            chrome.storage.local.set({ onboardingState })
+          }
         }
       }
-    });
+    )
   } catch (error) {
-    console.error('❌ Failed to show first preview celebration:', error);
+    console.error("❌ Failed to show first preview celebration:", error)
   }
 }
 
@@ -1286,7 +1406,7 @@ function getOverlayHTML() {
     <div class="preview-container" id="previewContainer">
       <!-- Collapsed Logo State -->
       <div class="collapsed-logo" id="collapsedLogo" style="display: none;">
-        <img class="collapsed-logo-img" src="${chrome.runtime.getURL('assets/images/icon48.png')}?v=${chrome.runtime.getManifest().version}" width="36" height="36" alt="VeloMail" draggable="false" />
+        <img class="collapsed-logo-img" src="${chrome.runtime.getURL("assets/images/icon48.png")}?v=${chrome.runtime.getManifest().version}" width="36" height="36" alt="VeloMail" draggable="false" />
       </div>
       
       <!-- Full Phone Preview -->
@@ -1395,7 +1515,7 @@ function getOverlayHTML() {
       <!-- Sent toast notification -->
       <div class="sent-toast" id="sentToast" aria-live="polite"></div>
     </div>
-  `;
+  `
 }
 
 /**
@@ -2276,7 +2396,7 @@ function getOverlayStyles() {
         background: rgba(255, 255, 255, 0.35);
       }
     }
-  `;
+  `
 }
 
 // ==================== TASK 5: MAKE IT MOVABLE (DRAGGABLE) ====================
@@ -2285,80 +2405,83 @@ function getOverlayStyles() {
  * Setup event listeners - dragging and controls
  */
 function setupEventListeners() {
-  if (!shadowRoot) return;
-  
+  if (!shadowRoot) return
+
   // Draggable phone
-  const dragHandle = shadowRoot.getElementById('dragHandle');
+  const dragHandle = shadowRoot.getElementById("dragHandle")
   if (dragHandle) {
-    dragHandle.addEventListener('mousedown', startDragging);
-    dragHandle.addEventListener('dragstart', (e) => e.preventDefault()); // Prevent browser ghost image
+    dragHandle.addEventListener("mousedown", startDragging)
+    dragHandle.addEventListener("dragstart", (e) => e.preventDefault()) // Prevent browser ghost image
   }
-  
+
   // Collapse button
-  const collapseBtn = shadowRoot.getElementById('collapseBtn');
+  const collapseBtn = shadowRoot.getElementById("collapseBtn")
   if (collapseBtn) {
-    collapseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleCollapse();
-    });
+    collapseBtn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      toggleCollapse()
+    })
   }
-  
+
   // Dark mode sim toggle
-  const darkSimToggle = shadowRoot.getElementById('darkSimToggle');
-  const phoneScreen = shadowRoot.getElementById('phoneScreen');
+  const darkSimToggle = shadowRoot.getElementById("darkSimToggle")
+  const phoneScreen = shadowRoot.getElementById("phoneScreen")
   if (darkSimToggle && phoneScreen) {
-    darkSimToggle.addEventListener('click', () => {
-      phoneScreen.classList.toggle('dark-mode-sim');
-      darkSimToggle.classList.toggle('active', phoneScreen.classList.contains('dark-mode-sim'));
-    });
+    darkSimToggle.addEventListener("click", () => {
+      phoneScreen.classList.toggle("dark-mode-sim")
+      darkSimToggle.classList.toggle(
+        "active",
+        phoneScreen.classList.contains("dark-mode-sim")
+      )
+    })
   }
-  
+
   // Collapsed logo (to expand and drag)
-  const collapsedLogo = shadowRoot.getElementById('collapsedLogo');
+  const collapsedLogo = shadowRoot.getElementById("collapsedLogo")
   if (collapsedLogo) {
-    collapsedLogo.addEventListener('click', (e) => {
+    collapsedLogo.addEventListener("click", (e) => {
       // Only toggle if we didn't just drag
       if (!hasMoved) {
-        toggleCollapse();
+        toggleCollapse()
       }
-    });
-    collapsedLogo.addEventListener('mousedown', startDragging);
-    collapsedLogo.addEventListener('dragstart', (e) => e.preventDefault()); // Prevent browser ghost image
+    })
+    collapsedLogo.addEventListener("mousedown", startDragging)
+    collapsedLogo.addEventListener("dragstart", (e) => e.preventDefault()) // Prevent browser ghost image
   }
-  
+
   // Global mouse events for dragging
   // Remove existing listeners first to prevent duplicates
-  document.removeEventListener('mousemove', handleDragging);
-  document.removeEventListener('mouseup', stopDragging);
+  document.removeEventListener("mousemove", handleDragging)
+  document.removeEventListener("mouseup", stopDragging)
   // Now add fresh listeners
-  document.addEventListener('mousemove', handleDragging);
-  document.addEventListener('mouseup', stopDragging);
-  
+  document.addEventListener("mousemove", handleDragging)
+  document.addEventListener("mouseup", stopDragging)
+
   // Watch for Gmail toolbar interactions (formatting, attachments, etc.)
-  watchForToolbarInteractions();
+  watchForToolbarInteractions()
 }
 
 /**
  * Toggle collapse/expand preview
  */
 function toggleCollapse() {
-  if (!shadowRoot) return;
-  
-  const phoneMockup = shadowRoot.querySelector('.phone-mockup');
-  const collapsedLogo = shadowRoot.getElementById('collapsedLogo');
-  
-  isCollapsed = !isCollapsed;
-  
+  if (!shadowRoot) return
+
+  const phoneMockup = shadowRoot.querySelector(".phone-mockup")
+  const collapsedLogo = shadowRoot.getElementById("collapsedLogo")
+
+  isCollapsed = !isCollapsed
+
   if (isCollapsed) {
     // Collapse to logo
-    phoneMockup.style.display = 'none';
-    collapsedLogo.style.display = 'flex';
-    log('📱 Preview collapsed to logo');
+    phoneMockup.style.display = "none"
+    collapsedLogo.style.display = "flex"
+    log("📱 Preview collapsed to logo")
   } else {
     // Expand to full preview
-    phoneMockup.style.display = 'block';
-    collapsedLogo.style.display = 'none';
-    log('📱 Preview expanded');
+    phoneMockup.style.display = "block"
+    collapsedLogo.style.display = "none"
+    log("📱 Preview expanded")
   }
 }
 
@@ -2367,86 +2490,86 @@ function toggleCollapse() {
  */
 function watchForToolbarInteractions() {
   // Watch for formatting toolbar popup
-  const composeWindow = findComposeWindow();
-  if (!composeWindow) return;
-  
+  const composeWindow = findComposeWindow()
+  if (!composeWindow) return
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === 1) {
           // Check for Gmail formatting toolbar
-          const isFormattingToolbar = node.matches && (
-            node.matches('[role="dialog"][aria-label*="Format"]') ||
-            node.matches('.goog-toolbar') ||
-            node.matches('[data-tooltip*="Format"]') ||
-            node.querySelector('.goog-toolbar')
-          );
-          
+          const isFormattingToolbar =
+            node.matches &&
+            (node.matches('[role="dialog"][aria-label*="Format"]') ||
+              node.matches(".goog-toolbar") ||
+              node.matches('[data-tooltip*="Format"]') ||
+              node.querySelector(".goog-toolbar"))
+
           // Check for other Gmail popups
-          const isGmailPopup = node.matches && (
-            node.matches('[role="dialog"]') ||
-            node.matches('.Kj-JD') || // Gmail popup class
-            node.matches('[data-is-tooltip="true"]')
-          );
-          
+          const isGmailPopup =
+            node.matches &&
+            (node.matches('[role="dialog"]') ||
+              node.matches(".Kj-JD") || // Gmail popup class
+              node.matches('[data-is-tooltip="true"]'))
+
           if (isFormattingToolbar || isGmailPopup) {
-            log('🔧 Gmail tool opened - auto-collapsing preview');
+            log("🔧 Gmail tool opened - auto-collapsing preview")
             if (!isCollapsed) {
-              toggleCollapse();
+              toggleCollapse()
             }
           }
         }
-      });
-      
+      })
+
       mutation.removedNodes.forEach((node) => {
         if (node.nodeType === 1) {
-          const wasGmailPopup = node.matches && (
-            node.matches('[role="dialog"]') ||
-            node.matches('.goog-toolbar') ||
-            node.matches('.Kj-JD')
-          );
-          
+          const wasGmailPopup =
+            node.matches &&
+            (node.matches('[role="dialog"]') ||
+              node.matches(".goog-toolbar") ||
+              node.matches(".Kj-JD"))
+
           if (wasGmailPopup && isCollapsed) {
-            log('🔧 Gmail tool closed - auto-expanding preview');
-            toggleCollapse();
+            log("🔧 Gmail tool closed - auto-expanding preview")
+            toggleCollapse()
           }
         }
-      });
-    });
-  });
-  
+      })
+    })
+  })
+
   observer.observe(document.body, {
     childList: true,
     subtree: true
-  });
-  
-  log('👀 Watching for Gmail toolbar interactions');
+  })
+
+  log("👀 Watching for Gmail toolbar interactions")
 }
 
 /**
  * Start dragging the preview window
  */
 function startDragging(e) {
-  e.preventDefault(); // Prevent browser's default drag behavior (ghost image)
-  
-  isDragging = true;
-  hasMoved = false;
+  e.preventDefault() // Prevent browser's default drag behavior (ghost image)
+
+  isDragging = true
+  hasMoved = false
   dragOffset = {
     x: e.clientX - overlayContainer.offsetLeft,
     y: e.clientY - overlayContainer.offsetTop
-  };
-  
-  const dragHandle = shadowRoot.getElementById('dragHandle');
-  const collapsedLogo = shadowRoot.getElementById('collapsedLogo');
-  
-  if (dragHandle && !isCollapsed) {
-    dragHandle.style.cursor = 'grabbing';
-    dragHandle.classList.add('dragging');
   }
-  
+
+  const dragHandle = shadowRoot.getElementById("dragHandle")
+  const collapsedLogo = shadowRoot.getElementById("collapsedLogo")
+
+  if (dragHandle && !isCollapsed) {
+    dragHandle.style.cursor = "grabbing"
+    dragHandle.classList.add("dragging")
+  }
+
   if (collapsedLogo && isCollapsed) {
-    collapsedLogo.style.cursor = 'grabbing';
-    collapsedLogo.classList.add('dragging');
+    collapsedLogo.style.cursor = "grabbing"
+    collapsedLogo.classList.add("dragging")
   }
 }
 
@@ -2454,52 +2577,51 @@ function startDragging(e) {
  * Handle dragging movement
  */
 function handleDragging(e) {
-  if (!isDragging || !overlayContainer) return;
-  
-  e.preventDefault();
-  hasMoved = true;
-  
-  const newLeft = e.clientX - dragOffset.x;
-  const newTop = e.clientY - dragOffset.y;
-  
+  if (!isDragging || !overlayContainer) return
+
+  e.preventDefault()
+  hasMoved = true
+
+  const newLeft = e.clientX - dragOffset.x
+  const newTop = e.clientY - dragOffset.y
+
   // Keep within viewport bounds
-  const maxX = window.innerWidth - overlayContainer.offsetWidth;
-  const maxY = window.innerHeight - overlayContainer.offsetHeight;
-  
-  overlayContainer.style.left = Math.max(0, Math.min(newLeft, maxX)) + 'px';
-  overlayContainer.style.top = Math.max(0, Math.min(newTop, maxY)) + 'px';
-  overlayContainer.style.right = 'auto';
+  const maxX = window.innerWidth - overlayContainer.offsetWidth
+  const maxY = window.innerHeight - overlayContainer.offsetHeight
+
+  overlayContainer.style.left = Math.max(0, Math.min(newLeft, maxX)) + "px"
+  overlayContainer.style.top = Math.max(0, Math.min(newTop, maxY)) + "px"
+  overlayContainer.style.right = "auto"
 }
 
 /**
  * Stop dragging
  */
 function stopDragging() {
-  if (!isDragging) return;
-  
-  isDragging = false;
-  
+  if (!isDragging) return
+
+  isDragging = false
+
   if (shadowRoot) {
-    const dragHandle = shadowRoot.getElementById('dragHandle');
-    const collapsedLogo = shadowRoot.getElementById('collapsedLogo');
-    
+    const dragHandle = shadowRoot.getElementById("dragHandle")
+    const collapsedLogo = shadowRoot.getElementById("collapsedLogo")
+
     if (dragHandle) {
-      dragHandle.style.cursor = 'grab';
-      dragHandle.classList.remove('dragging');
+      dragHandle.style.cursor = "grab"
+      dragHandle.classList.remove("dragging")
     }
-    
+
     if (collapsedLogo) {
-      collapsedLogo.style.cursor = 'grab';
-      collapsedLogo.classList.remove('dragging');
+      collapsedLogo.style.cursor = "grab"
+      collapsedLogo.classList.remove("dragging")
     }
   }
 }
 
-
 // ==================== TASK 3: THE SCRAPER ====================
 
 /**
- * Task 3: Syncing - Specifically target div[role="textbox"] 
+ * Task 3: Syncing - Specifically target div[role="textbox"]
  * inside the specific compose window to mirror text into preview
  * @param {HTMLElement} composeWindow - The specific compose window to attach to
  * @param {number} retryCount - Current retry attempt (for delayed loading)
@@ -2507,97 +2629,112 @@ function stopDragging() {
  */
 function attachToCompose(composeWindow, retryCount = 0) {
   return new Promise((resolve) => {
-    log(`🔍 Attaching to compose window (attempt ${retryCount + 1})`);
-    log('   Compose window:', {
+    log(`🔍 Attaching to compose window (attempt ${retryCount + 1})`)
+    log("   Compose window:", {
       tag: composeWindow.tagName,
-      role: composeWindow.getAttribute('role'),
+      role: composeWindow.getAttribute("role"),
       class: composeWindow.className
-    });
-    
+    })
+
     // Find div[role="textbox"] inside THIS specific compose window
-    const composeBody = findComposeBody(composeWindow);
-    
+    const composeBody = findComposeBody(composeWindow)
+
     if (!composeBody) {
       // Gmail compose body might still be loading - retry up to 10 times with progressive delays
       if (retryCount < 10) {
         // Progressive delays: 300ms, 500ms, 800ms, 1000ms, 1500ms...
-        const delay = retryCount === 0 ? 300 : 
-                     retryCount === 1 ? 500 :
-                     retryCount === 2 ? 800 :
-                     retryCount < 5 ? 1000 : 1500;
-        console.warn(`⚠️ Compose body not ready yet, retrying in ${delay}ms... (${retryCount + 1}/10)`);
+        const delay =
+          retryCount === 0
+            ? 300
+            : retryCount === 1
+              ? 500
+              : retryCount === 2
+                ? 800
+                : retryCount < 5
+                  ? 1000
+                  : 1500
+        console.warn(
+          `⚠️ Compose body not ready yet, retrying in ${delay}ms... (${retryCount + 1}/10)`
+        )
         setTimeout(async () => {
           // Re-query compose window in case it changed
-          const freshComposeWindow = findComposeWindow();
+          const freshComposeWindow = findComposeWindow()
           if (freshComposeWindow) {
-            const result = await attachToCompose(freshComposeWindow, retryCount + 1);
-            resolve(result);
+            const result = await attachToCompose(
+              freshComposeWindow,
+              retryCount + 1
+            )
+            resolve(result)
           } else {
-            console.error('❌ Compose window disappeared during retry');
-            resolve(false);
+            console.error("❌ Compose window disappeared during retry")
+            resolve(false)
           }
-        }, delay);
-        return;
+        }, delay)
+        return
       }
-      
-      console.error('❌ Could not find compose body after 10 attempts');
-      log('📋 This could mean:');
-      log('   1. Gmail is using a different structure than expected');
-      log('   2. Your Gmail version is not supported yet');
-      log('   3. Compose window is not fully loaded');
-      log('');
-      log('🔍 Please share the console logs above to help fix this!');
-      
+
+      console.error("❌ Could not find compose body after 10 attempts")
+      log("📋 This could mean:")
+      log("   1. Gmail is using a different structure than expected")
+      log("   2. Your Gmail version is not supported yet")
+      log("   3. Compose window is not fully loaded")
+      log("")
+      log("🔍 Please share the console logs above to help fix this!")
+
       // Don't call showError here - let caller handle it
-      resolve(false);
-      return;
+      resolve(false)
+      return
     }
-  
-  log('✅ Found compose body:', {
-    tag: composeBody.tagName,
-    role: composeBody.getAttribute('role'),
-    ariaLabel: composeBody.getAttribute('aria-label')
-  });
-  currentComposeBody = composeBody;
-  
-  // Find subject line inside THIS specific compose window
-  const subjectField = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
-  if (subjectField) {
-    log('✅ Found subject line input');
-    currentSubjectField = subjectField;
-    setupSubjectSync(subjectField);
-  } else {
-    console.warn('⚠️ Subject field not found (may appear later)');
-    // Try to find it with a slight delay
-    setTimeout(() => {
-      const delayedSubject = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
-      if (delayedSubject && !currentSubjectField) {
-        log('✅ Found subject field on delayed check');
-        currentSubjectField = delayedSubject;
-        setupSubjectSync(delayedSubject);
-      }
-    }, 1000);
-  }
-  
-  // Setup live sync for THIS specific compose body
-  setupLiveSync(composeBody);
-  
-  // Initial update to show current content
-  log('🔄 Performing initial preview update...');
-  updatePreview();
-  
-  // Run initial pre-flight checks (updatePreview calls this, but let's be explicit)
-  log('✈️ Running initial pre-flight checks...');
-  const initialHtml = composeBody.innerHTML || '';
-  const initialText = composeBody.innerText || '';
-  runPreflightChecks(initialHtml, initialText);
-  
+
+    log("✅ Found compose body:", {
+      tag: composeBody.tagName,
+      role: composeBody.getAttribute("role"),
+      ariaLabel: composeBody.getAttribute("aria-label")
+    })
+    currentComposeBody = composeBody
+
+    // Find subject line inside THIS specific compose window
+    const subjectField = composeWindow.querySelector(
+      GMAIL_SELECTORS.subjectField
+    )
+    if (subjectField) {
+      log("✅ Found subject line input")
+      currentSubjectField = subjectField
+      setupSubjectSync(subjectField)
+    } else {
+      console.warn("⚠️ Subject field not found (may appear later)")
+      // Try to find it with a slight delay
+      setTimeout(() => {
+        const delayedSubject = composeWindow.querySelector(
+          GMAIL_SELECTORS.subjectField
+        )
+        if (delayedSubject && !currentSubjectField) {
+          log("✅ Found subject field on delayed check")
+          currentSubjectField = delayedSubject
+          setupSubjectSync(delayedSubject)
+        }
+      }, 1000)
+    }
+
+    // Setup live sync for THIS specific compose body
+    setupLiveSync(composeBody)
+
+    // Initial update to show current content
+    log("🔄 Performing initial preview update...")
+    updatePreview()
+
+    // Run initial pre-flight checks (updatePreview calls this, but let's be explicit)
+    log("✈️ Running initial pre-flight checks...")
+    const initialHtml = composeBody.innerHTML || ""
+    const initialText = composeBody.innerText || ""
+    runPreflightChecks(initialHtml, initialText)
+
     // Setup send button detection
-    setupSendButtonListener(composeWindow);
-    
-    log('✅ Successfully attached to compose window and set up sync');
-    resolve(true);
-  });
+    setupSendButtonListener(composeWindow)
+
+    log("✅ Successfully attached to compose window and set up sync")
+    resolve(true)
+  })
 }
 
 /**
@@ -2605,55 +2742,55 @@ function attachToCompose(composeWindow, retryCount = 0) {
  * @param {HTMLElement} composeWindow - The compose window to monitor
  */
 function setupSendButtonListener(composeWindow) {
-  log('📤 Setting up send button listener...');
-  
+  log("📤 Setting up send button listener...")
+
   // Gmail send button selectors (multiple fallbacks)
   const sendSelectors = [
     '[role="button"][data-tooltip*="Send"]',
     '[role="button"][aria-label*="Send"]',
-    '.T-I.J-J5-Ji.aoO.v7.T-I-atl.L3', // Gmail's send button class
+    ".T-I.J-J5-Ji.aoO.v7.T-I-atl.L3", // Gmail's send button class
     'div[role="button"]:has(span:contains("Send"))'
-  ];
-  
+  ]
+
   // Try to find send button
-  let sendButton = null;
+  let sendButton = null
   for (const selector of sendSelectors) {
     try {
-      sendButton = composeWindow.querySelector(selector);
+      sendButton = composeWindow.querySelector(selector)
       if (sendButton) {
-        log('✅ Found send button with selector:', selector);
-        break;
+        log("✅ Found send button with selector:", selector)
+        break
       }
     } catch (e) {
       // Some selectors might fail, continue
     }
   }
-  
+
   // If not found, use MutationObserver to watch for it
   if (!sendButton) {
-    log('⏳ Send button not found yet, watching for it...');
+    log("⏳ Send button not found yet, watching for it...")
     const observer = new MutationObserver(() => {
       for (const selector of sendSelectors) {
         try {
-          const btn = composeWindow.querySelector(selector);
-          if (btn && !btn.hasAttribute('data-velomail-listener')) {
-            log('✅ Send button appeared:', selector);
-            attachSendListener(btn);
-            observer.disconnect();
-            return;
+          const btn = composeWindow.querySelector(selector)
+          if (btn && !btn.hasAttribute("data-velomail-listener")) {
+            log("✅ Send button appeared:", selector)
+            attachSendListener(btn)
+            observer.disconnect()
+            return
           }
         } catch (e) {
           // Continue
         }
       }
-    });
-    
+    })
+
     observer.observe(composeWindow, {
       childList: true,
       subtree: true
-    });
+    })
   } else {
-    attachSendListener(sendButton);
+    attachSendListener(sendButton)
   }
 }
 
@@ -2662,94 +2799,102 @@ function setupSendButtonListener(composeWindow) {
  * @param {HTMLElement} sendButton - The send button element
  */
 function attachSendListener(sendButton) {
-  if (sendButton.hasAttribute('data-velomail-listener')) {
-    log('ℹ️ Send button already has listener');
-    return;
+  if (sendButton.hasAttribute("data-velomail-listener")) {
+    log("ℹ️ Send button already has listener")
+    return
   }
-  
-  sendButton.setAttribute('data-velomail-listener', 'true');
-  
-  sendButton.addEventListener('click', () => {
-    log('📧 Send button clicked! Tracking email send...');
-    handleEmailSent();
-  }, { capture: true }); // Use capture to ensure we catch it first
-  
-  log('✅ Send button listener attached');
+
+  sendButton.setAttribute("data-velomail-listener", "true")
+
+  sendButton.addEventListener(
+    "click",
+    () => {
+      log("📧 Send button clicked! Tracking email send...")
+      handleEmailSent()
+    },
+    { capture: true }
+  ) // Use capture to ensure we catch it first
+
+  log("✅ Send button listener attached")
 }
 
 /**
  * Handle email sent event
  */
 function handleEmailSent() {
-  log('✉️ Email sent! Notifying service worker...');
-  
-  chrome.runtime.sendMessage({
-    type: 'EMAIL_SENT',
-    timestamp: Date.now()
-  }).then((response) => {
-    if (response && response.usage) {
-      const { previews, limit } = response.usage;
-      log(`✅ Email tracked: ${previews} today (limit: ${limit})`);
-      
-      if (limit < 0) {
-        showSentToast('Sent!');
-        return;
-      }
-      
-      const remaining = limit - previews;
-      
-      if (previews >= limit) {
-        applyAtLimitUI();
-      } else {
-        const msg = remaining <= 3
-          ? `Sent! ${remaining} send${remaining === 1 ? '' : 's'} left today`
-          : `Sent! ${remaining} of ${limit} sends remaining`;
-        showSentToast(msg);
-        
-        if (remaining <= 3) {
-          showNearLimitBanner(remaining, limit);
+  log("✉️ Email sent! Notifying service worker...")
+
+  chrome.runtime
+    .sendMessage({
+      type: "EMAIL_SENT",
+      timestamp: Date.now()
+    })
+    .then((response) => {
+      if (response && response.usage) {
+        const { previews, limit } = response.usage
+        log(`✅ Email tracked: ${previews} today (limit: ${limit})`)
+
+        if (limit < 0) {
+          showSentToast("Sent!")
+          return
         }
+
+        const remaining = limit - previews
+
+        if (previews >= limit) {
+          applyAtLimitUI()
+        } else {
+          const msg =
+            remaining <= 3
+              ? `Sent! ${remaining} send${remaining === 1 ? "" : "s"} left today`
+              : `Sent! ${remaining} of ${limit} sends remaining`
+          showSentToast(msg)
+
+          if (remaining <= 3) {
+            showNearLimitBanner(remaining, limit)
+          }
+        }
+      } else {
+        showSentToast("Email sent!")
       }
-    } else {
-      showSentToast('Email sent!');
-    }
-  }).catch(error => {
-    console.error('❌ Failed to track sent email:', error);
-  });
+    })
+    .catch((error) => {
+      console.error("❌ Failed to track sent email:", error)
+    })
 }
 
 /**
  * Show a brief toast inside the mobile preview after a send event
  */
 function showSentToast(message) {
-  if (!shadowRoot) return;
-  const toast = shadowRoot.getElementById('sentToast');
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), 3000);
+  if (!shadowRoot) return
+  const toast = shadowRoot.getElementById("sentToast")
+  if (!toast) return
+  toast.textContent = message
+  toast.classList.add("visible")
+  setTimeout(() => toast.classList.remove("visible"), 3000)
 }
 
 /**
  * Show a near-limit warning banner at the top of the preview
  */
 function showNearLimitBanner(remaining, limit) {
-  if (!shadowRoot) return;
-  let banner = shadowRoot.getElementById('nearLimitBanner');
+  if (!shadowRoot) return
+  let banner = shadowRoot.getElementById("nearLimitBanner")
   if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'nearLimitBanner';
+    banner = document.createElement("div")
+    banner.id = "nearLimitBanner"
     banner.style.cssText = `
       position: absolute; top: 0; left: 0; right: 0;
       background: #fef3c7; color: #92400e;
       font-size: 11px; font-weight: 600;
       padding: 6px 12px; text-align: center;
       z-index: 40; border-radius: 0;
-    `;
-    const container = shadowRoot.getElementById('previewContainer');
-    if (container) container.insertBefore(banner, container.firstChild);
+    `
+    const container = shadowRoot.getElementById("previewContainer")
+    if (container) container.insertBefore(banner, container.firstChild)
   }
-  banner.textContent = `${remaining} send${remaining === 1 ? '' : 's'} left today — Get Lifetime ($29) for unlimited`;
+  banner.textContent = `${remaining} send${remaining === 1 ? "" : "s"} left today — Get Lifetime ($29) for unlimited`
 }
 
 /**
@@ -2759,147 +2904,150 @@ function showNearLimitBanner(remaining, limit) {
  * @returns {HTMLElement|null} The compose body element
  */
 function findComposeBody(composeWindow) {
-  log('🔍 Searching for compose body inside compose window...');
-  
+  log("🔍 Searching for compose body inside compose window...")
+
   // DIAGNOSTIC: Log the entire compose window structure
-  log('📦 Compose window structure:');
-  log('   Tag:', composeWindow.tagName);
-  log('   Role:', composeWindow.getAttribute('role'));
-  log('   Class:', composeWindow.className);
-  log('   ID:', composeWindow.id);
-  log('   Children count:', composeWindow.children.length);
-  
+  log("📦 Compose window structure:")
+  log("   Tag:", composeWindow.tagName)
+  log("   Role:", composeWindow.getAttribute("role"))
+  log("   Class:", composeWindow.className)
+  log("   ID:", composeWindow.id)
+  log("   Children count:", composeWindow.children.length)
+
   // Check all textboxes
-  const allTextboxes = composeWindow.querySelectorAll('[role="textbox"]');
-  log(`📊 Found ${allTextboxes.length} elements with role="textbox"`);
-  
+  const allTextboxes = composeWindow.querySelectorAll('[role="textbox"]')
+  log(`📊 Found ${allTextboxes.length} elements with role="textbox"`)
+
   if (allTextboxes.length > 0) {
     allTextboxes.forEach((el, i) => {
       log(`   Textbox ${i + 1}:`, {
         tag: el.tagName,
-        ariaLabel: el.getAttribute('aria-label'),
+        ariaLabel: el.getAttribute("aria-label"),
         contentEditable: el.contentEditable,
         height: el.offsetHeight,
         width: el.offsetWidth,
         visible: el.offsetHeight > 0 && el.offsetWidth > 0,
         class: el.className.substring(0, 50)
-      });
-    });
-    
+      })
+    })
+
     // Return the largest visible textbox (likely the body)
-    let largestTextbox = null;
-    let largestSize = 0;
-    
+    let largestTextbox = null
+    let largestSize = 0
+
     for (let el of allTextboxes) {
       if (el.offsetHeight > 0 && el.offsetWidth > 0) {
-        const size = el.offsetHeight * el.offsetWidth;
+        const size = el.offsetHeight * el.offsetWidth
         if (size > largestSize) {
-          largestSize = size;
-          largestTextbox = el;
+          largestSize = size
+          largestTextbox = el
         }
       }
     }
-    
+
     if (largestTextbox) {
-      log('✅ Found largest visible textbox (likely compose body)');
-      return largestTextbox;
+      log("✅ Found largest visible textbox (likely compose body)")
+      return largestTextbox
     }
   }
-  
+
   // Check all contenteditable elements
-  const allContentEditable = composeWindow.querySelectorAll('[contenteditable="true"]');
-  log(`📊 Found ${allContentEditable.length} contenteditable elements`);
-  
+  const allContentEditable = composeWindow.querySelectorAll(
+    '[contenteditable="true"]'
+  )
+  log(`📊 Found ${allContentEditable.length} contenteditable elements`)
+
   if (allContentEditable.length > 0) {
     // Log details of each
     allContentEditable.forEach((el, i) => {
-      if (i < 10) { // Only log first 10 to avoid spam
+      if (i < 10) {
+        // Only log first 10 to avoid spam
         log(`   Editable ${i + 1}:`, {
           tag: el.tagName,
-          role: el.getAttribute('role'),
-          ariaLabel: el.getAttribute('aria-label')?.substring(0, 30),
+          role: el.getAttribute("role"),
+          ariaLabel: el.getAttribute("aria-label")?.substring(0, 30),
           height: el.offsetHeight,
           width: el.offsetWidth,
           class: el.className.substring(0, 50)
-        });
+        })
       }
-    });
-    
+    })
+
     // Find the largest contenteditable that's not the subject
-    let largestEditable = null;
-    let largestSize = 0;
-    
+    let largestEditable = null
+    let largestSize = 0
+
     for (let el of allContentEditable) {
       // Skip if it looks like a subject field (small height)
-      if (el.offsetHeight < 40) continue;
-      
+      if (el.offsetHeight < 40) continue
+
       // Skip if it has certain classes that indicate it's not the body
-      const className = el.className.toLowerCase();
-      if (className.includes('subject')) continue;
-      
-      const size = el.offsetHeight * el.offsetWidth;
+      const className = el.className.toLowerCase()
+      if (className.includes("subject")) continue
+
+      const size = el.offsetHeight * el.offsetWidth
       if (size > largestSize) {
-        largestSize = size;
-        largestEditable = el;
+        largestSize = size
+        largestEditable = el
       }
     }
-    
+
     if (largestEditable) {
-      log('✅ Found via largest contenteditable:', {
+      log("✅ Found via largest contenteditable:", {
         tag: largestEditable.tagName,
         height: largestEditable.offsetHeight,
         width: largestEditable.offsetWidth
-      });
-      return largestEditable;
+      })
+      return largestEditable
     }
   }
-  
+
   // Last resort: look for specific Gmail compose classes
-  log('⚠️ Trying Gmail-specific class selectors...');
+  log("⚠️ Trying Gmail-specific class selectors...")
   const gmailSpecificSelectors = [
-    '.Am.Al.editable',
+    ".Am.Al.editable",
     '.editable[contenteditable="true"]',
     'div[aria-label*="Message body"]',
     'div[aria-label*="message body"]',
     '[g_editable="true"]',
     // Additional selectors for different Gmail versions
-    '.editable.LW-avf',
+    ".editable.LW-avf",
     'div[contenteditable="true"][role="textbox"]',
     '.Am[contenteditable="true"]',
     '[aria-label*="Message Body"]',
-    'div.editable',
+    "div.editable",
     // Try searching in the entire document as fallback
     'div[aria-label*="compose" i] [contenteditable="true"]',
     'div[role="dialog"] [contenteditable="true"][role="textbox"]'
-  ];
-  
+  ]
+
   for (let selector of gmailSpecificSelectors) {
     try {
-      const element = composeWindow.querySelector(selector);
+      const element = composeWindow.querySelector(selector)
       if (element && element.offsetHeight > 50) {
-        log(`✅ Found with Gmail selector: ${selector}`);
-        return element;
+        log(`✅ Found with Gmail selector: ${selector}`)
+        return element
       }
     } catch (e) {
       // Invalid selector, skip
-      log(`⚠️ Selector failed: ${selector}`, e.message);
+      log(`⚠️ Selector failed: ${selector}`, e.message)
     }
   }
-  
+
   // Very last resort: find ANY contenteditable div that's reasonably sized
-  log('⚠️ Last resort: searching for any contenteditable div...');
-  const allDivs = composeWindow.querySelectorAll('div[contenteditable]');
+  log("⚠️ Last resort: searching for any contenteditable div...")
+  const allDivs = composeWindow.querySelectorAll("div[contenteditable]")
   for (let div of allDivs) {
     if (div.offsetHeight > 50 && div.offsetWidth > 100) {
-      log('✅ Found via last resort contenteditable search');
-      return div;
+      log("✅ Found via last resort contenteditable search")
+      return div
     }
   }
-  
-  console.error('❌ Could not find compose body with any selector');
-  log('💡 Tip: Open DevTools Elements tab and inspect the compose window');
-  
-  return null;
+
+  console.error("❌ Could not find compose body with any selector")
+  log("💡 Tip: Open DevTools Elements tab and inspect the compose window")
+
+  return null
 }
 
 // ==================== TASK 4: LIVE SYNC ====================
@@ -2910,88 +3058,92 @@ function findComposeBody(composeWindow) {
  * OPTIMIZED: Uses RAF for DOM updates, debouncing for heavy operations
  */
 function setupLiveSync(composeBody) {
-  log('🔄 Setting up live sync with input event listener (OPTIMIZED)');
-  log('   Compose body element:', {
+  log("🔄 Setting up live sync with input event listener (OPTIMIZED)")
+  log("   Compose body element:", {
     tag: composeBody.tagName,
-    role: composeBody.getAttribute('role'),
+    role: composeBody.getAttribute("role"),
     contentEditable: composeBody.contentEditable,
-    ariaLabel: composeBody.getAttribute('aria-label')
-  });
-  
+    ariaLabel: composeBody.getAttribute("aria-label")
+  })
+
   // Lightweight immediate preview update (just content)
   const updatePreviewLight = () => {
-    updatePreview(true); // true = light mode (skip heavy operations)
-  };
-  
+    updatePreview(true) // true = light mode (skip heavy operations)
+  }
+
   // Heavy operations (pre-flight checks, score calc) - debounced 200ms
   const updatePreviewHeavy = debounce(() => {
-    updatePreview(false); // false = full update with heavy operations
-  }, 200);
-  
+    updatePreview(false) // false = full update with heavy operations
+  }, 200)
+
   // Input event for instant character-by-character sync (LIGHT)
-  composeBody.addEventListener('input', (e) => {
-    updatePreviewLight(); // Immediate light update
-    updatePreviewHeavy();  // Debounced heavy update
-  });
-  
+  composeBody.addEventListener("input", (e) => {
+    updatePreviewLight() // Immediate light update
+    updatePreviewHeavy() // Debounced heavy update
+  })
+
   // Also listen for keyup as backup (LIGHT)
-  composeBody.addEventListener('keyup', () => {
-    updatePreviewLight();
-    updatePreviewHeavy();
-  });
-  
+  composeBody.addEventListener("keyup", () => {
+    updatePreviewLight()
+    updatePreviewHeavy()
+  })
+
   // Handle text selection changes (highlighted text)
-  composeBody.addEventListener('mouseup', () => {
-    handleTextSelection();
-  });
-  
-  composeBody.addEventListener('keyup', () => {
-    handleTextSelection();
-  });
-  
+  composeBody.addEventListener("mouseup", () => {
+    handleTextSelection()
+  })
+
+  composeBody.addEventListener("keyup", () => {
+    handleTextSelection()
+  })
+
   // MutationObserver for paste, formatting, link insertion, etc.
   const observer = new MutationObserver((mutations) => {
-    updatePreviewLight();
-    updatePreviewHeavy();
-  });
-  
+    updatePreviewLight()
+    updatePreviewHeavy()
+  })
+
   observer.observe(composeBody, {
     childList: true,
     subtree: true,
     characterData: true,
     attributes: true,
-    attributeFilter: ['href', 'contenteditable']
-  });
-  
+    attributeFilter: ["href", "contenteditable"]
+  })
+
   // Paste/cut so tips update as soon as link or content is added/removed
-  composeBody.addEventListener('paste', () => {
-    updatePreviewLight();
-    updatePreviewHeavy();
-  });
-  composeBody.addEventListener('cut', () => {
-    updatePreviewLight();
-    updatePreviewHeavy();
-  });
-  
+  composeBody.addEventListener("paste", () => {
+    updatePreviewLight()
+    updatePreviewHeavy()
+  })
+  composeBody.addEventListener("cut", () => {
+    updatePreviewLight()
+    updatePreviewHeavy()
+  })
+
   // Focus: refresh tips when user clicks back into compose (e.g. after pasting elsewhere)
-  composeBody.addEventListener('focus', () => {
-    updatePreviewHeavy();
-  });
-  
+  composeBody.addEventListener("focus", () => {
+    updatePreviewHeavy()
+  })
+
   // Periodic full update so tips stay current even when no input/mutation fires (e.g. link auto-insert, external edit)
-  const PREFLIGHT_REFRESH_MS = 2500;
-  if (preflightRefreshInterval) clearInterval(preflightRefreshInterval);
+  const PREFLIGHT_REFRESH_MS = 2500
+  if (preflightRefreshInterval) clearInterval(preflightRefreshInterval)
   preflightRefreshInterval = setInterval(() => {
     if (currentComposeBody && currentComposeBody.isConnected && shadowRoot) {
-      updatePreview(false);
+      updatePreview(false)
     }
-  }, PREFLIGHT_REFRESH_MS);
-  
-  log('✅ Live sync activated (OPTIMIZED):');
-  log('   - Light updates: RAF batching');
-  log('   - Heavy operations: 200ms debounce');
-  log('   - Pre-flight refresh: every ' + (PREFLIGHT_REFRESH_MS / 1000) + 's + paste/cut/focus');
-  log('   - Service worker: Throttled messaging');
+  }, PREFLIGHT_REFRESH_MS)
+
+  log("✅ Live sync activated (OPTIMIZED):")
+  log("   - Light updates: RAF batching")
+  log("   - Heavy operations: 200ms debounce")
+  log(
+    "   - Pre-flight refresh: every " +
+      PREFLIGHT_REFRESH_MS / 1000 +
+      "s + paste/cut/focus"
+  )
+  log("   - Service worker: Throttled messaging")
 }
 
 /**
@@ -2999,32 +3151,34 @@ function setupLiveSync(composeBody) {
  * Uses window.getSelection() to track highlighted text
  */
 function handleTextSelection() {
-  if (!currentComposeBody) return;
-  
+  if (!currentComposeBody) return
+
   // Get current selection using window.getSelection()
-  const selection = window.getSelection();
-  
+  const selection = window.getSelection()
+
   if (selection && selection.rangeCount > 0) {
-    const selectedText = selection.toString();
-    
+    const selectedText = selection.toString()
+
     if (selectedText.length > 0) {
-      log('📝 Text selected:', {
-        text: selectedText.substring(0, 50) + (selectedText.length > 50 ? '...' : ''),
+      log("📝 Text selected:", {
+        text:
+          selectedText.substring(0, 50) +
+          (selectedText.length > 50 ? "..." : ""),
         length: selectedText.length,
         rangeCount: selection.rangeCount
-      });
-      
+      })
+
       // Store selection info for potential future features
       // (e.g., highlight selected text in preview, format toolbar, etc.)
-      const range = selection.getRangeAt(0);
+      const range = selection.getRangeAt(0)
       const selectionInfo = {
         text: selectedText,
         startOffset: range.startOffset,
         endOffset: range.endOffset,
         startContainer: range.startContainer,
         endContainer: range.endContainer
-      };
-      
+      }
+
       // Could be used to highlight selected text in preview
       // or show character count of selection, etc.
     }
@@ -3035,39 +3189,39 @@ function handleTextSelection() {
  * Setup subject line sync
  */
 function setupSubjectSync(subjectField) {
-  subjectField.addEventListener('input', () => {
-    if (!shadowRoot) return;
-    
-    const value = subjectField.value.trim();
-    const subjectDisplay = shadowRoot.getElementById('subjectDisplay');
+  subjectField.addEventListener("input", () => {
+    if (!shadowRoot) return
+
+    const value = subjectField.value.trim()
+    const subjectDisplay = shadowRoot.getElementById("subjectDisplay")
     if (subjectDisplay) {
-      subjectDisplay.textContent = value || 'No subject';
+      subjectDisplay.textContent = value || "No subject"
     }
-    updateSubjectCounter(value);
-    updatePreview();
-  });
+    updateSubjectCounter(value)
+    updatePreview()
+  })
 }
 
 /**
  * Update the subject char counter badge with color-coded feedback
  */
 function updateSubjectCounter(subject) {
-  if (!shadowRoot) return;
-  const counter = shadowRoot.getElementById('subjectCharCount');
-  if (!counter) return;
-  const len = (subject || '').length;
+  if (!shadowRoot) return
+  const counter = shadowRoot.getElementById("subjectCharCount")
+  if (!counter) return
+  const len = (subject || "").length
   if (len === 0) {
-    counter.className = 'subject-char-count';
-    counter.textContent = '';
-    return;
+    counter.className = "subject-char-count"
+    counter.textContent = ""
+    return
   }
-  counter.textContent = `${len} chars`;
+  counter.textContent = `${len} chars`
   if (len >= 30 && len <= 50) {
-    counter.className = 'subject-char-count optimal';
+    counter.className = "subject-char-count optimal"
   } else if (len < 30 || (len > 50 && len <= 70)) {
-    counter.className = 'subject-char-count borderline';
+    counter.className = "subject-char-count borderline"
   } else {
-    counter.className = 'subject-char-count too-long';
+    counter.className = "subject-char-count too-long"
   }
 }
 
@@ -3080,121 +3234,134 @@ function updateSubjectCounter(subject) {
  * If compose body was replaced by Gmail/Outlook (node disconnected), re-find and re-attach without alerting user.
  */
 function tryReattachComposeBody() {
-  if (!currentComposeBody || currentComposeBody.isConnected) return;
-  const composeWindow = findComposeWindow();
-  if (!composeWindow) return;
-  const newBody = findComposeBody(composeWindow);
-  if (!newBody) return;
-  log('🔄 Compose body was replaced, re-attaching (safe-fail reconnect)');
-  currentComposeBody = newBody;
-  const subjectField = composeWindow.querySelector(GMAIL_SELECTORS.subjectField);
+  if (!currentComposeBody || currentComposeBody.isConnected) return
+  const composeWindow = findComposeWindow()
+  if (!composeWindow) return
+  const newBody = findComposeBody(composeWindow)
+  if (!newBody) return
+  log("🔄 Compose body was replaced, re-attaching (safe-fail reconnect)")
+  currentComposeBody = newBody
+  const subjectField = composeWindow.querySelector(GMAIL_SELECTORS.subjectField)
   if (subjectField) {
-    currentSubjectField = subjectField;
-    setupSubjectSync(subjectField);
+    currentSubjectField = subjectField
+    setupSubjectSync(subjectField)
   } else {
-    currentSubjectField = null;
+    currentSubjectField = null
   }
-  setupLiveSync(newBody);
-  updatePreview();
+  setupLiveSync(newBody)
+  updatePreview()
 }
 
 function updatePreview(lightMode = false) {
-  if (!shadowRoot) return;
+  if (!shadowRoot) return
   if (currentComposeBody && !currentComposeBody.isConnected) {
-    tryReattachComposeBody();
-    return;
+    tryReattachComposeBody()
+    return
   }
   if (!currentComposeBody) {
-    return;
+    return
   }
-  
-  const startTime = performance.now();
-  
+
+  const startTime = performance.now()
+
   // Cancel any pending RAF
   if (updatePreviewRAF) {
-    cancelAnimationFrame(updatePreviewRAF);
+    cancelAnimationFrame(updatePreviewRAF)
   }
-  
+
   // Use RAF to batch DOM updates
   updatePreviewRAF = requestAnimationFrame(() => {
     try {
-      const htmlContent = currentComposeBody.innerHTML;
-      const textContent = currentComposeBody.innerText || currentComposeBody.textContent;
-      const subjectValue = currentSubjectField ? currentSubjectField.value.trim() : '';
-    
-    // Generate content hashes for change detection
-    const contentHash = fastHash(textContent);
-    const subjectHash = fastHash(subjectValue);
-    const hasContentChanged = contentHash !== lastContentHash;
-    const hasSubjectChanged = subjectHash !== lastSubjectHash;
-    
-    // Heavy pass: skip if nothing changed since the last heavy pass
-    if (!lightMode && !hasContentChanged && !hasSubjectChanged) {
-      performanceMetrics.cacheHits++;
-      return;
-    }
-    
-    performanceMetrics.cacheMisses++;
-    // Only the heavy pass owns the hashes — light pass must not overwrite them,
-    // otherwise the debounced heavy pass always sees "no change" and exits early.
-    if (!lightMode) {
-      lastContentHash = contentHash;
-      lastSubjectHash = subjectHash;
-    }
-    
-    // Update email body content (FAST - always do this)
-    const previewContent = shadowRoot.getElementById('previewContent');
-    if (previewContent) {
-      if (textContent.trim()) {
-        const sanitized = sanitizeHTML(htmlContent);
-        previewContent.innerHTML = sanitized;
+      const htmlContent = currentComposeBody.innerHTML
+      const textContent =
+        currentComposeBody.innerText || currentComposeBody.textContent
+      const subjectValue = currentSubjectField
+        ? currentSubjectField.value.trim()
+        : ""
+
+      // Generate content hashes for change detection
+      const contentHash = fastHash(textContent)
+      const subjectHash = fastHash(subjectValue)
+      const hasContentChanged = contentHash !== lastContentHash
+      const hasSubjectChanged = subjectHash !== lastSubjectHash
+
+      // Heavy pass: skip if nothing changed since the last heavy pass
+      if (!lightMode && !hasContentChanged && !hasSubjectChanged) {
+        performanceMetrics.cacheHits++
+        return
+      }
+
+      performanceMetrics.cacheMisses++
+      // Only the heavy pass owns the hashes — light pass must not overwrite them,
+      // otherwise the debounced heavy pass always sees "no change" and exits early.
+      if (!lightMode) {
+        lastContentHash = contentHash
+        lastSubjectHash = subjectHash
+      }
+
+      // Update email body content (FAST - always do this)
+      const previewContent = shadowRoot.getElementById("previewContent")
+      if (previewContent) {
+        if (textContent.trim()) {
+          const sanitized = sanitizeHTML(htmlContent)
+          previewContent.innerHTML = sanitized
+        } else {
+          previewContent.innerHTML = `<div class="empty-state">Start typing to see preview</div>`
+        }
+      }
+
+      // Update subject and char counter (FAST - always do this)
+      if (currentSubjectField) {
+        const subjectDisplay = shadowRoot.getElementById("subjectDisplay")
+        if (subjectDisplay) {
+          const value = subjectValue || "No subject"
+          subjectDisplay.textContent = value
+        }
+        updateSubjectCounter(subjectValue)
+      }
+
+      const lightTime = performance.now() - startTime
+
+      // Heavy operations (only if not in light mode)
+      if (!lightMode) {
+        const heavyStart = performance.now()
+
+        // Run pre-flight checks (SLOW - debounced)
+        runPreflightChecks(htmlContent, textContent)
+
+        // Calculate mobile score (MEDIUM - debounced)
+        const mobileScore = calculateSimpleMobileScore(
+          textContent,
+          subjectValue
+        )
+
+        // Throttled service worker update (SLOW - network call)
+        throttledServiceWorkerUpdate(
+          htmlContent,
+          textContent,
+          subjectValue,
+          mobileScore
+        )
+
+        const heavyTime = performance.now() - heavyStart
+        logPerformance("heavy", heavyTime)
+
+        log(
+          `⚡ Full update: ${lightTime.toFixed(2)}ms (light) + ${heavyTime.toFixed(2)}ms (heavy) = ${(lightTime + heavyTime).toFixed(2)}ms total`
+        )
       } else {
-        previewContent.innerHTML = `<div class="empty-state">Start typing to see preview</div>`;
+        log(`⚡ Light update: ${lightTime.toFixed(2)}ms`)
       }
-    }
-    
-    // Update subject and char counter (FAST - always do this)
-    if (currentSubjectField) {
-      const subjectDisplay = shadowRoot.getElementById('subjectDisplay');
-      if (subjectDisplay) {
-        const value = subjectValue || 'No subject';
-        subjectDisplay.textContent = value;
-      }
-      updateSubjectCounter(subjectValue);
-    }
-    
-    const lightTime = performance.now() - startTime;
-    
-    // Heavy operations (only if not in light mode)
-    if (!lightMode) {
-      const heavyStart = performance.now();
-      
-      // Run pre-flight checks (SLOW - debounced)
-      runPreflightChecks(htmlContent, textContent);
-      
-      // Calculate mobile score (MEDIUM - debounced)
-      const mobileScore = calculateSimpleMobileScore(textContent, subjectValue);
-      
-      // Throttled service worker update (SLOW - network call)
-      throttledServiceWorkerUpdate(htmlContent, textContent, subjectValue, mobileScore);
-      
-      const heavyTime = performance.now() - heavyStart;
-      logPerformance('heavy', heavyTime);
-      
-      log(`⚡ Full update: ${lightTime.toFixed(2)}ms (light) + ${heavyTime.toFixed(2)}ms (heavy) = ${(lightTime + heavyTime).toFixed(2)}ms total`);
-    } else {
-      log(`⚡ Light update: ${lightTime.toFixed(2)}ms`);
-    }
-    
-    logPerformance('update', lightTime);
+
+      logPerformance("update", lightTime)
     } catch (error) {
-      logError('PREVIEW_UPDATE_ERROR', 'Failed to update preview', {
+      logError("PREVIEW_UPDATE_ERROR", "Failed to update preview", {
         error: error.message,
         stack: error.stack,
         hasContent: !!currentComposeBody
-      });
+      })
     }
-  });
+  })
 }
 
 /**
@@ -3202,228 +3369,263 @@ function updatePreview(lightMode = false) {
  * Returns detailed structure compatible with popup display
  */
 function calculateSimpleMobileScore(textContent, subject) {
-  let score = 0;
-  const breakdown = {};
-  const suggestions = [];
-  
+  let score = 0
+  const breakdown = {}
+  const suggestions = []
+
   // Subject line (20 points)
-  const subjectLength = subject.length;
-  const subjectMaxScore = 20;
-  let subjectScore = 0;
-  let subjectFeedback = '';
-  
+  const subjectLength = subject.length
+  const subjectMaxScore = 20
+  let subjectScore = 0
+  let subjectFeedback = ""
+
   if (!subject || subjectLength === 0) {
-    subjectScore = 0;
-    subjectFeedback = 'Add a subject line';
-    suggestions.push(`⚠️ Add a subject line (+${subjectMaxScore} points)`);
+    subjectScore = 0
+    subjectFeedback = "Add a subject line"
+    suggestions.push(`⚠️ Add a subject line (+${subjectMaxScore} points)`)
   } else if (subjectLength <= 40) {
-    subjectScore = subjectMaxScore;
-    subjectFeedback = `Perfect length for mobile (${subjectLength} chars)`;
+    subjectScore = subjectMaxScore
+    subjectFeedback = `Perfect length for mobile (${subjectLength} chars)`
   } else if (subjectLength <= 50) {
-    subjectScore = Math.round(subjectMaxScore * 0.6);
-    const pointsToGain = Math.round(subjectMaxScore * 0.4);
-    subjectFeedback = `Good, but consider shortening (${subjectLength} chars)`;
-    suggestions.push(`📏 Subject under 60 characters (recommended) (+${pointsToGain} points)`);
+    subjectScore = Math.round(subjectMaxScore * 0.6)
+    const pointsToGain = Math.round(subjectMaxScore * 0.4)
+    subjectFeedback = `Good, but consider shortening (${subjectLength} chars)`
+    suggestions.push(
+      `📏 Subject under 60 characters (recommended) (+${pointsToGain} points)`
+    )
   } else if (subjectLength <= 60) {
-    subjectScore = Math.round(subjectMaxScore * 0.3);
-    const pointsToGain = Math.round(subjectMaxScore * 0.7);
-    subjectFeedback = `May truncate on some devices (${subjectLength} chars)`;
-    suggestions.push(`⚠️ Shorten subject to under 60 chars — truncated subjects lose opens (+${pointsToGain} points)`);
+    subjectScore = Math.round(subjectMaxScore * 0.3)
+    const pointsToGain = Math.round(subjectMaxScore * 0.7)
+    subjectFeedback = `May truncate on some devices (${subjectLength} chars)`
+    suggestions.push(
+      `⚠️ Shorten subject to under 60 chars — truncated subjects lose opens (+${pointsToGain} points)`
+    )
   } else {
-    subjectScore = Math.round(subjectMaxScore * 0.1);
-    const pointsToGain = Math.round(subjectMaxScore * 0.9);
-    subjectFeedback = `Too long—will definitely truncate (${subjectLength} chars)`;
-    suggestions.push(`❌ Subject too long (${subjectLength} chars) — mobile shows ~30 chars before cutting off (+${pointsToGain} points)`);
+    subjectScore = Math.round(subjectMaxScore * 0.1)
+    const pointsToGain = Math.round(subjectMaxScore * 0.9)
+    subjectFeedback = `Too long—will definitely truncate (${subjectLength} chars)`
+    suggestions.push(
+      `❌ Subject too long (${subjectLength} chars) — mobile shows ~30 chars before cutting off (+${pointsToGain} points)`
+    )
   }
-  
+
   breakdown.subjectLength = {
     score: subjectScore,
     maxScore: subjectMaxScore,
     feedback: subjectFeedback
-  };
-  score += subjectScore;
-  
-  // CTA Above Fold (25 points) - check for action words in first 250 chars
-  const ctaMaxScore = 25;
-  const first250Chars = textContent.substring(0, 250);
-  const ctaKeywords = /\b(click|tap|view|reply|respond|call|visit|download|register|sign up|join|buy|get|try|learn more|read more|schedule|book|demo)\b/gi;
-  const hasCTAAboveFold = ctaKeywords.test(first250Chars);
-  const hasCTAAnyWhere = ctaKeywords.test(textContent);
-  let ctaScore = 0;
-  let ctaFeedback = '';
-  
-  if (hasCTAAboveFold) {
-    ctaScore = ctaMaxScore;
-    ctaFeedback = 'CTA visible without scrolling ✓';
-  } else if (hasCTAAnyWhere) {
-    ctaScore = Math.round(ctaMaxScore * 0.4);
-    const pointsToGain = Math.round(ctaMaxScore * 0.6);
-    ctaFeedback = 'CTA exists but below fold';
-    suggestions.push(`🎯 Move CTA above the fold — prospects decide in 3 seconds (+${pointsToGain} points)`);
-  } else {
-    ctaScore = 0;
-    ctaFeedback = 'No clear call-to-action found';
-    suggestions.push(`❌ Add a CTA — emails without one get ignored on mobile (+${ctaMaxScore} points)`);
   }
-  
+  score += subjectScore
+
+  // CTA Above Fold (25 points) - check for action words in first 250 chars
+  const ctaMaxScore = 25
+  const first250Chars = textContent.substring(0, 250)
+  const ctaKeywords =
+    /\b(click|tap|view|reply|respond|call|visit|download|register|sign up|join|buy|get|try|learn more|read more|schedule|book|demo)\b/gi
+  const hasCTAAboveFold = ctaKeywords.test(first250Chars)
+  const hasCTAAnyWhere = ctaKeywords.test(textContent)
+  let ctaScore = 0
+  let ctaFeedback = ""
+
+  if (hasCTAAboveFold) {
+    ctaScore = ctaMaxScore
+    ctaFeedback = "CTA visible without scrolling ✓"
+  } else if (hasCTAAnyWhere) {
+    ctaScore = Math.round(ctaMaxScore * 0.4)
+    const pointsToGain = Math.round(ctaMaxScore * 0.6)
+    ctaFeedback = "CTA exists but below fold"
+    suggestions.push(
+      `🎯 Move CTA above the fold — prospects decide in 3 seconds (+${pointsToGain} points)`
+    )
+  } else {
+    ctaScore = 0
+    ctaFeedback = "No clear call-to-action found"
+    suggestions.push(
+      `❌ Add a CTA — emails without one get ignored on mobile (+${ctaMaxScore} points)`
+    )
+  }
+
   breakdown.ctaAboveFold = {
     score: ctaScore,
     maxScore: ctaMaxScore,
     feedback: ctaFeedback
-  };
-  score += ctaScore;
-  
-  // Link Density (15 points) - check for reasonable link spacing
-  const linkMaxScore = 15;
-  const linkMatches = textContent.match(/\b(https?:\/\/|www\.)\S+/gi) || [];
-  const linkCount = linkMatches.length;
-  const charsPerLink = linkCount > 0 ? textContent.length / linkCount : Infinity;
-  let linkScore = 0;
-  let linkFeedback = '';
-  
-  if (linkCount === 0) {
-    linkScore = Math.round(linkMaxScore * 0.5);
-    linkFeedback = 'No links detected';
-  } else if (charsPerLink >= 100) {
-    linkScore = linkMaxScore;
-    linkFeedback = `Good link spacing (${linkCount} links)`;
-  } else if (charsPerLink >= 50) {
-    linkScore = Math.round(linkMaxScore * 0.7);
-    const pointsToGain = Math.round(linkMaxScore * 0.3);
-    linkFeedback = `Links are a bit dense (${linkCount} links)`;
-    suggestions.push(`🔗 Fewer links = higher tap-through rate on mobile (+${pointsToGain} points)`);
-  } else {
-    linkScore = Math.round(linkMaxScore * 0.3);
-    const pointsToGain = Math.round(linkMaxScore * 0.7);
-    linkFeedback = `Too many links (${linkCount} links)`;
-    suggestions.push(`⚠️ Too many links overwhelm mobile readers — pick one strong CTA (+${pointsToGain} points)`);
   }
-  
+  score += ctaScore
+
+  // Link Density (15 points) - check for reasonable link spacing
+  const linkMaxScore = 15
+  const linkMatches = textContent.match(/\b(https?:\/\/|www\.)\S+/gi) || []
+  const linkCount = linkMatches.length
+  const charsPerLink = linkCount > 0 ? textContent.length / linkCount : Infinity
+  let linkScore = 0
+  let linkFeedback = ""
+
+  if (linkCount === 0) {
+    linkScore = Math.round(linkMaxScore * 0.5)
+    linkFeedback = "No links detected"
+  } else if (charsPerLink >= 100) {
+    linkScore = linkMaxScore
+    linkFeedback = `Good link spacing (${linkCount} links)`
+  } else if (charsPerLink >= 50) {
+    linkScore = Math.round(linkMaxScore * 0.7)
+    const pointsToGain = Math.round(linkMaxScore * 0.3)
+    linkFeedback = `Links are a bit dense (${linkCount} links)`
+    suggestions.push(
+      `🔗 Fewer links = higher tap-through rate on mobile (+${pointsToGain} points)`
+    )
+  } else {
+    linkScore = Math.round(linkMaxScore * 0.3)
+    const pointsToGain = Math.round(linkMaxScore * 0.7)
+    linkFeedback = `Too many links (${linkCount} links)`
+    suggestions.push(
+      `⚠️ Too many links overwhelm mobile readers — pick one strong CTA (+${pointsToGain} points)`
+    )
+  }
+
   breakdown.linkDensity = {
     score: linkScore,
     maxScore: linkMaxScore,
     feedback: linkFeedback
-  };
-  score += linkScore;
-  
+  }
+  score += linkScore
+
   // Image Optimization (12 points) - placeholder for now
-  const imageMaxScore = 12;
+  const imageMaxScore = 12
   breakdown.imageOptimization = {
     score: imageMaxScore, // Default to full score for now
     maxScore: imageMaxScore,
-    feedback: 'Images not analyzed in preview'
-  };
-  score += imageMaxScore;
-  
-  // Email length (12 points) - mobile-friendly is 50-500 words
-  const words = textContent.trim().split(/\s+/).filter(w => w.length > 0);
-  const wordCount = words.length;
-  const lengthMaxScore = 12;
-  let lengthScore = 0;
-  let lengthFeedback = '';
-  
-  if (wordCount >= 50 && wordCount <= 500) {
-    lengthScore = lengthMaxScore;
-    lengthFeedback = `Perfect length (${wordCount} words)`;
-  } else if (wordCount >= 30 && wordCount < 50) {
-    lengthScore = Math.round(lengthMaxScore * 0.6);
-    const pointsToGain = Math.round(lengthMaxScore * 0.4);
-    lengthFeedback = `A bit short (${wordCount} words)`;
-    suggestions.push(`📝 Add more content (aim for 50-500 words) (+${pointsToGain} points)`);
-  } else if (wordCount > 500 && wordCount <= 800) {
-    lengthScore = Math.round(lengthMaxScore * 0.6);
-    const pointsToGain = Math.round(lengthMaxScore * 0.4);
-    lengthFeedback = `A bit long (${wordCount} words)`;
-    suggestions.push(`✂️ Shorten email to 50-500 words for mobile (+${pointsToGain} points)`);
-  } else if (wordCount > 800) {
-    lengthScore = Math.round(lengthMaxScore * 0.3);
-    const pointsToGain = Math.round(lengthMaxScore * 0.7);
-    lengthFeedback = `Too long (${wordCount} words)`;
-    suggestions.push(`❌ Email is ${wordCount} words! Shorten to under 500 (+${pointsToGain} points)`);
-  } else {
-    lengthScore = 0;
-    lengthFeedback = `Too short (${wordCount} words)`;
-    suggestions.push(`⚠️ Add more content (at least 30 words) (+${lengthMaxScore} points)`);
+    feedback: "Images not analyzed in preview"
   }
-  
+  score += imageMaxScore
+
+  // Email length (12 points) - mobile-friendly is 50-500 words
+  const words = textContent
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w.length > 0)
+  const wordCount = words.length
+  const lengthMaxScore = 12
+  let lengthScore = 0
+  let lengthFeedback = ""
+
+  if (wordCount >= 50 && wordCount <= 500) {
+    lengthScore = lengthMaxScore
+    lengthFeedback = `Perfect length (${wordCount} words)`
+  } else if (wordCount >= 30 && wordCount < 50) {
+    lengthScore = Math.round(lengthMaxScore * 0.6)
+    const pointsToGain = Math.round(lengthMaxScore * 0.4)
+    lengthFeedback = `A bit short (${wordCount} words)`
+    suggestions.push(
+      `📝 Add more content (aim for 50-500 words) (+${pointsToGain} points)`
+    )
+  } else if (wordCount > 500 && wordCount <= 800) {
+    lengthScore = Math.round(lengthMaxScore * 0.6)
+    const pointsToGain = Math.round(lengthMaxScore * 0.4)
+    lengthFeedback = `A bit long (${wordCount} words)`
+    suggestions.push(
+      `✂️ Shorten email to 50-500 words for mobile (+${pointsToGain} points)`
+    )
+  } else if (wordCount > 800) {
+    lengthScore = Math.round(lengthMaxScore * 0.3)
+    const pointsToGain = Math.round(lengthMaxScore * 0.7)
+    lengthFeedback = `Too long (${wordCount} words)`
+    suggestions.push(
+      `❌ Email is ${wordCount} words! Shorten to under 500 (+${pointsToGain} points)`
+    )
+  } else {
+    lengthScore = 0
+    lengthFeedback = `Too short (${wordCount} words)`
+    suggestions.push(
+      `⚠️ Add more content (at least 30 words) (+${lengthMaxScore} points)`
+    )
+  }
+
   breakdown.textLength = {
     score: lengthScore,
     maxScore: lengthMaxScore,
     feedback: lengthFeedback
-  };
-  score += lengthScore;
-  
-  // Whitespace Ratio (10 points) - check for paragraph breaks
-  const whitespaceMaxScore = 10;
-  const paragraphs = textContent.split('\n').filter(p => p.trim().length > 0);
-  const paraCount = paragraphs.length;
-  let whitespaceScore = 0;
-  let whitespaceFeedback = '';
-  
-  if (paraCount >= 3) {
-    whitespaceScore = whitespaceMaxScore;
-    whitespaceFeedback = `Good spacing (${paraCount} paragraphs)`;
-  } else if (paraCount === 2) {
-    whitespaceScore = Math.round(whitespaceMaxScore * 0.6);
-    const pointsToGain = Math.round(whitespaceMaxScore * 0.4);
-    whitespaceFeedback = 'Add more paragraph breaks';
-    suggestions.push(`⬜ Break content into more paragraphs (+${pointsToGain} points)`);
-  } else {
-    whitespaceScore = Math.round(whitespaceMaxScore * 0.3);
-    const pointsToGain = Math.round(whitespaceMaxScore * 0.7);
-    whitespaceFeedback = 'No paragraph breaks';
-    suggestions.push(`⚠️ Add paragraph breaks for readability (+${pointsToGain} points)`);
   }
-  
+  score += lengthScore
+
+  // Whitespace Ratio (10 points) - check for paragraph breaks
+  const whitespaceMaxScore = 10
+  const paragraphs = textContent.split("\n").filter((p) => p.trim().length > 0)
+  const paraCount = paragraphs.length
+  let whitespaceScore = 0
+  let whitespaceFeedback = ""
+
+  if (paraCount >= 3) {
+    whitespaceScore = whitespaceMaxScore
+    whitespaceFeedback = `Good spacing (${paraCount} paragraphs)`
+  } else if (paraCount === 2) {
+    whitespaceScore = Math.round(whitespaceMaxScore * 0.6)
+    const pointsToGain = Math.round(whitespaceMaxScore * 0.4)
+    whitespaceFeedback = "Add more paragraph breaks"
+    suggestions.push(
+      `⬜ Break content into more paragraphs (+${pointsToGain} points)`
+    )
+  } else {
+    whitespaceScore = Math.round(whitespaceMaxScore * 0.3)
+    const pointsToGain = Math.round(whitespaceMaxScore * 0.7)
+    whitespaceFeedback = "No paragraph breaks"
+    suggestions.push(
+      `⚠️ Add paragraph breaks for readability (+${pointsToGain} points)`
+    )
+  }
+
   breakdown.whitespaceRatio = {
     score: whitespaceScore,
     maxScore: whitespaceMaxScore,
     feedback: whitespaceFeedback
-  };
-  score += whitespaceScore;
-  
-  // Readability (6 points) - check for short paragraphs
-  const readabilityMaxScore = 6;
-  const avgParaLength = paragraphs.reduce((sum, p) => sum + p.length, 0) / (paragraphs.length || 1);
-  let readabilityScore = 0;
-  let readabilityFeedback = '';
-  
-  if (avgParaLength <= 300) {
-    readabilityScore = readabilityMaxScore;
-    readabilityFeedback = 'Paragraphs are scannable';
-  } else if (avgParaLength <= 500) {
-    readabilityScore = Math.round(readabilityMaxScore * 0.6);
-    const pointsToGain = Math.round(readabilityMaxScore * 0.4);
-    readabilityFeedback = 'Paragraphs are a bit long';
-    suggestions.push(`👓 Shorten paragraphs for easier reading (+${pointsToGain} points)`);
-  } else {
-    readabilityScore = Math.round(readabilityMaxScore * 0.3);
-    const pointsToGain = Math.round(readabilityMaxScore * 0.7);
-    readabilityFeedback = 'Paragraphs are too long';
-    suggestions.push(`❌ Break up long paragraphs (under 300 chars each) (+${pointsToGain} points)`);
   }
-  
+  score += whitespaceScore
+
+  // Readability (6 points) - check for short paragraphs
+  const readabilityMaxScore = 6
+  const avgParaLength =
+    paragraphs.reduce((sum, p) => sum + p.length, 0) / (paragraphs.length || 1)
+  let readabilityScore = 0
+  let readabilityFeedback = ""
+
+  if (avgParaLength <= 300) {
+    readabilityScore = readabilityMaxScore
+    readabilityFeedback = "Paragraphs are scannable"
+  } else if (avgParaLength <= 500) {
+    readabilityScore = Math.round(readabilityMaxScore * 0.6)
+    const pointsToGain = Math.round(readabilityMaxScore * 0.4)
+    readabilityFeedback = "Paragraphs are a bit long"
+    suggestions.push(
+      `👓 Shorten paragraphs for easier reading (+${pointsToGain} points)`
+    )
+  } else {
+    readabilityScore = Math.round(readabilityMaxScore * 0.3)
+    const pointsToGain = Math.round(readabilityMaxScore * 0.7)
+    readabilityFeedback = "Paragraphs are too long"
+    suggestions.push(
+      `❌ Break up long paragraphs (under 300 chars each) (+${pointsToGain} points)`
+    )
+  }
+
   breakdown.readability = {
     score: readabilityScore,
     maxScore: readabilityMaxScore,
     feedback: readabilityFeedback
-  };
-  score += readabilityScore;
-  
+  }
+  score += readabilityScore
+
   return {
     score: Math.round(score),
     breakdown: breakdown,
     suggestions: suggestions,
     grade: getGradeFromScore(score)
-  };
+  }
 }
 
 function getGradeFromScore(score) {
-  if (score >= 90) return 'A';
-  if (score >= 80) return 'B';
-  if (score >= 70) return 'C';
-  if (score >= 60) return 'D';
-  return 'F';
+  if (score >= 90) return "A"
+  if (score >= 80) return "B"
+  if (score >= 70) return "C"
+  if (score >= 60) return "D"
+  return "F"
 }
 
 /**
@@ -3431,13 +3633,16 @@ function getGradeFromScore(score) {
  * CTA = at least one link or button in body (regex for <a href= or <button)
  */
 function getTrafficLightState(htmlContent, textContent, subject) {
-  const hasContent = (subject && subject.trim()) || (textContent && textContent.trim());
-  if (!hasContent) return 'idle';
+  const hasContent =
+    (subject && subject.trim()) || (textContent && textContent.trim())
+  if (!hasContent) return "idle"
 
-  const subjectOk = subject.length < 60;
-  const hasCTA = /<a\s+[^>]*href\s*=/i.test(htmlContent || '') || /<button/i.test(htmlContent || '');
-  if (subjectOk && hasCTA) return 'ready';
-  return 'issues';
+  const subjectOk = subject.length < 60
+  const hasCTA =
+    /<a\s+[^>]*href\s*=/i.test(htmlContent || "") ||
+    /<button/i.test(htmlContent || "")
+  if (subjectOk && hasCTA) return "ready"
+  return "issues"
 }
 
 /**
@@ -3445,20 +3650,34 @@ function getTrafficLightState(htmlContent, textContent, subject) {
  * OPTIMIZED: Throttled to max once per 500ms
  * ENHANCED: Timing measurements and retry logic
  */
-function sendEmailStateToServiceWorker(htmlContent, textContent, subject, mobileScore) {
-  const startTime = performance.now();
-  
+function sendEmailStateToServiceWorker(
+  htmlContent,
+  textContent,
+  subject,
+  mobileScore
+) {
+  const startTime = performance.now()
+
   // Count words (split by whitespace, filter empty strings)
-  const words = textContent.trim().split(/\s+/).filter(w => w.length > 0);
-  const wordCount = words.length;
-  
+  const words = textContent
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w.length > 0)
+  const wordCount = words.length
+
   // Detect environment (Gmail or Outlook)
-  const environment = window.location.hostname.includes('mail.google.com') ? 'gmail' : 
-                       window.location.hostname.includes('outlook') ? 'outlook' : 
-                       'unknown';
-  
-  const trafficLight = getTrafficLightState(htmlContent, textContent, subject || '');
-  
+  const environment = window.location.hostname.includes("mail.google.com")
+    ? "gmail"
+    : window.location.hostname.includes("outlook")
+      ? "outlook"
+      : "unknown"
+
+  const trafficLight = getTrafficLightState(
+    htmlContent,
+    textContent,
+    subject || ""
+  )
+
   const emailState = {
     html: htmlContent,
     text: textContent,
@@ -3474,37 +3693,47 @@ function sendEmailStateToServiceWorker(htmlContent, textContent, subject, mobile
       linkTapability: preflightChecks.linkTapability
     },
     sentAt: Date.now()
-  };
+  }
 
-  lastSentEmailState = { ...emailState, isActive: true };
-  
-  chrome.runtime.sendMessage({
-    type: 'EMAIL_CONTENT_UPDATED',
-    state: emailState
-  }).then(() => {
-    const latency = performance.now() - startTime;
-    if (latency > 5) {
-      log(`⚠️ Content → Worker latency: ${latency.toFixed(2)}ms (target: <5ms)`);
-    } else {
-      log(`✅ Synced to worker (${latency.toFixed(2)}ms)`);
-    }
-  }).catch(error => {
-    const latency = performance.now() - startTime;
-    console.error(`❌ Send failed after ${latency.toFixed(2)}ms:`, error);
-    setTimeout(() => {
-      log('🔄 Retrying send...');
-      chrome.runtime.sendMessage({
-        type: 'EMAIL_CONTENT_UPDATED',
-        state: emailState
-      }).catch(retryError => {
-        console.error('❌ Retry failed:', retryError);
-      });
-    }, 500);
-  });
+  lastSentEmailState = { ...emailState, isActive: true }
+
+  chrome.runtime
+    .sendMessage({
+      type: "EMAIL_CONTENT_UPDATED",
+      state: emailState
+    })
+    .then(() => {
+      const latency = performance.now() - startTime
+      if (latency > 5) {
+        log(
+          `⚠️ Content → Worker latency: ${latency.toFixed(2)}ms (target: <5ms)`
+        )
+      } else {
+        log(`✅ Synced to worker (${latency.toFixed(2)}ms)`)
+      }
+    })
+    .catch((error) => {
+      const latency = performance.now() - startTime
+      console.error(`❌ Send failed after ${latency.toFixed(2)}ms:`, error)
+      setTimeout(() => {
+        log("🔄 Retrying send...")
+        chrome.runtime
+          .sendMessage({
+            type: "EMAIL_CONTENT_UPDATED",
+            state: emailState
+          })
+          .catch((retryError) => {
+            console.error("❌ Retry failed:", retryError)
+          })
+      }, 500)
+    })
 }
 
 // Throttled version (max once per 500ms)
-const throttledServiceWorkerUpdate = throttle(sendEmailStateToServiceWorker, 500);
+const throttledServiceWorkerUpdate = throttle(
+  sendEmailStateToServiceWorker,
+  500
+)
 
 // ==================== SETTINGS LISTENER ====================
 
@@ -3512,98 +3741,115 @@ const throttledServiceWorkerUpdate = throttle(sendEmailStateToServiceWorker, 500
  * Listen for settings updates from popup (via service worker)
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  log('📨 Message received from extension:', message.type);
-  
-  if (message.type === 'REQUEST_EMAIL_STATE') {
+  log("📨 Message received from extension:", message.type)
+
+  if (message.type === "REQUEST_EMAIL_STATE") {
     if (overlayContainer) {
       if (lastSentEmailState) {
-        sendResponse(lastSentEmailState);
+        sendResponse(lastSentEmailState)
       } else {
-        const checks = preflightChecks && typeof preflightChecks === 'object'
-          ? preflightChecks
-          : { subjectFrontLoaded: false, ctaAboveFold: false, linkTapability: false };
+        const checks =
+          preflightChecks && typeof preflightChecks === "object"
+            ? preflightChecks
+            : {
+                subjectFrontLoaded: false,
+                ctaAboveFold: false,
+                linkTapability: false
+              }
         sendResponse({
           isActive: true,
           preflightChecks: checks,
           mobileScore: mobileScore || null,
           characterCount: 0,
           wordCount: 0,
-          subject: '',
-          text: '',
-          html: '',
-          environment: window.location.hostname.includes('mail.google.com') ? 'gmail' : window.location.hostname.includes('outlook') ? 'outlook' : 'unknown',
+          subject: "",
+          text: "",
+          html: "",
+          environment: window.location.hostname.includes("mail.google.com")
+            ? "gmail"
+            : window.location.hostname.includes("outlook")
+              ? "outlook"
+              : "unknown",
           trafficLight: null
-        });
+        })
       }
     } else {
-      sendResponse({ isActive: false, preflightChecks: null, mobileScore: null });
+      sendResponse({
+        isActive: false,
+        preflightChecks: null,
+        mobileScore: null
+      })
     }
-    return true;
-  }
-  
-  if (message.type === 'TOGGLE_PREVIEW') {
-    if (shadowRoot) {
-      const collapseBtn = shadowRoot.getElementById('collapseBtn');
-      const collapsedLogo = shadowRoot.getElementById('collapsedLogo');
-      if (collapseBtn || collapsedLogo) {
-        toggleCollapse();
-        sendResponse({ success: true });
-      } else {
-        sendResponse({ success: false });
-      }
-    } else {
-      sendResponse({ success: false });
-    }
-    return true;
+    return true
   }
 
-  if (message.type === 'SETTINGS_UPDATED') {
-    log('⚙️ Settings updated:', message.settings);
-    
+  if (message.type === "TOGGLE_PREVIEW") {
+    if (shadowRoot) {
+      const collapseBtn = shadowRoot.getElementById("collapseBtn")
+      const collapsedLogo = shadowRoot.getElementById("collapsedLogo")
+      if (collapseBtn || collapsedLogo) {
+        toggleCollapse()
+        sendResponse({ success: true })
+      } else {
+        sendResponse({ success: false })
+      }
+    } else {
+      sendResponse({ success: false })
+    }
+    return true
+  }
+
+  if (message.type === "SETTINGS_UPDATED") {
+    log("⚙️ Settings updated:", message.settings)
+
     // Update cached settings
     if (message.settings.autoShow !== undefined) {
-      settings.autoShow = message.settings.autoShow;
+      settings.autoShow = message.settings.autoShow
     }
-    log('✅ Settings cache updated:', settings);
-    
+    log("✅ Settings cache updated:", settings)
+
     // Apply dark mode to overlay if needed
     if (shadowRoot && message.settings.darkMode !== undefined) {
-      const phoneScreen = shadowRoot.querySelector('.phone-screen');
+      const phoneScreen = shadowRoot.querySelector(".phone-screen")
       if (phoneScreen) {
         if (message.settings.darkMode) {
-          phoneScreen.style.filter = 'invert(1) hue-rotate(180deg)';
-          log('🌙 Dark mode applied to overlay');
+          phoneScreen.style.filter = "invert(1) hue-rotate(180deg)"
+          log("🌙 Dark mode applied to overlay")
         } else {
-          phoneScreen.style.filter = 'none';
-          log('☀️ Dark mode removed from overlay');
+          phoneScreen.style.filter = "none"
+          log("☀️ Dark mode removed from overlay")
         }
       }
     }
-    
+
     // Handle auto-show setting - show/hide overlay based on setting
     if (message.settings.autoShow === false && overlayContainer) {
       // Hide overlay if auto-show disabled (but keep syncing)
-      log('👁️ Auto-show disabled, hiding overlay (still syncing)');
+      log("👁️ Auto-show disabled, hiding overlay (still syncing)")
       if (overlayContainer && overlayContainer.parentNode) {
-        overlayContainer.parentNode.removeChild(overlayContainer);
-        overlayContainer = null;
-        shadowRoot = null;
-        lastSentEmailState = null;
+        overlayContainer.parentNode.removeChild(overlayContainer)
+        overlayContainer = null
+        shadowRoot = null
+        lastSentEmailState = null
       }
-    } else if (message.settings.autoShow === true && !overlayContainer && isAttachedToCompose) {
+    } else if (
+      message.settings.autoShow === true &&
+      !overlayContainer &&
+      isAttachedToCompose
+    ) {
       // Show overlay if auto-show enabled and we're attached to compose
-      log('👁️ Auto-show enabled, creating overlay');
-      const composeWindow = findComposeWindow();
+      log("👁️ Auto-show enabled, creating overlay")
+      const composeWindow = findComposeWindow()
       if (composeWindow) {
-        createPreviewUI(composeWindow);
+        createPreviewUI(composeWindow)
       }
     }
-    
-    sendResponse({ success: true });
+
+    sendResponse({ success: true })
   }
-  
-  return true;
-});
+
+  return true
+})
 
 /**
  * Check if CTA is visible in mobile viewport without scrolling
@@ -3611,115 +3857,120 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  * OPTIMIZED: Cached results, only recomputes when content changes significantly
  */
 function checkCTAInViewport(htmlContent, textContent) {
-  const perfStart = performance.now();
-  
+  const perfStart = performance.now()
+
   // Generate cache key from content hash
-  const contentHash = fastHash(textContent.substring(0, 500)); // Only hash first 500 chars for CTA check
-  
+  const contentHash = fastHash(textContent.substring(0, 500)) // Only hash first 500 chars for CTA check
+
   // Check cache first (LRU cache)
-  const cached = operationCache.ctaCheck.get(contentHash);
+  const cached = operationCache.ctaCheck.get(contentHash)
   if (cached !== undefined) {
-    performanceMetrics.cacheHits++;
-    log(`⚡ CTA check cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
-    return cached;
+    performanceMetrics.cacheHits++
+    log(`⚡ CTA check cached (${(performance.now() - perfStart).toFixed(2)}ms)`)
+    return cached
   }
-  
-  performanceMetrics.cacheMisses++;
-  
+
+  performanceMetrics.cacheMisses++
+
   // Quick check: If text is very short, likely no CTA
   if (textContent.trim().length < 50) {
-    const result = { found: false, type: null, position: null, details: 'Content too short' };
-    operationCache.ctaCheck.set(contentHash, result);
-    return result;
+    const result = {
+      found: false,
+      type: null,
+      position: null,
+      details: "Content too short"
+    }
+    operationCache.ctaCheck.set(contentHash, result)
+    return result
   }
-  
+
   // OPTIMIZED: Use reusable container instead of creating new one
-  const tempContainer = getMeasurementContainer();
-  
+  const tempContainer = getMeasurementContainer()
+
   // Insert the email content
-  tempContainer.innerHTML = htmlContent || textContent;
-  
+  tempContainer.innerHTML = htmlContent || textContent
+
   // Mobile viewport available for email body (before scrolling needed)
   // iPhone 15 Pro: 812px total
   // - Status bar: 56px
-  // - Mail header: 44px  
+  // - Mail header: 44px
   // - Subject: ~60px (can vary)
   // - From section: 76px
   // = ~576px available for email body content
-  const VIEWPORT_HEIGHT = 576;
-  
+  const VIEWPORT_HEIGHT = 576
+
   // Find all potential CTA elements
-  const links = tempContainer.querySelectorAll('a[href]');
-  const buttons = tempContainer.querySelectorAll('button');
-  
+  const links = tempContainer.querySelectorAll("a[href]")
+  const buttons = tempContainer.querySelectorAll("button")
+
   let foundCTA = {
     found: false,
     type: null,
     position: null,
     details: null
-  };
-  
+  }
+
   // Check links
   for (let link of links) {
-    const linkTop = link.offsetTop;
-    const linkText = link.textContent.trim();
-    
+    const linkTop = link.offsetTop
+    const linkText = link.textContent.trim()
+
     if (linkTop <= VIEWPORT_HEIGHT) {
       foundCTA = {
         found: true,
-        type: 'link',
+        type: "link",
         position: `${linkTop}px from top`,
-        details: `Link: "${linkText.substring(0, 40)}${linkText.length > 40 ? '...' : ''}"`
-      };
-      break;
+        details: `Link: "${linkText.substring(0, 40)}${linkText.length > 40 ? "..." : ""}"`
+      }
+      break
     }
   }
-  
+
   // Check buttons
   if (!foundCTA.found) {
     for (let button of buttons) {
-      const buttonTop = button.offsetTop;
-      const buttonText = button.textContent.trim();
-      
+      const buttonTop = button.offsetTop
+      const buttonText = button.textContent.trim()
+
       if (buttonTop <= VIEWPORT_HEIGHT) {
         foundCTA = {
           found: true,
-          type: 'button',
+          type: "button",
           position: `${buttonTop}px from top`,
           details: `Button: "${buttonText.substring(0, 40)}"`
-        };
-        break;
+        }
+        break
       }
     }
   }
-  
+
   // Fallback: check for a raw URL in the visible portion of text (stricter: 600 chars)
   // This handles plain-text CTAs like "Click here: https://..." without relying
   // on generic keyword matching that fires on normal prose words (reply, see, get).
   if (!foundCTA.found) {
-    const urlPattern = /https?:\/\/[^\s"'<>]{4,}/gi;
-    const firstChunk = textContent.substring(0, 600); // stricter above-fold
-    const urlMatch = firstChunk.match(urlPattern);
+    const urlPattern = /https?:\/\/[^\s"'<>]{4,}/gi
+    const firstChunk = textContent.substring(0, 600) // stricter above-fold
+    const urlMatch = firstChunk.match(urlPattern)
     if (urlMatch) {
       foundCTA = {
         found: true,
-        type: 'raw-url',
-        position: 'within first 600 chars',
+        type: "raw-url",
+        position: "within first 600 chars",
         details: `URL: "${urlMatch[0].substring(0, 50)}"`
-      };
+      }
     }
   }
-  
+
   // OPTIMIZED: Clear content but keep container for reuse
-  tempContainer.innerHTML = '';
-  
+  tempContainer.innerHTML = ""
+
   // Cache the result in LRU cache (auto-evicts old entries)
-  operationCache.ctaCheck.set(contentHash, foundCTA);
-  
-  const perfTime = performance.now() - perfStart;
-  log(`⚡ CTA check completed (${perfTime.toFixed(2)}ms)`);
-  
-  return foundCTA;
+  operationCache.ctaCheck.set(contentHash, foundCTA)
+
+  const perfTime = performance.now() - perfStart
+  log(`⚡ CTA check completed (${perfTime.toFixed(2)}ms)`)
+
+  return foundCTA
 }
 
 /**
@@ -3727,56 +3978,60 @@ function checkCTAInViewport(htmlContent, textContent) {
  * Based on mobile-first email best practices
  */
 function runPreflightChecks(htmlContent, textContent) {
-  const perfStart = performance.now();
-  
+  const perfStart = performance.now()
+
   if (!shadowRoot) {
-    console.warn('⚠️ Cannot run pre-flight checks: shadowRoot not available');
-    return;
+    console.warn("⚠️ Cannot run pre-flight checks: shadowRoot not available")
+    return
   }
-  
+
   // Get subject for cache key
-  const subject = currentSubjectField ? currentSubjectField.value.trim() : '';
-  
+  const subject = currentSubjectField ? currentSubjectField.value.trim() : ""
+
   // Generate cache key
-  const cacheKey = fastHash(subject + textContent.substring(0, 500));
-  
+  const cacheKey = fastHash(subject + textContent.substring(0, 500))
+
   // Check cache first
-  const cached = operationCache.preflightResults.get(cacheKey);
+  const cached = operationCache.preflightResults.get(cacheKey)
   if (cached !== undefined) {
     // Apply cached results
-    preflightChecks.subjectFrontLoaded = cached.subjectFrontLoaded;
-    preflightChecks.ctaAboveFold = cached.ctaAboveFold;
-    preflightChecks.linkTapability = cached.linkTapability;
-    
+    preflightChecks.subjectFrontLoaded = cached.subjectFrontLoaded
+    preflightChecks.ctaAboveFold = cached.ctaAboveFold
+    preflightChecks.linkTapability = cached.linkTapability
+
     // Update UI with cached results
-    updatePreflightUI();
-    
-    performanceMetrics.cacheHits++;
-    log(`⚡ Pre-flight checks cached (${(performance.now() - perfStart).toFixed(2)}ms)`);
-    return;
+    updatePreflightUI()
+
+    performanceMetrics.cacheHits++
+    log(
+      `⚡ Pre-flight checks cached (${(performance.now() - perfStart).toFixed(2)}ms)`
+    )
+    return
   }
-  
-  performanceMetrics.cacheMisses++;
-  log('🔍 Running pre-flight checks...');
-  
+
+  performanceMetrics.cacheMisses++
+  log("🔍 Running pre-flight checks...")
+
   // Check 1: Subject Front-Loading (Hook in first 30 chars)
   // Mobile users only see 25-30 characters of subject line
   // Stricter: require 15+ chars and no filler — green only for strong value props
-  const subjectFirst30 = subject.substring(0, 30);
-  const fillerWords = /^(hi|hello|hey|greetings|good morning|good afternoon|re:|fw:|thanks|thank you|quick|question|fyi|update)/i;
-  const hasHook = subject.length > 0 &&
-                  subjectFirst30.length >= 15 &&
-                  !fillerWords.test(subjectFirst30);
-  
-  preflightChecks.subjectFrontLoaded = hasHook;
-  
-  log(`   📧 Subject Front-Loading: ${hasHook ? '✅ PASS' : '❌ FAIL'}`, {
-    subject: subject.substring(0, 50) + (subject.length > 50 ? '...' : ''),
+  const subjectFirst30 = subject.substring(0, 30)
+  const fillerWords =
+    /^(hi|hello|hey|greetings|good morning|good afternoon|re:|fw:|thanks|thank you|quick|question|fyi|update)/i
+  const hasHook =
+    subject.length > 0 &&
+    subjectFirst30.length >= 15 &&
+    !fillerWords.test(subjectFirst30)
+
+  preflightChecks.subjectFrontLoaded = hasHook
+
+  log(`   📧 Subject Front-Loading: ${hasHook ? "✅ PASS" : "❌ FAIL"}`, {
+    subject: subject.substring(0, 50) + (subject.length > 50 ? "..." : ""),
     first30: subjectFirst30,
     length: subject.length,
     hasFillerWords: fillerWords.test(subjectFirst30)
-  });
-  
+  })
+
   // Check 2: CTA Above the Fold (Visible without scrolling)
   // Calculate actual visible area in mobile preview
   // iPhone screen: 812px height
@@ -3785,145 +4040,158 @@ function runPreflightChecks(htmlContent, textContent) {
   // - Subject area: ~60px (variable based on length)
   // - From section: ~76px
   // - Available viewport for email body: ~576px (before user needs to scroll)
-  
-  const ctaAboveFold = checkCTAInViewport(htmlContent, textContent);
-  preflightChecks.ctaAboveFold = ctaAboveFold.found;
-  
-  log(`   🎯 CTA Above Fold: ${ctaAboveFold.found ? '✅ PASS' : '❌ FAIL'}`, {
+
+  const ctaAboveFold = checkCTAInViewport(htmlContent, textContent)
+  preflightChecks.ctaAboveFold = ctaAboveFold.found
+
+  log(`   🎯 CTA Above Fold: ${ctaAboveFold.found ? "✅ PASS" : "❌ FAIL"}`, {
     found: ctaAboveFold.found,
     type: ctaAboveFold.type,
     position: ctaAboveFold.position,
-    visibleHeight: '~576px',
+    visibleHeight: "~576px",
     details: ctaAboveFold.details
-  });
-  
+  })
+
   // Check 3: Link Tap-Ability
   // Check if email body contains a tap-friendly CTA link (not just signature/footer links)
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = htmlContent;
+  const tempDiv = document.createElement("div")
+  tempDiv.innerHTML = htmlContent
 
   // Strip Gmail signature blocks so their links don't produce false positives
-  tempDiv.querySelectorAll('.gmail_signature, [data-smartmail="gmail_signature"], .gmail_default, .gmail_footer').forEach(el => el.remove());
+  tempDiv
+    .querySelectorAll(
+      '.gmail_signature, [data-smartmail="gmail_signature"], .gmail_default, .gmail_footer'
+    )
+    .forEach((el) => el.remove())
 
   // Also strip any element whose text is purely auto-generated (e.g. "Sent from Gmail")
-  tempDiv.querySelectorAll('div, span').forEach(el => {
+  tempDiv.querySelectorAll("div, span").forEach((el) => {
     if (/^(sent from|get outlook|--\s*$)/i.test(el.textContent.trim())) {
-      el.remove();
+      el.remove()
     }
-  });
+  })
 
-  const links = tempDiv.querySelectorAll('a');
-  
-  let tapFriendly = true;
-  let linksInFirstSection = 0;
-  let hasShortLinks = false;
-  let hasStrongLink = false; // at least one link with text >= 5 chars
-  
+  const links = tempDiv.querySelectorAll("a")
+
+  let tapFriendly = true
+  let linksInFirstSection = 0
+  let hasShortLinks = false
+  let hasStrongLink = false // at least one link with text >= 5 chars
+
   if (links.length > 0) {
     // Stricter: single clear CTA, no short links, at least one strong link (>= 5 chars)
     links.forEach((link) => {
-      const linkText = link.textContent.trim();
-      const linkPos = textContent.indexOf(linkText);
-      
+      const linkText = link.textContent.trim()
+      const linkPos = textContent.indexOf(linkText)
+
       if (linkPos >= 0 && linkPos < 200) {
-        linksInFirstSection++;
+        linksInFirstSection++
       }
-      
+
       if (linkText.length >= 5) {
-        hasStrongLink = true;
+        hasStrongLink = true
       }
-      
-      if (linkText.length < 3 && linkText.length > 0 && !/[📱🔗👉]/.test(linkText)) {
-        hasShortLinks = true;
+
+      if (
+        linkText.length < 3 &&
+        linkText.length > 0 &&
+        !/[📱🔗👉]/.test(linkText)
+      ) {
+        hasShortLinks = true
       }
-    });
-    
-    tapFriendly = linksInFirstSection <= 1 && !hasShortLinks && hasStrongLink;
-    
+    })
+
+    tapFriendly = linksInFirstSection <= 1 && !hasShortLinks && hasStrongLink
   } else {
     // No body links = fail. Every sales email needs a clickable next step.
-    tapFriendly = false;
+    tapFriendly = false
   }
-  
-  preflightChecks.linkTapability = tapFriendly;
-  
-  log(`   👆 Link Tap-Ability: ${tapFriendly ? '✅ PASS' : '❌ FAIL'}`, {
+
+  preflightChecks.linkTapability = tapFriendly
+
+  log(`   👆 Link Tap-Ability: ${tapFriendly ? "✅ PASS" : "❌ FAIL"}`, {
     totalLinks: links.length,
     linksInFirstSection: linksInFirstSection,
     hasShortLinks: hasShortLinks,
     hasStrongLink: hasStrongLink
-  });
-  
+  })
+
   // Update UI indicators
-  updatePreflightUI();
-  
-  log('✈️ Mobile Pre-flight Summary:', {
-    subjectFrontLoaded: preflightChecks.subjectFrontLoaded ? '✅ PASS' : '❌ FAIL',
-    ctaAboveFold: preflightChecks.ctaAboveFold ? '✅ PASS' : '❌ FAIL',
-    linkTapability: preflightChecks.linkTapability ? '✅ PASS' : '❌ FAIL'
-  });
-  
+  updatePreflightUI()
+
+  log("✈️ Mobile Pre-flight Summary:", {
+    subjectFrontLoaded: preflightChecks.subjectFrontLoaded
+      ? "✅ PASS"
+      : "❌ FAIL",
+    ctaAboveFold: preflightChecks.ctaAboveFold ? "✅ PASS" : "❌ FAIL",
+    linkTapability: preflightChecks.linkTapability ? "✅ PASS" : "❌ FAIL"
+  })
+
   // Cache the results
   operationCache.preflightResults.set(cacheKey, {
     subjectFrontLoaded: preflightChecks.subjectFrontLoaded,
     ctaAboveFold: preflightChecks.ctaAboveFold,
     linkTapability: preflightChecks.linkTapability
-  });
-  
-  const perfTime = performance.now() - perfStart;
-  log(`⚡ Pre-flight checks completed (${perfTime.toFixed(2)}ms)`);
+  })
+
+  const perfTime = performance.now() - perfStart
+  log(`⚡ Pre-flight checks completed (${perfTime.toFixed(2)}ms)`)
 }
 
 /**
  * Update pre-flight status dots with pulsing red/green indicators
  */
 function updatePreflightUI() {
-  if (!shadowRoot) return;
-  
+  if (!shadowRoot) return
+
   // Preflight data still used for popup tips; only log summary (no status dots in overlay)
   if (!isAttachedToCompose) {
-    log('ℹ️ Skipping preflight warnings (not yet attached to compose body)');
-    return;
+    log("ℹ️ Skipping preflight warnings (not yet attached to compose body)")
+    return
   }
-  
-  const allPassed = preflightChecks.subjectFrontLoaded && 
-                    preflightChecks.ctaAboveFold && 
-                    preflightChecks.linkTapability;
-  
+
+  const allPassed =
+    preflightChecks.subjectFrontLoaded &&
+    preflightChecks.ctaAboveFold &&
+    preflightChecks.linkTapability
+
   // Create a state string to track changes
-  const currentState = `${preflightChecks.subjectFrontLoaded}-${preflightChecks.ctaAboveFold}-${preflightChecks.linkTapability}`;
-  
+  const currentState = `${preflightChecks.subjectFrontLoaded}-${preflightChecks.ctaAboveFold}-${preflightChecks.linkTapability}`
+
   // Only log if state has changed
   if (currentState !== lastWarningState) {
-    lastWarningState = currentState;
+    lastWarningState = currentState
     if (allPassed) {
-      log('🎉 All mobile pre-flight checks passed!');
+      log("🎉 All mobile pre-flight checks passed!")
     } else {
-      const failedChecks = [];
-      if (!preflightChecks.subjectFrontLoaded) failedChecks.push('Subject Front-Loading');
-      if (!preflightChecks.ctaAboveFold) failedChecks.push('CTA Above Fold');
-      if (!preflightChecks.linkTapability) failedChecks.push('Link Tap-Ability');
-      console.warn('⚠️ Mobile optimization issues detected:', failedChecks.join(', '));
+      const failedChecks = []
+      if (!preflightChecks.subjectFrontLoaded)
+        failedChecks.push("Subject Front-Loading")
+      if (!preflightChecks.ctaAboveFold) failedChecks.push("CTA Above Fold")
+      if (!preflightChecks.linkTapability) failedChecks.push("Link Tap-Ability")
+      console.warn(
+        "⚠️ Mobile optimization issues detected:",
+        failedChecks.join(", ")
+      )
     }
   }
 }
-
 
 /**
  * Sanitize HTML to prevent XSS
  */
 function sanitizeHTML(html) {
   // Remove script tags
-  html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-  
+  html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+
   // Remove event handlers
-  html = html.replace(/on\w+="[^"]*"/gi, '');
-  html = html.replace(/on\w+='[^']*'/gi, '');
-  
+  html = html.replace(/on\w+="[^"]*"/gi, "")
+  html = html.replace(/on\w+='[^']*'/gi, "")
+
   // Remove javascript: URLs
-  html = html.replace(/javascript:[^"']*/gi, '');
-  
-  return html;
+  html = html.replace(/javascript:[^"']*/gi, "")
+
+  return html
 }
 
 /**
@@ -3931,16 +4199,19 @@ function sanitizeHTML(html) {
  */
 function showError(message) {
   if (!shadowRoot) {
-    console.warn('⚠️ Cannot show error in UI - shadowRoot not available:', message);
-    return;
+    console.warn(
+      "⚠️ Cannot show error in UI - shadowRoot not available:",
+      message
+    )
+    return
   }
-  
-  const previewContent = shadowRoot.getElementById('previewContent');
+
+  const previewContent = shadowRoot.getElementById("previewContent")
   if (!previewContent) {
-    console.warn('⚠️ Cannot show error - previewContent not found:', message);
-    return;
+    console.warn("⚠️ Cannot show error - previewContent not found:", message)
+    return
   }
-  
+
   if (previewContent) {
     previewContent.innerHTML = `
       <div class="empty-state">
@@ -3965,18 +4236,18 @@ function showError(message) {
           🔄 Retry Detection
         </button>
       </div>
-    `;
-    
+    `
+
     // Add retry button handler
-    const retryButton = previewContent.querySelector('#retryButton');
+    const retryButton = previewContent.querySelector("#retryButton")
     if (retryButton) {
-      retryButton.addEventListener('click', () => {
-        log('🔄 Manual retry triggered');
-        const composeWindow = findComposeWindow();
+      retryButton.addEventListener("click", () => {
+        log("🔄 Manual retry triggered")
+        const composeWindow = findComposeWindow()
         if (composeWindow) {
-          attachToCompose(composeWindow, 0);
+          attachToCompose(composeWindow, 0)
         } else {
-          console.error('❌ No compose window found for retry');
+          console.error("❌ No compose window found for retry")
           previewContent.innerHTML = `
             <div class="empty-state">
               <div style="font-size: 48px; margin-bottom: 12px; color: #ea4335;">❌</div>
@@ -3987,17 +4258,17 @@ function showError(message) {
                 Please close and reopen Gmail compose
               </div>
             </div>
-          `;
+          `
         }
-      });
-      
+      })
+
       // Hover effects
-      retryButton.addEventListener('mouseenter', () => {
-        retryButton.style.transform = 'scale(1.05)';
-      });
-      retryButton.addEventListener('mouseleave', () => {
-        retryButton.style.transform = 'scale(1)';
-      });
+      retryButton.addEventListener("mouseenter", () => {
+        retryButton.style.transform = "scale(1.05)"
+      })
+      retryButton.addEventListener("mouseleave", () => {
+        retryButton.style.transform = "scale(1)"
+      })
     }
   }
 }
@@ -4009,229 +4280,263 @@ function showError(message) {
  * OPTIMIZED: Clear all timers, caches, and RAF handles
  */
 function removePreview() {
-  if (!overlayContainer) return;
-  
-  log('🗑️ Removing Phone Preview UI');
-  
+  if (!overlayContainer) return
+
+  log("🗑️ Removing Phone Preview UI")
+
   // Cancel pending operations
   if (updatePreviewRAF) {
-    cancelAnimationFrame(updatePreviewRAF);
-    updatePreviewRAF = null;
+    cancelAnimationFrame(updatePreviewRAF)
+    updatePreviewRAF = null
   }
   if (heavyOperationsTimer) {
-    clearTimeout(heavyOperationsTimer);
-    heavyOperationsTimer = null;
+    clearTimeout(heavyOperationsTimer)
+    heavyOperationsTimer = null
   }
   if (serviceWorkerThrottle) {
-    clearTimeout(serviceWorkerThrottle);
-    serviceWorkerThrottle = null;
+    clearTimeout(serviceWorkerThrottle)
+    serviceWorkerThrottle = null
   }
-  
+
   // Remove global event listeners (prevent memory leaks)
-  document.removeEventListener('mousemove', handleDragging);
-  document.removeEventListener('mouseup', stopDragging);
-  
+  document.removeEventListener("mousemove", handleDragging)
+  document.removeEventListener("mouseup", stopDragging)
+
   // Stop periodic pre-flight refresh
   if (preflightRefreshInterval) {
-    clearInterval(preflightRefreshInterval);
-    preflightRefreshInterval = null;
+    clearInterval(preflightRefreshInterval)
+    preflightRefreshInterval = null
   }
-  
+
   // Clear all caches
-  operationCache.ctaCheck.clear();
-  operationCache.preflightResults.clear();
-  operationCache.scoreCalc.clear();
-  
+  operationCache.ctaCheck.clear()
+  operationCache.preflightResults.clear()
+  operationCache.scoreCalc.clear()
+
   // Reset hashes
-  lastContentHash = null;
-  lastSubjectHash = null;
-  
+  lastContentHash = null
+  lastSubjectHash = null
+
   // Log final performance stats
   if (performanceMetrics.updateCount > 0) {
-    const avgUpdate = (performanceMetrics.totalUpdateTime / performanceMetrics.updateCount).toFixed(2);
-    const avgHeavy = performanceMetrics.heavyOpsCount > 0 ? 
-      (performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount).toFixed(2) : 0;
-    
-    log('📊 Final Performance Stats:');
-    log(`   Total updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`);
-    log(`   Heavy operations: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`);
-    log(`   Cache hits: ${performanceMetrics.cacheHits}, Cache misses: ${performanceMetrics.cacheMisses}`);
-    
+    const avgUpdate = (
+      performanceMetrics.totalUpdateTime / performanceMetrics.updateCount
+    ).toFixed(2)
+    const avgHeavy =
+      performanceMetrics.heavyOpsCount > 0
+        ? (
+            performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount
+          ).toFixed(2)
+        : 0
+
+    log("📊 Final Performance Stats:")
+    log(
+      `   Total updates: ${performanceMetrics.updateCount} (avg: ${avgUpdate}ms)`
+    )
+    log(
+      `   Heavy operations: ${performanceMetrics.heavyOpsCount} (avg: ${avgHeavy}ms)`
+    )
+    log(
+      `   Cache hits: ${performanceMetrics.cacheHits}, Cache misses: ${performanceMetrics.cacheMisses}`
+    )
+
     // Reset metrics
-    performanceMetrics.updateCount = 0;
-    performanceMetrics.totalUpdateTime = 0;
-    performanceMetrics.heavyOpsCount = 0;
-    performanceMetrics.heavyOpsTime = 0;
-    performanceMetrics.cacheHits = 0;
-    performanceMetrics.cacheMisses = 0;
+    performanceMetrics.updateCount = 0
+    performanceMetrics.totalUpdateTime = 0
+    performanceMetrics.heavyOpsCount = 0
+    performanceMetrics.heavyOpsTime = 0
+    performanceMetrics.cacheHits = 0
+    performanceMetrics.cacheMisses = 0
   }
-  
+
   // Notify service worker that compose closed (may throw if extension was reloaded)
   try {
-    chrome.runtime.sendMessage({ type: 'COMPOSE_CLOSED' }).catch(() => {});
+    chrome.runtime.sendMessage({ type: "COMPOSE_CLOSED" }).catch(() => {})
   } catch (e) {
-    if (!isContextInvalidatedError(e)) console.error('❌ Error notifying service worker:', e);
+    if (!isContextInvalidatedError(e))
+      console.error("❌ Error notifying service worker:", e)
   }
-  
+
   // Remove from DOM
-  overlayContainer.remove();
-  overlayContainer = null;
-  shadowRoot = null;
-  lastSentEmailState = null;
-  
+  overlayContainer.remove()
+  overlayContainer = null
+  shadowRoot = null
+  lastSentEmailState = null
+
   // Clean up measurement container
   if (measurementContainer && measurementContainer.parentNode) {
-    measurementContainer.parentNode.removeChild(measurementContainer);
-    measurementContainer = null;
+    measurementContainer.parentNode.removeChild(measurementContainer)
+    measurementContainer = null
   }
-  
+
   // Clear all object references
-  currentComposeBody = null;
-  currentSubjectField = null;
-  isDragging = false;
-  hasMoved = false;
-  dragOffset = { x: 0, y: 0 };
-  isCollapsed = false;
-  isAttachedToCompose = false;
-  
+  currentComposeBody = null
+  currentSubjectField = null
+  isDragging = false
+  hasMoved = false
+  dragOffset = { x: 0, y: 0 }
+  isCollapsed = false
+  isAttachedToCompose = false
+
   // Reset pre-flight checks
   preflightChecks = {
     subjectFrontLoaded: false,
     ctaAboveFold: false,
     linkTapability: false
-  };
-  
-  log('✅ Phone Preview removed - all resources cleaned up');
+  }
+
+  log("✅ Phone Preview removed - all resources cleaned up")
 }
 
 /**
  * Cleanup on page unload (pagehide is the non-deprecated replacement for beforeunload/unload)
  */
-window.addEventListener('pagehide', () => {
-  removePreview();
-});
+window.addEventListener("pagehide", () => {
+  removePreview()
+})
 
 // ==================== START ====================
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initialize);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initialize)
 } else {
-  initialize();
+  initialize()
 }
 
-log('✅ VeloMail Content Script ready');
-log('📱 Minimalist phone preview will appear when you compose in Gmail');
-log('⚙️ Listening for settings updates from popup');
-log('');
-log('🔧 Debugging help:');
-log('   If preview doesn\'t work, run: inspectGmailCompose()');
+log("✅ VeloMail Content Script ready")
+log("📱 Minimalist phone preview will appear when you compose in Gmail")
+log("⚙️ Listening for settings updates from popup")
+log("")
+log("🔧 Debugging help:")
+log("   If preview doesn't work, run: inspectGmailCompose()")
 
 // Debug helper function exposed to console
-window.inspectGmailCompose = function() {
-  log('🔍 GMAIL COMPOSE INSPECTOR');
-  log('='.repeat(50));
-  
-  const dialogs = document.querySelectorAll('[role="dialog"]');
-  log(`📊 Found ${dialogs.length} dialog(s) on page`);
-  
+window.inspectGmailCompose = function () {
+  log("🔍 GMAIL COMPOSE INSPECTOR")
+  log("=".repeat(50))
+
+  const dialogs = document.querySelectorAll('[role="dialog"]')
+  log(`📊 Found ${dialogs.length} dialog(s) on page`)
+
   dialogs.forEach((dialog, i) => {
-    log(`\n📦 Dialog ${i + 1}:`);
-    log('   Tag:', dialog.tagName);
-    log('   Class:', dialog.className.substring(0, 100));
-    log('   Children:', dialog.children.length);
-    
+    log(`\n📦 Dialog ${i + 1}:`)
+    log("   Tag:", dialog.tagName)
+    log("   Class:", dialog.className.substring(0, 100))
+    log("   Children:", dialog.children.length)
+
     // Check for subject
-    const subject = dialog.querySelector('input[name="subjectbox"]');
-    log('   Has subject field:', !!subject);
-    
+    const subject = dialog.querySelector('input[name="subjectbox"]')
+    log("   Has subject field:", !!subject)
+
     // Check for textboxes
-    const textboxes = dialog.querySelectorAll('[role="textbox"]');
-    log(`   Textboxes: ${textboxes.length}`);
+    const textboxes = dialog.querySelectorAll('[role="textbox"]')
+    log(`   Textboxes: ${textboxes.length}`)
     textboxes.forEach((tb, j) => {
-      log(`     ${j + 1}. ${tb.tagName} - ${tb.getAttribute('aria-label') || 'no label'} (${tb.offsetWidth}x${tb.offsetHeight})`);
-    });
-    
+      log(
+        `     ${j + 1}. ${tb.tagName} - ${tb.getAttribute("aria-label") || "no label"} (${tb.offsetWidth}x${tb.offsetHeight})`
+      )
+    })
+
     // Check for contenteditable
-    const editables = dialog.querySelectorAll('[contenteditable="true"]');
-    log(`   Contenteditable elements: ${editables.length}`);
+    const editables = dialog.querySelectorAll('[contenteditable="true"]')
+    log(`   Contenteditable elements: ${editables.length}`)
     editables.forEach((ed, j) => {
-      if (j < 5) { // Only show first 5
-        log(`     ${j + 1}. ${ed.tagName} - ${ed.getAttribute('aria-label')?.substring(0, 30) || 'no label'} (${ed.offsetWidth}x${ed.offsetHeight})`);
+      if (j < 5) {
+        // Only show first 5
+        log(
+          `     ${j + 1}. ${ed.tagName} - ${ed.getAttribute("aria-label")?.substring(0, 30) || "no label"} (${ed.offsetWidth}x${ed.offsetHeight})`
+        )
       }
-    });
-  });
-  
-  log('\n' + '='.repeat(50));
-  log('💡 Look for the dialog that is the compose window');
-  log('💡 Note the textbox or contenteditable element that should be the body');
-};
+    })
+  })
+
+  log("\n" + "=".repeat(50))
+  log("💡 Look for the dialog that is the compose window")
+  log("💡 Note the textbox or contenteditable element that should be the body")
+}
 
 // Performance dashboard helper
-window.veloMailPerformance = function() {
-  log('⚡ VELOMAIL PERFORMANCE DASHBOARD');
-  log('='.repeat(60));
-  
-  if (performanceMetrics.updateCount === 0) {
-    log('ℹ️ No updates recorded yet. Start composing an email to see metrics.');
-    return;
-  }
-  
-  const avgUpdate = (performanceMetrics.totalUpdateTime / performanceMetrics.updateCount).toFixed(2);
-  const avgHeavy = performanceMetrics.heavyOpsCount > 0 ? 
-    (performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount).toFixed(2) : 0;
-  const cacheTotal = performanceMetrics.cacheHits + performanceMetrics.cacheMisses;
-  const cacheHitRate = cacheTotal > 0 ?
-    ((performanceMetrics.cacheHits / cacheTotal) * 100).toFixed(1) : 0;
-  
-  log('\n📊 Update Performance:');
-  log(`   Total updates: ${performanceMetrics.updateCount}`);
-  log(`   Average update time: ${avgUpdate}ms`);
-  log(`   Target: <10ms (Light updates only)`);
-  log(`   Status: ${avgUpdate < 10 ? '✅ PASS' : avgUpdate < 20 ? '⚠️ OK' : '❌ NEEDS OPTIMIZATION'}`);
-  
-  log('\n⚙️ Heavy Operations:');
-  log(`   Total heavy ops: ${performanceMetrics.heavyOpsCount}`);
-  log(`   Average time: ${avgHeavy}ms`);
-  log(`   Debounce: 300ms (reduces frequency)`);
-  log(`   Status: ${performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? '✅ OPTIMIZED' : '⚠️ CHECK DEBOUNCING'}`);
-  
-  log('\n💾 Cache Performance:');
-  log(`   Cache hits: ${performanceMetrics.cacheHits}`);
-  log(`   Cache misses: ${performanceMetrics.cacheMisses}`);
-  log(`   Hit rate: ${cacheHitRate}%`);
-  log(`   Target: >50%`);
-  log(`   Status: ${cacheHitRate > 50 ? '✅ EXCELLENT' : cacheHitRate > 30 ? '⚠️ OK' : '❌ NEEDS IMPROVEMENT'}`);
-  
-  log('\n🗂️ Cache Size:');
-  log(`   CTA checks cached: ${operationCache.ctaCheck.size} / 50`);
-  log(`   Preflight results cached: ${operationCache.preflightResults.size}`);
-  
-  log('\n🎯 Optimization Summary:');
-  const optimizationScore = (
-    (avgUpdate < 10 ? 40 : avgUpdate < 20 ? 20 : 0) +
-    (performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? 30 : 0) +
-    (cacheHitRate > 50 ? 30 : cacheHitRate > 30 ? 15 : 0)
-  );
-  log(`   Overall score: ${optimizationScore}/100`);
-  if (optimizationScore >= 90) {
-    log('   🏆 Excellent performance!');
-  } else if (optimizationScore >= 70) {
-    log('   ✅ Good performance');
-  } else if (optimizationScore >= 50) {
-    log('   ⚠️ Acceptable performance');
-  } else {
-    log('   ❌ Performance needs optimization');
-  }
-  
-  log('\n' + '='.repeat(60));
-  log('💡 Tips:');
-  log('   - Light updates use RAF batching (instant DOM updates)');
-  log('   - Heavy operations debounced by 300ms (reduces load)');
-  log('   - Service worker messages throttled to 500ms max');
-  log('   - CTA checks cached (avoid repeated DOM measurements)');
-  log('   - Content hashing prevents duplicate work');
-};
+window.veloMailPerformance = function () {
+  log("⚡ VELOMAIL PERFORMANCE DASHBOARD")
+  log("=".repeat(60))
 
-log('   Example: Type inspectGmailCompose() in console');
-log('   Performance: Type veloMailPerformance() in console');
+  if (performanceMetrics.updateCount === 0) {
+    log("ℹ️ No updates recorded yet. Start composing an email to see metrics.")
+    return
+  }
+
+  const avgUpdate = (
+    performanceMetrics.totalUpdateTime / performanceMetrics.updateCount
+  ).toFixed(2)
+  const avgHeavy =
+    performanceMetrics.heavyOpsCount > 0
+      ? (
+          performanceMetrics.heavyOpsTime / performanceMetrics.heavyOpsCount
+        ).toFixed(2)
+      : 0
+  const cacheTotal =
+    performanceMetrics.cacheHits + performanceMetrics.cacheMisses
+  const cacheHitRate =
+    cacheTotal > 0
+      ? ((performanceMetrics.cacheHits / cacheTotal) * 100).toFixed(1)
+      : 0
+
+  log("\n📊 Update Performance:")
+  log(`   Total updates: ${performanceMetrics.updateCount}`)
+  log(`   Average update time: ${avgUpdate}ms`)
+  log(`   Target: <10ms (Light updates only)`)
+  log(
+    `   Status: ${avgUpdate < 10 ? "✅ PASS" : avgUpdate < 20 ? "⚠️ OK" : "❌ NEEDS OPTIMIZATION"}`
+  )
+
+  log("\n⚙️ Heavy Operations:")
+  log(`   Total heavy ops: ${performanceMetrics.heavyOpsCount}`)
+  log(`   Average time: ${avgHeavy}ms`)
+  log(`   Debounce: 300ms (reduces frequency)`)
+  log(
+    `   Status: ${performanceMetrics.heavyOpsCount < performanceMetrics.updateCount ? "✅ OPTIMIZED" : "⚠️ CHECK DEBOUNCING"}`
+  )
+
+  log("\n💾 Cache Performance:")
+  log(`   Cache hits: ${performanceMetrics.cacheHits}`)
+  log(`   Cache misses: ${performanceMetrics.cacheMisses}`)
+  log(`   Hit rate: ${cacheHitRate}%`)
+  log(`   Target: >50%`)
+  log(
+    `   Status: ${cacheHitRate > 50 ? "✅ EXCELLENT" : cacheHitRate > 30 ? "⚠️ OK" : "❌ NEEDS IMPROVEMENT"}`
+  )
+
+  log("\n🗂️ Cache Size:")
+  log(`   CTA checks cached: ${operationCache.ctaCheck.size} / 50`)
+  log(`   Preflight results cached: ${operationCache.preflightResults.size}`)
+
+  log("\n🎯 Optimization Summary:")
+  const optimizationScore =
+    (avgUpdate < 10 ? 40 : avgUpdate < 20 ? 20 : 0) +
+    (performanceMetrics.heavyOpsCount < performanceMetrics.updateCount
+      ? 30
+      : 0) +
+    (cacheHitRate > 50 ? 30 : cacheHitRate > 30 ? 15 : 0)
+  log(`   Overall score: ${optimizationScore}/100`)
+  if (optimizationScore >= 90) {
+    log("   🏆 Excellent performance!")
+  } else if (optimizationScore >= 70) {
+    log("   ✅ Good performance")
+  } else if (optimizationScore >= 50) {
+    log("   ⚠️ Acceptable performance")
+  } else {
+    log("   ❌ Performance needs optimization")
+  }
+
+  log("\n" + "=".repeat(60))
+  log("💡 Tips:")
+  log("   - Light updates use RAF batching (instant DOM updates)")
+  log("   - Heavy operations debounced by 300ms (reduces load)")
+  log("   - Service worker messages throttled to 500ms max")
+  log("   - CTA checks cached (avoid repeated DOM measurements)")
+  log("   - Content hashing prevents duplicate work")
+}
+
+log("   Example: Type inspectGmailCompose() in console")
+log("   Performance: Type veloMailPerformance() in console")
