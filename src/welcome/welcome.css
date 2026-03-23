@@ -24,7 +24,8 @@
   --radius: 12px;
   --radius-lg: 16px;
   --radius-card: 20px;
-  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", Roboto, sans-serif;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -86,8 +87,12 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Header */
@@ -150,7 +155,9 @@ body {
   inset: 0;
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.4s var(--ease-spring), transform 0.4s var(--ease-spring);
+  transition:
+    opacity 0.4s var(--ease-spring),
+    transform 0.4s var(--ease-spring);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -257,7 +264,9 @@ body {
   background: #1a1a1c;
   border-radius: 48px;
   padding: 10px;
-  box-shadow: var(--shadow-md), 0 0 0 1px rgba(0,0,0,0.05);
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
   position: relative;
 }
 
@@ -270,9 +279,9 @@ body {
   font-size: 11px;
   font-weight: 500;
   color: #fff;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 12px;
-  border: 0.5px solid rgba(255,255,255,0.2);
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
   z-index: 10;
 }
@@ -286,7 +295,14 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "Roboto",
+    "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -340,7 +356,7 @@ body {
   min-height: 32px;
   padding: 0 10px 8px;
   font-size: 10px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 
@@ -348,7 +364,7 @@ body {
   display: flex;
   align-items: center;
   gap: 3px;
-  color: #007AFF;
+  color: #007aff;
   font-size: 10px;
 }
 
@@ -363,7 +379,7 @@ body {
 }
 
 .phone-header-send {
-  background: #007AFF;
+  background: #007aff;
   color: #fff;
   padding: 4px 10px;
   border-radius: 11px;
@@ -386,7 +402,7 @@ body {
   min-height: 27px;
   padding: 7px 10px;
   font-size: 9px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 
@@ -398,7 +414,8 @@ body {
   font-weight: 400;
 }
 
-.phone-value, .phone-from-name {
+.phone-value,
+.phone-from-name {
   font-size: 9px;
   font-weight: 600;
   color: #1a1a1a;
@@ -477,7 +494,7 @@ body {
 }
 
 .phone-body a {
-  color: #007AFF;
+  color: #007aff;
   text-decoration: none;
   word-break: break-word;
   font-weight: 400;
@@ -490,7 +507,7 @@ body {
   transform: translateX(-50%);
   width: 82px;
   height: 3px;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 100px;
 }
 
@@ -511,7 +528,9 @@ body {
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
 }
 
 .check:hover {
@@ -577,7 +596,9 @@ body {
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 .phone-frame-sm {
@@ -594,7 +615,9 @@ body {
   font-size: 9px;
 }
 
-.phone-frame-sm .phone-screen { border-radius: 30px; }
+.phone-frame-sm .phone-screen {
+  border-radius: 30px;
+}
 
 .phone-notch-sm {
   width: 58px;
@@ -619,7 +642,7 @@ body {
   display: flex;
   align-items: center;
   gap: 2px;
-  color: #007AFF;
+  color: #007aff;
   font-size: 7px;
 }
 
@@ -686,10 +709,12 @@ body {
   font-size: 10px;
 }
 
-.phone-body-sm p { margin: 0 0 5px 0; }
+.phone-body-sm p {
+  margin: 0 0 5px 0;
+}
 
 .phone-body-sm a {
-  color: #007AFF;
+  color: #007aff;
   font-size: 9px;
 }
 
@@ -758,7 +783,9 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition:
+    transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
 }
 
 .feature-item:hover {
@@ -860,7 +887,9 @@ body {
   padding: 10px 16px;
   border-radius: var(--radius);
   font-family: var(--font);
-  transition: color 0.2s, background 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
 }
 
 .btn-ghost:hover {
@@ -881,7 +910,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: background 0.2s, transform 0.15s var(--ease);
+  transition:
+    background 0.2s,
+    transform 0.15s var(--ease);
 }
 
 .btn-primary:hover {
@@ -913,7 +944,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  transition: background 0.2s, color 0.2s, transform 0.15s var(--ease);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.15s var(--ease);
 }
 
 .btn-secondary:hover {

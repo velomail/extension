@@ -9,32 +9,36 @@
 }
 
 :root {
-  --blue:         #007AFF;
-  --green:        #34C759;
-  --red:          #FF3B30;
-  --orange:       #FF9500;
-  --label:        #1C1C1E;
-  --label-2:      #8E8E93;
-  --label-3:      #AEAEB2;
-  --separator:    #E5E5EA;
-  --bg-page:      #F2F2F7;
-  --bg-card:      #FFFFFF;
-  --radius-card:  14px;
+  --blue: #007aff;
+  --green: #34c759;
+  --red: #ff3b30;
+  --orange: #ff9500;
+  --label: #1c1c1e;
+  --label-2: #8e8e93;
+  --label-3: #aeaeb2;
+  --separator: #e5e5ea;
+  --bg-page: #f2f2f7;
+  --bg-card: #ffffff;
+  --radius-card: 14px;
 }
 
 /* Dark mode — lighter blacks for better visibility across devices */
 @media (prefers-color-scheme: dark) {
   :root {
-    --label:      #FFFFFF;
-    --label-2:    #9E9EA3;
-    --label-3:    #6E6E72;
-    --separator:  #454548;
-    --bg-page:    #2A2A2E;
-    --bg-card:    #36363A;
+    --label: #ffffff;
+    --label-2: #9e9ea3;
+    --label-3: #6e6e72;
+    --separator: #454548;
+    --bg-page: #2a2a2e;
+    --bg-card: #36363a;
   }
 
-  html { background: var(--bg-page); }
-  body { background: var(--bg-card); }
+  html {
+    background: var(--bg-page);
+  }
+  body {
+    background: var(--bg-card);
+  }
 
   .tip-card--pending {
     background: transparent;
@@ -48,22 +52,30 @@
     background: rgba(255, 59, 48, 0.1);
     border-color: rgba(255, 59, 48, 0.2);
   }
-  .tip-card--pending .tip-card-label   { color: #FFFFFF; }
-  .tip-card--pending .tip-card-description { color: var(--label-2); }
+  .tip-card--pending .tip-card-label {
+    color: #ffffff;
+  }
+  .tip-card--pending .tip-card-description {
+    color: var(--label-2);
+  }
 
-  .setting-row input[type="checkbox"] { background: #6E6E72; }
-  .usage-bar { background: #4E4E52; }
+  .setting-row input[type="checkbox"] {
+    background: #6e6e72;
+  }
+  .usage-bar {
+    background: #4e4e52;
+  }
 }
 
 /* Dark mode via theme.js class (unified with welcome page) */
 html.dark-mode,
 html[data-theme="dark"] {
-  --label:      #FFFFFF;
-  --label-2:    #9E9EA3;
-  --label-3:    #6E6E72;
-  --separator:  #454548;
-  --bg-page:    #2A2A2E;
-  --bg-card:    #36363A;
+  --label: #ffffff;
+  --label-2: #9e9ea3;
+  --label-3: #6e6e72;
+  --separator: #454548;
+  --bg-page: #2a2a2e;
+  --bg-card: #36363a;
 }
 
 html.dark-mode,
@@ -96,7 +108,7 @@ html[data-theme="dark"] .tip-card--fail {
 
 html.dark-mode .tip-card--pending .tip-card-label,
 html[data-theme="dark"] .tip-card--pending .tip-card-label {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 html.dark-mode .tip-card--pending .tip-card-description,
@@ -106,12 +118,12 @@ html[data-theme="dark"] .tip-card--pending .tip-card-description {
 
 html.dark-mode .setting-row input[type="checkbox"],
 html[data-theme="dark"] .setting-row input[type="checkbox"] {
-  background: #6E6E72;
+  background: #6e6e72;
 }
 
 html.dark-mode .usage-bar,
 html[data-theme="dark"] .usage-bar {
-  background: #4E4E52;
+  background: #4e4e52;
 }
 
 /* ============================================================================
@@ -130,8 +142,8 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--bg-card);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-               Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   color: var(--label);
   font-size: 15px;
   font-weight: 400;
@@ -202,7 +214,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #1A7F3C;
+  color: #1a7f3c;
   background: rgba(52, 199, 89, 0.15);
   padding: 2px 6px;
   border-radius: 6px;
@@ -260,7 +272,9 @@ body {
   border-radius: 10px;
   border: 1px solid var(--separator);
   background: transparent;
-  transition: border-color 0.25s ease, background 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
   animation: bubbleSlideIn 0.3s ease both;
   box-shadow: none;
   backdrop-filter: none;
@@ -296,8 +310,12 @@ body {
   line-height: 1.3;
 }
 
-.tip-card--pass .tip-card-label { color: #1A7F3C; }
-.tip-card--fail .tip-card-label { color: #C0392B; }
+.tip-card--pass .tip-card-label {
+  color: #1a7f3c;
+}
+.tip-card--fail .tip-card-label {
+  color: #c0392b;
+}
 
 /* Badge */
 .tip-card-badge {
@@ -315,16 +333,20 @@ body {
 
 .badge--pass {
   background: rgba(52, 199, 89, 0.15);
-  color: #1A7F3C;
+  color: #1a7f3c;
 }
 
 .badge--fail {
   background: rgba(255, 59, 48, 0.12);
-  color: #C0392B;
+  color: #c0392b;
 }
 
-.badge-icon { font-size: 11px; }
-.badge-weight { font-variant-numeric: tabular-nums; }
+.badge-icon {
+  font-size: 11px;
+}
+.badge-weight {
+  font-variant-numeric: tabular-nums;
+}
 
 .tip-card-description {
   font-size: 12px;
@@ -333,8 +355,13 @@ body {
   font-weight: 400;
 }
 
-.tip-card--pass .tip-card-description { color: #1A7F3C; opacity: 0.85; }
-.tip-card--fail .tip-card-description { color: #992200; }
+.tip-card--pass .tip-card-description {
+  color: #1a7f3c;
+  opacity: 0.85;
+}
+.tip-card--fail .tip-card-description {
+  color: #992200;
+}
 
 .tip-card-bar {
   height: 3px;
@@ -351,7 +378,9 @@ body {
   background: var(--green);
 }
 
-.tip-card--fail .tip-card-bar-fill { background: var(--red); }
+.tip-card--fail .tip-card-bar-fill {
+  background: var(--red);
+}
 
 /* ============================================================================
    EMPTY STATE
@@ -459,7 +488,9 @@ body {
   animation-delay: 0.08s;
 }
 
-.usage-card:hover { box-shadow: none; }
+.usage-card:hover {
+  box-shadow: none;
+}
 
 .usage-card--premium {
   background: rgba(52, 199, 89, 0.06);
@@ -467,12 +498,12 @@ body {
 }
 
 .usage-card--premium .usage-plan-label {
-  color: #1A7F3C;
+  color: #1a7f3c;
   font-weight: 600;
 }
 
 .usage-card--premium .usage-count {
-  color: #1A7F3C;
+  color: #1a7f3c;
   font-weight: 600;
 }
 
@@ -512,8 +543,12 @@ body {
   width: 0%;
 }
 
-.usage-fill.warning { background: var(--orange); }
-.usage-fill.danger  { background: var(--red); }
+.usage-fill.warning {
+  background: var(--orange);
+}
+.usage-fill.danger {
+  background: var(--red);
+}
 
 .usage-footer {
   display: flex;
@@ -543,7 +578,9 @@ body {
   transition: background 0.15s ease;
 }
 
-.upgrade-cta:hover { background: rgba(0, 122, 255, 0.14); }
+.upgrade-cta:hover {
+  background: rgba(0, 122, 255, 0.14);
+}
 
 /* ============================================================================
    SETTINGS — flat section, no box
@@ -568,7 +605,9 @@ body {
   border-bottom: none;
 }
 
-.setting-row:last-child { border-bottom: none; }
+.setting-row:last-child {
+  border-bottom: none;
+}
 
 .setting-row label {
   display: flex;
@@ -585,7 +624,9 @@ body {
   letter-spacing: -0.1px;
 }
 
-.setting-row label:active { opacity: 0.65; }
+.setting-row label:active {
+  opacity: 0.65;
+}
 
 /* iOS-style pill switch — sleek, 44×26 */
 .setting-row input[type="checkbox"] {
@@ -596,7 +637,7 @@ body {
   -webkit-appearance: none;
   cursor: pointer;
   position: relative;
-  background: #D1D1D6;
+  background: #d1d1d6;
   transition: background 0.25s ease;
   flex-shrink: 0;
 }
@@ -606,12 +647,12 @@ body {
 }
 
 .setting-row input[type="checkbox"]::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #FFFFFF;
+  background: #ffffff;
   top: 2px;
   left: 2px;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -626,18 +667,32 @@ body {
    UTILITIES
    ============================================================================ */
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 /* ============================================================================
    ANIMATIONS
    ============================================================================ */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes bubbleSlideIn {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

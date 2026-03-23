@@ -3,48 +3,50 @@
  * Interactive overlay to guide users through their first email composition
  */
 
-const DEBUG = false;
-const log = (...args) => { if (DEBUG) console.log(...args); };
+const DEBUG = false
+const log = (...args) => {
+  if (DEBUG) console.log(...args)
+}
 
 // Prevent duplicate loading
 if (window.VeloMailFirstComposeGuide) {
-  log('🎯 First Compose Guide already loaded, skipping...');
+  log("🎯 First Compose Guide already loaded, skipping...")
   // Script already loaded, don't re-execute
 } else {
-  log('🎯 First Compose Guide module loading...');
+  log("🎯 First Compose Guide module loading...")
 
-(function() {
-  'use strict';
+  ;(function () {
+    "use strict"
 
-// ============================================================================
-// GUIDE STATE
-// ============================================================================
+    // ============================================================================
+    // GUIDE STATE
+    // ============================================================================
 
-let guideOverlay = null;
-let guideStep = 0;
-let isGuideActive = false;
+    let guideOverlay = null
+    let guideStep = 0
+    let isGuideActive = false
 
-// ============================================================================
-// GUIDE CREATION
-// ============================================================================
+    // ============================================================================
+    // GUIDE CREATION
+    // ============================================================================
 
-/**
- * Show the first compose guide overlay
- * Highlights the compose button and provides contextual help
- */
-function showFirstComposeGuide() {
-  if (isGuideActive || guideOverlay) {
-    log('ℹ️ Guide already active');
-    return;
-  }
+    /**
+     * Show the first compose guide overlay
+     * Highlights the compose button and provides contextual help
+     */
+    function showFirstComposeGuide() {
+      if (isGuideActive || guideOverlay) {
+        log("ℹ️ Guide already active")
+        return
+      }
 
-  log('🎯 Showing first compose guide');
-  isGuideActive = true;
+      log("🎯 Showing first compose guide")
+      isGuideActive = true
 
-  // Create overlay container
-  guideOverlay = document.createElement('div');
-  guideOverlay.id = 'velomail-first-compose-guide';
-  guideOverlay.innerHTML = `
+      // Create overlay container
+      guideOverlay = document.createElement("div")
+      guideOverlay.id = "velomail-first-compose-guide"
+      guideOverlay.innerHTML = `
     <style>
       #velomail-first-compose-guide {
         --sky-surge: #5db7de;
@@ -323,51 +325,53 @@ function showFirstComposeGuide() {
         <button class="guide-btn guide-btn-primary" id="guideStartBtn">Got It!</button>
       </div>
     </div>
-  `;
+  `
 
-  document.body.appendChild(guideOverlay);
+      document.body.appendChild(guideOverlay)
 
-  // Add event listeners
-  document.getElementById('guideStartBtn').addEventListener('click', closeFirstComposeGuide);
-  document.getElementById('guideSkipBtn').addEventListener('click', () => {
-    closeFirstComposeGuide();
-    markGuideSkipped();
-  });
+      // Add event listeners
+      document
+        .getElementById("guideStartBtn")
+        .addEventListener("click", closeFirstComposeGuide)
+      document.getElementById("guideSkipBtn").addEventListener("click", () => {
+        closeFirstComposeGuide()
+        markGuideSkipped()
+      })
 
-  // Mark guide as shown
-  markGuideShown();
+      // Mark guide as shown
+      markGuideShown()
 
-  log('✅ First compose guide displayed');
-}
-
-/**
- * Close the first compose guide
- */
-function closeFirstComposeGuide() {
-  if (!guideOverlay) return;
-
-  guideOverlay.style.animation = 'fadeOut 0.2s ease-out';
-  
-  setTimeout(() => {
-    if (guideOverlay && guideOverlay.parentNode) {
-      guideOverlay.parentNode.removeChild(guideOverlay);
+      log("✅ First compose guide displayed")
     }
-    guideOverlay = null;
-    isGuideActive = false;
-    log('✅ First compose guide closed');
-  }, 200);
-}
 
-/**
- * Show celebration modal when first preview appears
- * @param {Object} scoreData - Email state with suggestions (tips)
- */
-function showFirstPreviewCelebration(scoreData) {
-  log('🎉 Showing first preview celebration');
+    /**
+     * Close the first compose guide
+     */
+    function closeFirstComposeGuide() {
+      if (!guideOverlay) return
 
-  const celebrationOverlay = document.createElement('div');
-  celebrationOverlay.id = 'velomail-first-preview-celebration';
-  celebrationOverlay.innerHTML = `
+      guideOverlay.style.animation = "fadeOut 0.2s ease-out"
+
+      setTimeout(() => {
+        if (guideOverlay && guideOverlay.parentNode) {
+          guideOverlay.parentNode.removeChild(guideOverlay)
+        }
+        guideOverlay = null
+        isGuideActive = false
+        log("✅ First compose guide closed")
+      }, 200)
+    }
+
+    /**
+     * Show celebration modal when first preview appears
+     * @param {Object} scoreData - Email state with suggestions (tips)
+     */
+    function showFirstPreviewCelebration(scoreData) {
+      log("🎉 Showing first preview celebration")
+
+      const celebrationOverlay = document.createElement("div")
+      celebrationOverlay.id = "velomail-first-preview-celebration"
+      celebrationOverlay.innerHTML = `
     <style>
       #velomail-first-preview-celebration {
         position: fixed;
@@ -509,35 +513,37 @@ function showFirstPreviewCelebration(scoreData) {
 
       <button class="celebration-btn" id="celebrationContinueBtn">Continue Writing</button>
     </div>
-  `;
+  `
 
-  document.body.appendChild(celebrationOverlay);
+      document.body.appendChild(celebrationOverlay)
 
-  document.getElementById('celebrationContinueBtn').addEventListener('click', () => {
-    celebrationOverlay.style.animation = 'fadeOut 0.2s ease-out';
-    setTimeout(() => {
-      if (celebrationOverlay.parentNode) {
-        celebrationOverlay.parentNode.removeChild(celebrationOverlay);
-      }
-    }, 200);
-  });
+      document
+        .getElementById("celebrationContinueBtn")
+        .addEventListener("click", () => {
+          celebrationOverlay.style.animation = "fadeOut 0.2s ease-out"
+          setTimeout(() => {
+            if (celebrationOverlay.parentNode) {
+              celebrationOverlay.parentNode.removeChild(celebrationOverlay)
+            }
+          }, 200)
+        })
 
-  // Track milestone
-  chrome.runtime.sendMessage({
-    type: 'MILESTONE_ACHIEVED',
-    milestoneId: 'first_preview'
-  });
-}
+      // Track milestone
+      chrome.runtime.sendMessage({
+        type: "MILESTONE_ACHIEVED",
+        milestoneId: "first_preview"
+      })
+    }
 
-/**
- * Show celebration for applying tips well
- */
-function showGoodScoreCelebration() {
-  log('⭐ Showing good tips celebration');
+    /**
+     * Show celebration for applying tips well
+     */
+    function showGoodScoreCelebration() {
+      log("⭐ Showing good tips celebration")
 
-  const celebrationOverlay = document.createElement('div');
-  celebrationOverlay.id = 'velomail-good-score-celebration';
-  celebrationOverlay.innerHTML = `
+      const celebrationOverlay = document.createElement("div")
+      celebrationOverlay.id = "velomail-good-score-celebration"
+      celebrationOverlay.innerHTML = `
     <style>
       #velomail-good-score-celebration {
         position: fixed;
@@ -620,67 +626,67 @@ function showGoodScoreCelebration() {
       <p>Your email is in great shape for mobile readers. Keep using the tips to optimize.</p>
       <button class="good-score-btn" id="goodScoreContinueBtn">Awesome!</button>
     </div>
-  `;
+  `
 
-  document.body.appendChild(celebrationOverlay);
+      document.body.appendChild(celebrationOverlay)
 
-  document.getElementById('goodScoreContinueBtn').addEventListener('click', () => {
-    celebrationOverlay.style.animation = 'fadeOut 0.2s ease-out';
-    setTimeout(() => {
-      if (celebrationOverlay.parentNode) {
-        celebrationOverlay.parentNode.removeChild(celebrationOverlay);
+      document
+        .getElementById("goodScoreContinueBtn")
+        .addEventListener("click", () => {
+          celebrationOverlay.style.animation = "fadeOut 0.2s ease-out"
+          setTimeout(() => {
+            if (celebrationOverlay.parentNode) {
+              celebrationOverlay.parentNode.removeChild(celebrationOverlay)
+            }
+          }, 200)
+        })
+
+      // Track milestone
+      chrome.runtime.sendMessage({
+        type: "MILESTONE_ACHIEVED",
+        milestoneId: "first_good_score"
+      })
+    }
+
+    /**
+     * Mark guide as shown in storage
+     */
+    async function markGuideShown() {
+      try {
+        const result = await chrome.storage.local.get("onboardingState")
+        const state = result.onboardingState || {}
+        state.firstComposeGuideShown = true
+        await chrome.storage.local.set({ onboardingState: state })
+      } catch (error) {
+        console.error("❌ Failed to mark guide shown:", error)
       }
-    }, 200);
-  });
+    }
 
-  // Track milestone
-  chrome.runtime.sendMessage({
-    type: 'MILESTONE_ACHIEVED',
-    milestoneId: 'first_good_score'
-  });
-}
+    /**
+     * Mark guide as skipped
+     */
+    async function markGuideSkipped() {
+      try {
+        const result = await chrome.storage.local.get("onboardingState")
+        const state = result.onboardingState || {}
+        state.guideSkipped = true
+        await chrome.storage.local.set({ onboardingState: state })
+        log("⏭️ Guide skipped")
+      } catch (error) {
+        console.error("❌ Failed to mark guide skipped:", error)
+      }
+    }
 
-/**
- * Mark guide as shown in storage
- */
-async function markGuideShown() {
-  try {
-    const result = await chrome.storage.local.get('onboardingState');
-    const state = result.onboardingState || {};
-    state.firstComposeGuideShown = true;
-    await chrome.storage.local.set({ onboardingState: state });
-  } catch (error) {
-    console.error('❌ Failed to mark guide shown:', error);
-  }
-}
-
-/**
- * Mark guide as skipped
- */
-async function markGuideSkipped() {
-  try {
-    const result = await chrome.storage.local.get('onboardingState');
-    const state = result.onboardingState || {};
-    state.guideSkipped = true;
-    await chrome.storage.local.set({ onboardingState: state });
-    log('⏭️ Guide skipped');
-  } catch (error) {
-    console.error('❌ Failed to mark guide skipped:', error);
-  }
-}
-
-// Export functions
-if (typeof window !== 'undefined') {
-  window.VeloMailFirstComposeGuide = {
-    showFirstComposeGuide,
-    closeFirstComposeGuide,
-    showFirstPreviewCelebration,
-    showGoodScoreCelebration
-  };
-}
-
-})(); // End of IIFE
-
+    // Export functions
+    if (typeof window !== "undefined") {
+      window.VeloMailFirstComposeGuide = {
+        showFirstComposeGuide,
+        closeFirstComposeGuide,
+        showFirstPreviewCelebration,
+        showGoodScoreCelebration
+      }
+    }
+  })() // End of IIFE
 } // End of duplicate load check
 
-log('✅ First Compose Guide ready');
+log("✅ First Compose Guide ready")
